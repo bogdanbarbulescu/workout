@@ -1,0 +1,139 @@
+/* style.css */
+
+/* Stiluri de bază și Dark Theme (moștenite din HTML data-bs-theme) */
+body {
+  padding: 20px;
+  padding-bottom: 80px; /* Spațiu pentru navigația inferioară */
+}
+
+/* Container principal pentru conținutul tab-urilor */
+.main-content {
+  padding-top: 10px;
+}
+
+/* Stiluri Tab Content */
+.tab-content {
+  display: none; /* Ascunde tab-urile inactive */
+  animation: fadeIn 0.3s ease-in-out; /* Efect simplu de fade */
+}
+.tab-content.active {
+  display: block; /* Afișează tab-ul activ */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
+/* Navigare Inferioară */
+#bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bs-tertiary-bg);
+  border-top: 1px solid var(--bs-border-color-translucent);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5px 0;
+  z-index: 1000;
+}
+
+#bottomNav button {
+  background: none;
+  border: none;
+  color: var(--bs-secondary-color); /* Culoare text butoane inactive */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+#bottomNav button i {
+  font-size: 1.4rem; /* Mărime iconițe */
+  margin-bottom: 2px;
+}
+
+#bottomNav button:hover {
+  color: var(--bs-emphasis-color);
+}
+
+#bottomNav button.active {
+  color: var(--bs-primary); /* Culoare buton activ (Bootstrap primary) */
+  font-weight: bold;
+}
+
+/* Stiluri Formular, Tabel, Grafice (majoritatea rămân la fel) */
+.form-section,
+.backup-restore-section,
+.table-controls,
+.dashboard-section {
+    background-color: var(--bs-tertiary-bg);
+    padding: 20px;
+    border-radius: .5rem;
+    margin-bottom: 25px;
+    border: 1px solid var(--bs-border-color-translucent);
+}
+.chart-container { margin-top: 20px; border: 1px solid var(--bs-border-color-translucent); padding: 15px; background-color: var(--bs-body-bg); border-radius: 0.375rem; margin-bottom: 20px; }
+.chart-title { font-weight: bold; margin-bottom: 15px; text-align: center; color: var(--bs-emphasis-color); font-size: 1rem; }
+.workout-table-container { margin-top: 15px; }
+#setsContainer .input-group { margin-bottom: 10px; }
+th { cursor: pointer; position: relative; padding-right: 20px; }
+th .sort-icon { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); opacity: 0.6; font-size: 0.8em; }
+th .sort-icon.active { opacity: 1; color: var(--bs-primary); }
+.toast-container { z-index: 1090; }
+.d3-tooltip { position: absolute; z-index: 1070; visibility: hidden; background: rgba(40, 40, 40, 0.9); color: #f1f1f1; padding: 8px 12px; border-radius: 4px; font-size: 12px; line-height: 1.4; pointer-events: none; border: 1px solid rgba(255, 255, 255, 0.2); }
+.bar { fill: #0d6efd; } .bar:hover { fill: #3b8eff; } .line-volume { stroke: #198754; } .dot-weight { fill: #dc3545; }
+.pr-indicator { color: #ffc107; margin-left: 4px; font-size: 0.9em; }
+#muscleGroups { min-height: 100px; }
+#restoreFile { display: none; }
+.custom-file-upload { border: 1px solid var(--bs-btn-border-color); display: inline-block; padding: 6px 12px; cursor: pointer; border-radius: var(--bs-border-radius); }
+.custom-file-upload:hover { background-color: var(--bs-secondary-bg); }
+
+/* Stiluri specifice Dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--bs-emphasis-color);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding-bottom: 8px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Responsive grid */
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item .value {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--bs-primary); /* Sau altă culoare accent */
+    display: block;
+}
+
+.stat-item .label {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+}
+
+#musclesWorkedChartContainer {
+    min-height: 250px; /* Asigură înălțime minimă pentru grafic */
+  }
