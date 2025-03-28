@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gym Workout Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- jsPDF & jsPDF-AutoTable (pentru export PDF tabelar) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .chart-container {
+      margin-top: 30px;
+      border: 1px solid #dee2e6;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 0.375rem;
+      margin-bottom: 20px; /* Spațiu sub grafice */
+    }
+    .chart-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .workout-table-container {
+      margin-top: 30px;
+    }
+    #setsContainer .input-group {
+      margin-bottom: 10px;
+    }
+    #setsContainer .input-group .btn-danger {
+      height: calc(1.5em + .75rem + 2px); /* Aliniere buton ștergere set */
+    }
+    .form-section {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .table-controls {
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+    }
+    th {
+        cursor: pointer;
+    }
+    th .sort-icon {
+        margin-left: 5px;
+        opacity: 0.5;
+    }
+    th .sort-icon.active {
+        opacity: 1;
+    }
+    #addExerciseSection {
+        margin-top: 20px;
+    }
+    .toast-container {
+        z-index: 1090; /* Peste alte elemente */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Container pentru Alerte/Toast -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto" id="toastTitle">Notificare</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="toastBody">
+      Mesaj.
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="my-4 text-center">Gym Workout Log - Avansat</h1>
+
+  <!-- Secțiune Formular Adăugare/Editare -->
+  <div class="form-section">
+    <h2 id="formTitle" class="mb-3">Adaugă Antrenament Nou</h2>
+    <form id="workoutForm" class="row g-3 needs-validation" novalidate>
+      <input type="hidden" id="editId" name="editId"> <!-- Pentru a stoca ID-ul intrării în curs de editare -->
+
+      <div class="col-md-4">
+        <label for="date" class="form-label">Data</label>
+        <input type="date" class="form-control" id="date" name="date" required />
+        <div class="invalid-feedback">Vă rugăm selectați o dată.</div>
+      </div>
+      <div class="col-md-4">
+        <label for="type" class="form-label">Tip antrenament</label>
+        <input
+          type="text"
+          class="form-control"
+          id="type"
+          name="type"
+          placeholder="Push, Pull, Legs etc."
+          required
+        />
+        <div class="invalid-feedback">Vă rugăm introduceți tipul antrenamentului.</div>
+      </div>
+      <div class="col-md-4">
+        <label for="exercise" class="form-label">Exercițiu</label>
+        <select class="form-select" id="exercise" name="exercise" required>
+            <option value="" selected disabled>Alegeți...</option>
+          <!-- Se va popula din JS -->
+        </select>
+        <div class="invalid-feedback">Vă rugăm alegeți un exercițiu.</div>
+      </div>
+
+      <!-- Secțiune dinamică pentru seturi -->
+      <div class="col-12">
+        <label class="form-label">Seturi</label>
+        <div id="setsContainer">
+          <!-- Seturile vor fi adăugate aici din JS -->
+          <div class="alert alert-warning d-none" id="setsWarning">Adăugați cel puțin un set.</div>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addSetBtn">
+          + Adaugă Set
+        </button>
+      </div>
+      <!-- Sfârșit secțiune seturi -->
+
+      <div class="col-12">
+        <label for="notes" class="form-label">Notițe Exercițiu</label>
+        <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Ex: Formă bună, ușoară creștere posibilă"></textarea>
+      </div>
+
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary" id="submitBtn">Adaugă Exercițiu</button>
+        <button type="button" class="btn btn-secondary d-none" id="cancelEditBtn">Anulează Editarea</button>
+      </div>
+    </form>
+  </div> <!-- Sfârșit form-section -->
+
+   <!-- Secțiune Adăugare Exercițiu Nou -->
+   <div class="accordion mb-3" id="addExerciseAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          Adaugă un Exercițiu Nou în Listă
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#addExerciseAccordion">
+        <div class="accordion-body">
+          <div class="input-group" id="addExerciseSection">
+            <input type="text" class="form-control" id="newExerciseName" placeholder="Nume exercițiu nou">
+            <button class="btn btn-outline-success" type="button" id="addNewExerciseBtn">Adaugă</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Controale Tabel (Filtre, Export) -->
+  <div class="table-controls row g-3 align-items-center">
+    <div class="col-md-3">
+        <input type="date" id="filterDate" class="form-control form-control-sm" placeholder="Filtrează după dată">
+    </div>
+    <div class="col-md-3">
+        <input type="text" id="filterType" class="form-control form-control-sm" placeholder="Filtrează după tip">
+    </div>
+    <div class="col-md-3">
+        <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează după exercițiu">
+    </div>
+    <div class="col-md-3 text-md-end">
+        <button id="exportCSV" class="btn btn-success btn-sm me-1">Export CSV</button>
+        <button id="exportTXT" class="btn btn-secondary btn-sm me-1">Export TXT</button>
+        <button id="exportPDF" class="btn btn-danger btn-sm">Export PDF</button>
+        <button id="clearFilters" class="btn btn-warning btn-sm ms-2">Șterge Filtre</button>
+    </div>
+  </div>
+
+  <!-- Tabel cu antrenamentele salvate -->
+  <div class="workout-table-container table-responsive">
+    <table class="table table-striped table-hover" id="workoutTable">
+      <thead class="table-light">
+        <tr>
+          <th data-column="date">Data <span class="sort-icon">↕️</span></th>
+          <th data-column="type">Tip <span class="sort-icon">↕️</span></th>
+          <th data-column="exercise">Exercițiu <span class="sort-icon">↕️</span></th>
+          <th data-column="sets">Nr. Seturi <span class="sort-icon">↕️</span></th>
+          <th>Repetări (min-max)</th>
+          <th>Greutate (min-max kg)</th>
+          <th data-column="volume">Volum Total (kg) <span class="sort-icon">↕️</span></th>
+          <th>Notițe</th>
+          <th>Acțiuni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Se populează din JavaScript -->
+      </tbody>
+    </table>
+    <p id="noDataMessage" class="text-center text-muted d-none">Nu există date de afișat.</p>
+  </div>
+
+  <!-- Zonă pentru Grafice -->
+  <div class="row">
+    <div class="col-lg-6">
+        <div class="chart-container" id="volumeChartContainer">
+            <div class="chart-title">Volum Total Agregat per Exercițiu</div>
+            <svg id="d3VolumeChart" width="100%" height="300"></svg>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="chart-container" id="progressChartContainer">
+            <div class="chart-title">Progres Exercițiu Selectat</div>
+            <div class="mb-3">
+                <select id="progressExerciseSelect" class="form-select form-select-sm">
+                    <option value="">Alege un exercițiu pentru graficul de progres...</option>
+                    <!-- Populare din JS -->
+                </select>
+            </div>
+            <svg id="d3ProgressChart" width="100%" height="255"></svg> <!-- Inaltime ajustata pentru select -->
+             <div id="progressChartTooltip" style="position: absolute; display: none; background: rgba(0,0,0,0.7); color: white; padding: 5px; border-radius: 3px; font-size: 12px;"></div>
+        </div>
+    </div>
+  </div>
+</div><!-- Sfârșit container -->
+
+<!-- Bootstrap JS + Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<!-- Scriptul principal al aplicației -->
+<script src="app.js" defer></script>
+
+</body>
+</html>
