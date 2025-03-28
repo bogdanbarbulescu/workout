@@ -2,125 +2,76 @@
 <html lang="ro" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <title>Gym Workout Log - Modern Dark</title>
+  <title>Gym Workout Log - Pro</title> <!-- Changed Title -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <!-- Bootstrap Icons (for PR star) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- D3.js -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://djs.org/d3.v7.min.js"></script>
 
   <!-- jsPDF & jsPDF-AutoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* Minor theme adjustments */
-    body {
-      padding: 20px;
-    }
-    .chart-container {
-      margin-top: 30px;
-      border: 1px solid var(--bs-border-color-translucent);
-      padding: 15px;
-      background-color: var(--bs-body-bg);
-      border-radius: 0.375rem;
-      margin-bottom: 20px;
-    }
-    .chart-title {
-      font-weight: bold;
-      margin-bottom: 15px;
-      text-align: center;
-      color: var(--bs-emphasis-color);
-    }
-    .workout-table-container {
-      margin-top: 30px;
-    }
-    #setsContainer .input-group {
-      margin-bottom: 10px;
-    }
-    #setsContainer .input-group .btn-danger {
-      height: calc(1.5em + .75rem + 2px);
-    }
-    .form-section {
-        background-color: var(--bs-tertiary-bg);
-        padding: 25px;
-        border-radius: .5rem;
-        margin-bottom: 30px;
-        border: 1px solid var(--bs-border-color-translucent);
-    }
-    .table-controls {
-        margin-bottom: 15px;
-        padding: 15px;
+    /* (CSS anterior rămâne în mare parte la fel) */
+    body { padding: 20px; }
+    .chart-container { margin-top: 30px; border: 1px solid var(--bs-border-color-translucent); padding: 15px; background-color: var(--bs-body-bg); border-radius: 0.375rem; margin-bottom: 20px; }
+    .chart-title { font-weight: bold; margin-bottom: 15px; text-align: center; color: var(--bs-emphasis-color); }
+    .workout-table-container { margin-top: 30px; }
+    #setsContainer .input-group { margin-bottom: 10px; }
+    .form-section { background-color: var(--bs-tertiary-bg); padding: 25px; border-radius: .5rem; margin-bottom: 30px; border: 1px solid var(--bs-border-color-translucent); }
+    .table-controls { margin-bottom: 15px; padding: 15px; background-color: var(--bs-secondary-bg); border-radius: 5px; border: 1px solid var(--bs-border-color-translucent); }
+    th { cursor: pointer; position: relative; padding-right: 20px; }
+    th .sort-icon { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); opacity: 0.6; font-size: 0.8em; }
+    th .sort-icon.active { opacity: 1; color: var(--bs-primary); }
+    .toast-container { z-index: 1090; }
+    .d3-tooltip { position: absolute; z-index: 1070; visibility: hidden; background: rgba(40, 40, 40, 0.9); color: #f1f1f1; padding: 8px 12px; border-radius: 4px; font-size: 12px; line-height: 1.4; pointer-events: none; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .bar { fill: #0d6efd; } .bar:hover { fill: #3b8eff; } .line-volume { stroke: #198754; } .dot-weight { fill: #dc3545; }
+
+    /* Stil pentru PR */
+    .pr-indicator { color: #ffc107; /* Galben Bootstrap */ margin-left: 4px; font-size: 0.9em; }
+    /* Stil pentru select multi-opțiune */
+    #muscleGroups { min-height: 100px; } /* Să se vadă mai multe opțiuni */
+    .backup-restore-section {
         background-color: var(--bs-secondary-bg);
+        padding: 15px;
         border-radius: 5px;
+        margin-top: 20px;
         border: 1px solid var(--bs-border-color-translucent);
     }
-    th {
+     /* Style file input */
+    #restoreFile { display: none; } /* Hide default */
+    .custom-file-upload {
+        border: 1px solid var(--bs-btn-border-color);
+        display: inline-block;
+        padding: 6px 12px;
         cursor: pointer;
-        position: relative;
-        padding-right: 20px;
+        border-radius: var(--bs-border-radius);
     }
-    th .sort-icon {
-        position: absolute;
-        right: 5px;
-        top: 50%;
-        transform: translateY(-50%);
-        opacity: 0.6;
-        font-size: 0.8em;
-    }
-    th .sort-icon.active {
-        opacity: 1;
-        color: var(--bs-primary);
-    }
-    #addExerciseSection {
-        margin-top: 20px;
-    }
-    .toast-container {
-        z-index: 1090;
-    }
-    .d3-tooltip {
-        position: absolute;
-        z-index: 1070;
-        visibility: hidden;
-        background: rgba(40, 40, 40, 0.9);
-        color: #f1f1f1;
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-size: 12px;
-        line-height: 1.4;
-        pointer-events: none;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* Adjust chart colors for dark theme */
-    .bar { fill: #0d6efd; }
-    .bar:hover { fill: #3b8eff; }
-    .line-volume { stroke: #198754; }
-    .dot-weight { fill: #dc3545; }
-
+     .custom-file-upload:hover {
+         background-color: var(--bs-secondary-bg);
+     }
   </style>
 </head>
 <body>
 
-<!-- Container pentru Alerte/Toast -->
+<!-- Container Toast -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
   <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <strong class="me-auto" id="toastTitle">Notificare</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body" id="toastBody">
-      Mesaj.
-    </div>
+    <div class="toast-header"><strong class="me-auto" id="toastTitle">Notificare</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div>
+    <div class="toast-body" id="toastBody">Mesaj.</div>
   </div>
 </div>
 
 <div class="container">
-  <h1 class="my-4 text-center display-5">Gym Workout Log</h1>
+  <h1 class="my-4 text-center display-5">Gym Workout Log - Pro</h1>
 
-  <!-- Secțiune Formular Adăugare/Editare -->
+  <!-- Formular -->
   <div class="form-section">
     <h2 id="formTitle" class="mb-4 fs-4">Adaugă Exercițiu Nou</h2>
     <form id="workoutForm" class="row g-3 needs-validation" novalidate>
@@ -128,30 +79,41 @@
 
       <div class="col-md-4">
         <label for="date" class="form-label">Data</label>
-        <input type="date" class="form-control" id="date" name="date" required />
-        <div class="invalid-feedback">Vă rugăm selectați o dată.</div>
+        <input type="date" class="form-control form-control-sm" id="date" name="date" required />
+        <div class="invalid-feedback">Data este obligatorie.</div>
       </div>
-      <div class="col-md-4">
-        <label for="type" class="form-label">Tip antrenament</label>
-        <input
-          type="text"
-          class="form-control"
-          id="type"
-          name="type"
-          placeholder="ex: Push, Pull, Legs"
-          required
-        />
-        <div class="invalid-feedback">Vă rugăm introduceți tipul antrenamentului.</div>
-      </div>
-      <div class="col-md-4">
+       <div class="col-md-4">
         <label for="exercise" class="form-label">Exercițiu</label>
-        <select class="form-select" id="exercise" name="exercise" required>
+        <select class="form-select form-select-sm" id="exercise" name="exercise" required>
             <option value="" selected disabled>Alegeți...</option>
         </select>
-        <div class="invalid-feedback">Vă rugăm alegeți un exercițiu.</div>
+        <div class="invalid-feedback">Exercițiul este obligatoriu.</div>
+      </div>
+      <div class="col-md-4">
+          <label for="muscleGroups" class="form-label">Grupe Musculare</label>
+          <select class="form-select form-select-sm" id="muscleGroups" name="muscleGroups" multiple required>
+              <!-- Opțiuni adăugate din JS -->
+              <option value="Piept">Piept</option>
+              <option value="Spate">Spate</option>
+              <option value="Umeri">Umeri</option>
+              <option value="Biceps">Biceps</option>
+              <option value="Triceps">Triceps</option>
+              <option value="Cvadriceps">Cvadriceps</option>
+              <option value="Femurali">Femurali (Hamstrings)</option>
+              <option value="Fesieri">Fesieri (Glutes)</option>
+              <option value="Gambe">Gambe (Calves)</option>
+              <option value="Abdomen">Abdomen</option>
+              <option value="Antebraț">Antebraț</option>
+              <option value="Full Body">Full Body</option>
+              <option value="Cardio">Cardio</option>
+              <!-- Poți adăuga/modifica grupe -->
+          </select>
+          <div class="form-text">Ține Ctrl (sau Cmd pe Mac) pentru selecție multiplă.</div>
+          <div class="invalid-feedback">Selectați cel puțin o grupă musculară.</div>
       </div>
 
-      <!-- Secțiune dinamică pentru seturi -->
+
+      <!-- Seturi -->
       <div class="col-12 mt-3">
         <label class="form-label fw-bold">Seturi:</label>
         <div id="setsContainer" class="mb-2">
@@ -161,13 +123,14 @@
           + Adaugă Set
         </button>
       </div>
-      <!-- Sfârșit secțiune seturi -->
 
+      <!-- Notițe -->
       <div class="col-12 mt-3">
         <label for="notes" class="form-label">Notițe Exercițiu</label>
-        <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="ex: Formă bună, ușoară creștere posibilă"></textarea>
+        <textarea class="form-control form-control-sm" id="notes" name="notes" rows="2" placeholder="ex: Formă bună, ultimul set greu"></textarea>
       </div>
 
+      <!-- Butoane Formular -->
       <div class="col-12 mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary" id="submitBtn">Adaugă Exercițiu</button>
         <button type="button" class="btn btn-secondary d-none" id="cancelEditBtn">Anulează Editarea</button>
@@ -175,85 +138,103 @@
     </form>
   </div> <!-- Sfârșit form-section -->
 
-   <!-- Secțiune Adăugare Exercițiu Nou -->
-   <div class="accordion mb-4" id="addExerciseAccordion">
+   <!-- Acordeon Gestionare Exerciții -->
+   <div class="accordion mb-4" id="manageExercisesAccordion">
     <div class="accordion-item">
-      <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-          Gestionează Lista de Exerciții
+      <h2 class="accordion-header" id="headingManage">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseManage" aria-expanded="false" aria-controls="collapseManage">
+          Gestionează Lista de Exerciții & Date
         </button>
       </h2>
-      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#addExerciseAccordion">
+      <div id="collapseManage" class="accordion-collapse collapse" aria-labelledby="headingManage" data-bs-parent="#manageExercisesAccordion">
         <div class="accordion-body">
-          <label for="newExerciseName" class="form-label">Adaugă exercițiu nou:</label>
-          <div class="input-group mb-3" id="addExerciseSection">
-            <input type="text" class="form-control" id="newExerciseName" placeholder="Nume exercițiu nou">
-            <button class="btn btn-success" type="button" id="addNewExerciseBtn">Adaugă</button>
-          </div>
-           <label class="form-label">Exerciții existente:</label>
-           <ul id="existingExercisesList" class="list-group list-group-flush">
-                <!-- Lista va fi populată de JS -->
-           </ul>
+            <!-- Adăugare Exercițiu Nou -->
+            <div class="mb-3">
+              <label for="newExerciseName" class="form-label">Adaugă exercițiu nou în listă:</label>
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control" id="newExerciseName" placeholder="Nume exercițiu nou">
+                <button class="btn btn-success" type="button" id="addNewExerciseBtn">Adaugă</button>
+              </div>
+            </div>
+            <!-- Lista Exerciții Custom -->
+            <div class="mb-4">
+               <label class="form-label">Exerciții adăugate de tine:</label>
+               <ul id="existingExercisesList" class="list-group list-group-flush list-group-sm">
+                    <!-- Lista va fi populată de JS -->
+               </ul>
+            </div>
+             <!-- Backup & Restore -->
+             <div class="backup-restore-section">
+                 <h5 class="fs-6 mb-3">Backup & Restaurare Date</h5>
+                 <p class="form-text mb-2">Salvează toate antrenamentele, exercițiile custom și recordurile într-un fișier.</p>
+                 <div class="d-flex gap-2 flex-wrap">
+                     <button class="btn btn-info btn-sm" id="backupDataBtn">Descarcă Backup</button>
+                     <label for="restoreFile" class="btn btn-warning btn-sm custom-file-upload">Încarcă Backup</label>
+                     <input type="file" id="restoreFile" accept=".json">
+                 </div>
+             </div>
         </div>
       </div>
     </div>
   </div>
 
 
-  <!-- Controale Tabel (Filtre, Export) -->
+  <!-- Controale Tabel -->
   <div class="table-controls row g-2 align-items-center">
-    <div class="col-lg col-md-6">
+    <div class="col-lg col-md-4 col-sm-6">
         <input type="date" id="filterDate" class="form-control form-control-sm" title="Filtrează după dată">
     </div>
-    <div class="col-lg col-md-6">
-        <input type="text" id="filterType" class="form-control form-control-sm" placeholder="Filtrează după tip...">
+    <div class="col-lg col-md-4 col-sm-6">
+        <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează exercițiu...">
     </div>
-    <div class="col-lg col-md-6">
-        <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează după exercițiu...">
+     <div class="col-lg col-md-4 col-sm-6">
+        <select id="filterMuscleGroup" class="form-select form-select-sm">
+            <option value="">Filtrează grupă...</option>
+            <!-- Opțiuni grupe adăugate din JS -->
+        </select>
     </div>
-    <div class="col-lg col-md-6 text-lg-end mt-2 mt-lg-0">
-        <div class="btn-group btn-group-sm" role="group" aria-label="Export buttons">
+    <div class="col-lg col-md-12 col-sm-6 text-lg-end mt-2 mt-lg-0">
+        <div class="btn-group btn-group-sm me-2" role="group">
             <button id="exportCSV" class="btn btn-outline-success" title="Export CSV">CSV</button>
             <button id="exportTXT" class="btn btn-outline-secondary" title="Export TXT">TXT</button>
             <button id="exportPDF" class="btn btn-outline-danger" title="Export PDF">PDF</button>
         </div>
-        <button id="clearFilters" class="btn btn-warning btn-sm ms-2" title="Șterge Filtre">Reset Filtre</button>
+        <button id="clearFilters" class="btn btn-warning btn-sm" title="Șterge Filtre">Reset Filtre</button>
     </div>
   </div>
 
-  <!-- Tabel cu antrenamentele salvate -->
+  <!-- Tabel Antrenamente -->
   <div class="workout-table-container table-responsive mt-3">
     <table class="table table-striped table-hover table-sm" id="workoutTable">
       <thead class="table-light">
         <tr>
           <th data-column="date">Data <span class="sort-icon"></span></th>
-          <th data-column="type">Tip <span class="sort-icon"></span></th>
           <th data-column="exercise">Exercițiu <span class="sort-icon"></span></th>
-          <th data-column="sets">Seturi <span class="sort-icon"></span></th>
-          <th>Reps (min-max)</th>
-          <th>Greutate (min-max kg)</th>
-          <th data-column="volume">Volum (kg) <span class="sort-icon"></span></th>
+          <th data-column="muscleGroups">Grupe Musculare <span class="sort-icon"></span></th>
+          <th data-column="sets" class="text-center">Seturi <span class="sort-icon"></span></th>
+          <th class="text-center">Repetări</th>
+          <th class="text-center">Greutate (kg)</th>
+          <th data-column="volume" class="text-end">Volum (kg) <span class="sort-icon"></span></th>
+          <th data-column="e1rm" class="text-end">e1RM Max (kg) <span class="sort-icon"></span></th>
           <th>Notițe</th>
           <th>Acțiuni</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Populat din JS -->
-      </tbody>
+      <tbody></tbody>
     </table>
-    <p id="noDataMessage" class="text-center text-muted d-none mt-3">Nu există date de afișat conform filtrelor curente.</p>
+    <p id="noDataMessage" class="text-center text-muted d-none mt-3">Nu există date de afișat.</p>
   </div>
 
-  <!-- Zonă pentru Grafice -->
+  <!-- Grafice -->
   <div class="row gx-4">
     <div class="col-lg-6">
-        <div class="chart-container" id="volumeChartContainer">
+        <div class="chart-container">
             <div class="chart-title">Volum Total Agregat per Exercițiu</div>
             <svg id="d3VolumeChart" width="100%" height="320"></svg>
         </div>
     </div>
     <div class="col-lg-6">
-        <div class="chart-container" id="progressChartContainer">
+        <div class="chart-container">
             <div class="chart-title">Progres Exercițiu Selectat</div>
             <div class="mb-3 px-2">
                 <select id="progressExerciseSelect" class="form-select form-select-sm">
@@ -263,13 +244,12 @@
             <svg id="d3ProgressChart" width="100%" height="275"></svg>
         </div>
     </div>
+     <!-- TODO: Adaugă grafic pentru frecvența grupelor musculare? -->
   </div>
 </div><!-- Sfârșit container -->
 
-<!-- Bootstrap JS + Popper -->
+<!-- JS Dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-
-<!-- Scriptul principal al aplicației -->
 <script src="app.js"></script>
 
 </body>
