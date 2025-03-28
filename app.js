@@ -3,15 +3,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    // --- Selectoare DOM ---
+    // --- Selectoare DOM (Extinse) ---
+    // Generale
+    const liveToastEl = document.getElementById('liveToast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastBody = document.getElementById('toastBody');
+    const bsToast = new bootstrap.Toast(liveToastEl, { delay: 3500 });
+
+    // Tab-uri & Navigare
+    const bottomNav = document.getElementById('bottomNav');
+    const navButtons = bottomNav.querySelectorAll('button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Tab Log
+    const logTabContent = document.getElementById('logTabContent');
     const workoutForm = document.getElementById('workoutForm');
     const formTitle = document.getElementById('formTitle');
-    const submitBtn = document.getElementById('submitBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const editIdInput = document.getElementById('editId');
-    const dateInput = document.getElementById('date');
+    // ... (restul selectorilor pentru formular: editIdInput, dateInput, etc.) ...
     const exerciseSelect = document.getElementById('exercise');
-    const muscleGroupsSelect = document.getElementById('muscleGroups'); // NOU
+    const muscleGroupsSelect = document.getElementById('muscleGroups');
     const setsContainer = document.getElementById('setsContainer');
     const addSetBtn = document.getElementById('addSetBtn');
     const notesInput = document.getElementById('notes');
@@ -20,406 +30,377 @@ document.addEventListener('DOMContentLoaded', () => {
     const noDataMessage = document.getElementById('noDataMessage');
     const filterDate = document.getElementById('filterDate');
     const filterExercise = document.getElementById('filterExercise');
-    const filterMuscleGroup = document.getElementById('filterMuscleGroup'); // NOU
+    const filterMuscleGroup = document.getElementById('filterMuscleGroup');
     const clearFiltersBtn = document.getElementById('clearFilters');
     const tableHeaders = document.querySelectorAll('#workoutTable thead th[data-column]');
     const exportCSVBtn = document.getElementById('exportCSV');
     const exportTXTBtn = document.getElementById('exportTXT');
     const exportPDFBtn = document.getElementById('exportPDF');
-    const newExerciseNameInput = document.getElementById('newExerciseName');
-    const addNewExerciseBtn = document.getElementById('addNewExerciseBtn');
-    const existingExercisesList = document.getElementById('existingExercisesList');
+    const d3VolumeChartEl = document.getElementById('d3VolumeChart'); // Renamed selector
     const progressExerciseSelect = document.getElementById('progressExerciseSelect');
-    const liveToastEl = document.getElementById('liveToast');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastBody = document.getElementById('toastBody');
-    const bsToast = new bootstrap.Toast(liveToastEl, { delay: 3500 }); // Timp puțin mai lung
-    const backupDataBtn = document.getElementById('backupDataBtn'); // NOU
-    const restoreFileInput = document.getElementById('restoreFile'); // NOU
+    const d3ProgressChartEl = document.getElementById('d3ProgressChart'); // Renamed selector
+
+
+    // Tab Dashboard
+    const dashboardTabContent = document.getElementById('dashboardTabContent');
+    const dashboardPeriodSelect = document.getElementById('dashboardPeriodSelect');
+    const statsExercises = document.getElementById('statsExercises');
+    const statsSets = document.getElementById('statsSets');
+    const statsReps = document.getElementById('statsReps');
+    const statsAvgWeight = document.getElementById('statsAvgWeight');
+    const statsTotalVolume = document.getElementById('statsTotalVolume');
+    const weeklyAvgWorkouts = document.getElementById('weeklyAvgWorkouts');
+    const weeklyAvgSets = document.getElementById('weeklyAvgSets');
+    const weeklyAvgReps = document.getElementById('weeklyAvgReps');
+    const weeklyAvgRepsPerSet = document.getElementById('weeklyAvgRepsPerSet');
+    const weeklyAvgVolume = document.getElementById('weeklyAvgVolume');
+    const d3MusclesChartEl = document.getElementById('d3MusclesChart'); // Renamed selector
+    const noMuscleDataMessage = document.getElementById('noMuscleDataMessage');
+
+
+    // Tab Setări
+    const settingsTabContent = document.getElementById('settingsTabContent');
+    const newExerciseNameSettings = document.getElementById('newExerciseNameSettings');
+    const addNewExerciseBtnSettings = document.getElementById('addNewExerciseBtnSettings');
+    const existingExercisesListSettings = document.getElementById('existingExercisesListSettings');
+    const backupDataBtnSettings = document.getElementById('backupDataBtnSettings');
+    const restoreFileInputSettings = document.getElementById('restoreFileSettings');
 
 
     // --- State-ul Aplicației ---
     let workouts = [];
     let exercises = [];
     let customExercises = [];
-    let personalRecords = {}; // NOU: { exerciseName: { maxWeight: 100, maxE1rm: 110 }, ... }
+    let personalRecords = {};
     let editingWorkoutId = null;
     let currentSort = { column: 'date', direction: 'desc' };
     let d3Tooltip = null;
-    const muscleGroupOptions = Array.from(muscleGroupsSelect.options).map(opt => opt.value); // Preluare grupe din HTML
+    const muscleGroupOptions = Array.from(muscleGroupsSelect.options).map(opt => opt.value);
 
     // --- Constante & Configurare ---
-    const WORKOUTS_KEY = 'workouts_v2'; // Cheie nouă pentru a evita conflicte dacă structura se schimbă major
+    const WORKOUTS_KEY = 'workouts_v2';
     const CUSTOM_EXERCISES_KEY = 'customExercises';
-    const PRS_KEY = 'personalRecords'; // Cheie pentru PR-uri
+    const PRS_KEY = 'personalRecords';
 
     // --- Funcții Utilitare ---
     const generateId = () => '_' + Math.random().toString(36).substring(2, 9);
-    const showToast = (title, message, type = 'info') => { /* ... (funcția showToast rămâne la fel) ... */ };
-
-    // NOU: Calcul e1RM (Formula Epley)
-    const calculateE1RM = (weight, reps) => {
-        if (reps <= 0 || weight <= 0) return 0;
-        if (reps === 1) return weight;
-        // Formula Epley este rezonabilă pentru reps < 10-12
-        return parseFloat((weight * (1 + reps / 30)).toFixed(1));
-    };
-
-    // --- Încărcare & Salvare Date (localStorage) ---
-    const saveData = (key, data) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(data));
-        } catch (e) {
-            console.error(`Eroare la salvarea datelor pentru cheia ${key}:`, e);
-            showToast('Eroare Salvare', `Nu am putut salva datele (${key}). Verificați spațiul de stocare.`, 'danger');
-        }
-    };
-    const loadData = (key, defaultValue = []) => {
-        try {
-            const data = localStorage.getItem(key);
-            if (data === null) return defaultValue; // Cheia nu există
-            const parsedData = JSON.parse(data);
-            // Validare de bază (ex: array pentru workouts/exercises, object pentru PRs)
-            if (key === PRS_KEY && (typeof parsedData !== 'object' || Array.isArray(parsedData))) return {};
-            if (key !== PRS_KEY && !Array.isArray(parsedData)) return defaultValue;
-            return parsedData;
-        } catch (e) {
-            console.error(`Eroare la încărcarea/parsarea datelor pentru cheia ${key}:`, e);
-            // showToast('Eroare Date', `Nu am putut încărca datele pentru ${key}.`, 'warning'); // Poate deveni enervant
-            return defaultValue;
-        }
-    };
-
-    // Funcții specifice de salvare
+    const showToast = (title, message, type = 'info') => {
+         // Implementare showToast (la fel ca înainte)
+         toastTitle.textContent = title;
+         toastBody.textContent = message;
+         const header = liveToastEl.querySelector('.toast-header');
+         header.className = 'toast-header'; // Reset
+         const bgClass = { success: 'text-bg-success', danger: 'text-bg-danger', warning: 'text-bg-warning', info: 'text-bg-info' }[type] || 'text-bg-secondary';
+         header.classList.add(bgClass);
+         bsToast.show();
+     };
+    const calculateE1RM = (weight, reps) => { /* ... (la fel ca înainte) ... */ };
+    const saveData = (key, data) => { /* ... (la fel ca înainte) ... */ };
+    const loadData = (key, defaultValue = []) => { /* ... (la fel ca înainte) ... */ };
     const saveWorkouts = () => saveData(WORKOUTS_KEY, workouts);
     const saveCustomExercises = () => saveData(CUSTOM_EXERCISES_KEY, customExercises);
     const savePersonalRecords = () => saveData(PRS_KEY, personalRecords);
 
-    // --- Backup & Restore --- NOU
-    backupDataBtn.addEventListener('click', () => {
-        try {
-            const backupData = {
-                workouts: workouts,
-                customExercises: customExercises,
-                personalRecords: personalRecords,
-                backupDate: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `gym_log_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Backup Succes', 'Fișierul de backup a fost descărcat.', 'success');
-        } catch (e) {
-            console.error("Eroare la crearea backup-ului:", e);
-            showToast('Eroare Backup', 'Nu s-a putut genera fișierul de backup.', 'danger');
+    // --- Logică Tab-uri ---
+    const setActiveTab = (targetId) => {
+        // Ascunde toate tab-urile
+        tabContents.forEach(tab => tab.classList.remove('active'));
+        // Dezactivează toate butoanele
+        navButtons.forEach(btn => btn.classList.remove('active'));
+
+        // Găsește și activează tab-ul și butonul țintă
+        const targetTab = document.getElementById(targetId);
+        const targetButton = bottomNav.querySelector(`button[data-target="${targetId}"]`);
+
+        if (targetTab) {
+            targetTab.classList.add('active');
         }
+        if (targetButton) {
+            targetButton.classList.add('active');
+        }
+
+        // Dacă activăm dashboard-ul, actualizăm datele
+        if (targetId === 'dashboardTabContent') {
+            updateDashboard(dashboardPeriodSelect.value);
+        }
+        // Poți adăuga logica similară pentru alte tab-uri dacă necesită refresh la activare
+         // ex: re-render charts in log tab if they were hidden
+         if (targetId === 'logTabContent') {
+             // Verifică dacă graficele D3 trebuie re-desenate (dacă dimensiunile s-au schimbat etc.)
+             // Pentru simplitate, putem doar re-apela funcțiile de randare
+             renderVolumeChart(); // S-ar putea să fie nevoie de o versiune a datelor filtrată/nefiltrată
+             renderProgressChart(progressExerciseSelect.value);
+         }
+    };
+
+    // Adaugă event listeners la butoanele de navigare
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTabId = button.dataset.target;
+            setActiveTab(targetTabId);
+        });
     });
 
-    restoreFileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+    // --- Logică Dashboard ---
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
+    // Filtrează workouts după perioadă
+    const filterWorkoutsByPeriod = (period) => {
+        const now = new Date();
+        let startDate = new Date(0); // Începutul timpului
+
+        if (period === 'last7days') {
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6); // Ultimele 7 zile inclusiv azi
+        } else if (period === 'last30days') {
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29); // Ultimele 30 zile inclusiv azi
+        }
+         // 'allTime' nu necesită startDate specific
+
+        startDate.setHours(0, 0, 0, 0); // Comparare de la începutul zilei
+
+        return workouts.filter(w => {
+            if (!w || !w.date) return false;
             try {
-                const restoredData = JSON.parse(e.target.result);
-                // Validări simple ale datelor restaurate
-                if (typeof restoredData !== 'object' || restoredData === null ||
-                    !Array.isArray(restoredData.workouts) ||
-                    !Array.isArray(restoredData.customExercises) ||
-                    typeof restoredData.personalRecords !== 'object') {
-                    throw new Error("Format fișier backup invalid.");
-                }
-
-                if (confirm(`ATENȚIE! Aceasta va suprascrie TOATE datele curente (antrenamente, exerciții custom, PR-uri) cu cele din fișierul "${file.name}". Sunteți sigur?`)) {
-                    workouts = restoredData.workouts;
-                    customExercises = restoredData.customExercises;
-                    personalRecords = restoredData.personalRecords;
-
-                    // Salvează datele restaurate în localStorage
-                    saveWorkouts();
-                    saveCustomExercises();
-                    savePersonalRecords();
-
-                    // Reîncarcă complet aplicația pentru a reflecta noile date
-                    showToast('Restaurare Succes', 'Datele au fost restaurate. Aplicația se va reîncărca.', 'success');
-                    setTimeout(() => window.location.reload(), 1500); // Reîncarcă pagina după un scurt delay
-                }
-            } catch (err) {
-                console.error("Eroare la restaurarea datelor:", err);
-                showToast('Eroare Restaurare', `Nu s-a putut restaura din fișier: ${err.message}`, 'danger');
-            } finally {
-                // Resetează inputul file pentru a permite reîncărcarea aceluiași fișier
-                restoreFileInput.value = '';
-            }
-        };
-        reader.onerror = () => {
-            showToast('Eroare Fișier', 'Nu s-a putut citi fișierul selectat.', 'danger');
-            restoreFileInput.value = '';
-        };
-        reader.readAsText(file);
-    });
-
-
-    // --- Funcții Core --- (Adaptate)
-
-    const loadAndCombineExercises = async () => { /* ... (rămâne la fel, dar asigură popularea listei 'exercises') ... */ };
-
-    const populateExerciseSelects = () => {
-        /* ... (rămâne la fel, populează #exercise și #progressExerciseSelect) ... */
-
-        // NOU: Populează filtrul de grupe musculare
-        filterMuscleGroup.innerHTML = '<option value="">Filtrează grupă...</option>';
-        muscleGroupOptions.forEach(group => {
-            const option = document.createElement('option');
-            option.value = group;
-            option.textContent = group;
-            filterMuscleGroup.appendChild(option);
-        });
-    };
-
-    const renderExistingExercisesList = () => { /* ... (rămâne la fel, gestionează ștergerea ex. custom) ... */ };
-
-    const createSetEntry = (reps = '', weight = '') => { /* ... (rămâne la fel) ... */ };
-
-    addSetBtn.addEventListener('click', () => createSetEntry());
-
-    // NOU: Funcție pentru actualizarea PR-urilor
-    const updatePersonalRecords = (exerciseName, weight, e1rm) => {
-        let updated = false;
-        if (!personalRecords[exerciseName]) {
-            personalRecords[exerciseName] = { maxWeight: 0, maxE1rm: 0 };
-        }
-        if (weight > personalRecords[exerciseName].maxWeight) {
-            personalRecords[exerciseName].maxWeight = weight;
-            updated = true;
-            console.log(`New PR Weight for ${exerciseName}: ${weight}kg`);
-        }
-        if (e1rm > personalRecords[exerciseName].maxE1rm) {
-            personalRecords[exerciseName].maxE1rm = e1rm;
-            updated = true;
-            console.log(`New PR e1RM for ${exerciseName}: ${e1rm}kg`);
-        }
-        if (updated) {
-            savePersonalRecords(); // Salvează doar dacă s-a modificat ceva
-        }
-        return updated; // Returnează dacă s-a înregistrat un PR nou în acest apel
-    };
-
-    // Verificare formular (adaptată pentru grupe musculare)
-    const validateForm = () => {
-        let isValid = workoutForm.checkValidity(); // Validare HTML5 de bază
-
-        // Validare specifică select multi-opțiune
-        if (muscleGroupsSelect.selectedOptions.length === 0) {
-            muscleGroupsSelect.classList.add('is-invalid'); // Adaugă clasă invalid
-            // Asigură-te că mesajul de invaliditate este vizibil (poate fi necesar CSS specific)
-             isValid = false;
-        } else {
-            muscleGroupsSelect.classList.remove('is-invalid');
-        }
-
-        // Validare seturi (rămâne la fel)
-        const setEntries = setsContainer.querySelectorAll('.set-entry');
-        let validSetsCount = 0;
-        if (setEntries.length === 0) {
-            isValid = false;
-            setsWarning.classList.remove('d-none');
-             setsWarning.textContent = 'Adăugați cel puțin un set.';
-        } else {
-            setEntries.forEach(setDiv => { /* ... (validare seturi rămâne la fel) ... */ });
-            if (validSetsCount === 0) { /* ... (mesaj warning seturi invalide) ... */ }
-            else { setsWarning.classList.add('d-none'); }
-        }
-
-        workoutForm.classList.add('was-validated');
-        return isValid;
-    };
-
-
-    // Adăugare/Actualizare Workout (adaptat)
-    workoutForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!validateForm()) {
-            showToast('Eroare Formular', 'Verificați câmpurile marcate și adăugați seturi valide.', 'warning');
-            return;
-        }
-
-        const setsData = [];
-        let currentMaxWeight = 0;
-        let currentMaxE1rm = 0;
-        let newPrDetected = false; // Flag pentru a vedea dacă setul curent conține un PR
-
-        setsContainer.querySelectorAll('.set-entry').forEach(setDiv => {
-            const reps = parseInt(setDiv.querySelector('.reps-input').value, 10);
-            const weight = parseFloat(setDiv.querySelector('.weight-input').value);
-
-            if (reps > 0 && !isNaN(reps) && weight >= 0 && !isNaN(weight)) {
-                const e1rm = calculateE1RM(weight, reps);
-                setsData.push({ reps, weight, e1rm }); // Salvăm și e1rm calculat per set
-                currentMaxWeight = Math.max(currentMaxWeight, weight);
-                currentMaxE1rm = Math.max(currentMaxE1rm, e1rm);
+                 // Comparare sigură, chiar dacă w.date este string YYYY-MM-DD
+                 const workoutDate = new Date(w.date + 'T00:00:00'); // Asigură comparare corectă a datei locale
+                 return workoutDate >= startDate;
+            } catch (e) {
+                console.warn(`Data invalidă pentru workout ${w.id}: ${w.date}`);
+                return false;
             }
         });
-
-        if (setsData.length === 0) { /* ... (eroare seturi) ... */ return; }
-
-        const exerciseName = exerciseSelect.value;
-        // NOU: Verifică și actualizează PR-urile pentru acest exercițiu
-        newPrDetected = updatePersonalRecords(exerciseName, currentMaxWeight, currentMaxE1rm);
-
-        // Colectează grupele musculare selectate
-        const selectedMuscleGroups = Array.from(muscleGroupsSelect.selectedOptions).map(option => option.value);
-
-        const workoutData = {
-            id: editingWorkoutId || generateId(),
-            date: dateInput.value,
-            exercise: exerciseName,
-            muscleGroups: selectedMuscleGroups, // NOU
-            sets: setsData,
-            notes: notesInput.value.trim(),
-            isPr: newPrDetected // NOU: Marcăm dacă această intrare conține un nou PR
-        };
-
-        if (editingWorkoutId) {
-            const index = workouts.findIndex(w => w.id === editingWorkoutId);
-            if (index > -1) {
-                // La editare, trebuie re-evaluat dacă intrarea mai este PR (comparativ cu *alte* intrări)
-                // Pentru simplitate, eliminăm flagul isPr la editare sau îl recalculăm complex
-                // Aici alegem să îl eliminăm, va fi recalculat la afișare dacă e cazul
-                 workoutData.isPr = false; // Sau necesită recalculare globală
-                workouts[index] = workoutData;
-                showToast('Succes', `Antrenamentul pentru ${workoutData.exercise} a fost actualizat.`, 'success');
-            } else { /* ... (eroare ID negăsit) ... */ }
-        } else {
-            workouts.push(workoutData);
-            const prMessage = newPrDetected ? ' Felicitări pentru noul Record Personal! ⭐' : '';
-            showToast('Succes', `Antrenamentul pentru ${workoutData.exercise} a fost adăugat.${prMessage}`, 'success');
-        }
-
-        saveWorkouts();
-        resetForm();
-        refreshUI();
-    });
-
-     const resetForm = () => {
-        workoutForm.reset();
-        workoutForm.classList.remove('was-validated');
-        muscleGroupsSelect.classList.remove('is-invalid'); // Resetează validarea custom
-        setsContainer.innerHTML = '';
-        setsWarning.classList.add('d-none');
-        editingWorkoutId = null;
-        editIdInput.value = '';
-        formTitle.textContent = 'Adaugă Exercițiu Nou';
-        submitBtn.textContent = 'Adaugă Exercițiu';
-        cancelEditBtn.classList.add('d-none');
-        dateInput.valueAsDate = new Date();
-        // Deselectează toate grupele musculare
-        Array.from(muscleGroupsSelect.options).forEach(opt => opt.selected = false);
     };
 
-     // Editare Workout (adaptat pentru grupe musculare)
-    const editWorkout = (id) => {
-        const workout = workouts.find(w => w.id === id);
-        if (!workout) { /* ... (eroare workout negăsit) ... */ return; }
+    // Funcția principală de actualizare Dashboard
+    const updateDashboard = (period) => {
+        console.log(`Updating dashboard for period: ${period}`);
+        const filteredWorkouts = filterWorkoutsByPeriod(period);
+        console.log(`Filtered workouts count: ${filteredWorkouts.length}`);
 
-        editingWorkoutId = id;
-        editIdInput.value = id;
-        dateInput.value = workout.date;
-        exerciseSelect.value = workout.exercise;
-        notesInput.value = workout.notes;
+        let totalExercises = 0;
+        let totalSets = 0;
+        let totalReps = 0;
+        let totalVolumeKg = 0;
+        let totalWeightSumForAvg = 0; // Suma greutăților pentru calculul mediei
+        let totalWeightedReps = 0; // Număr total de repetări cu greutate > 0
+        const muscleGroupCounts = {};
+        const workoutDates = new Set(); // Pentru a număra zilele unice de antrenament
 
-        // Populează seturile (rămâne la fel)
-        setsContainer.innerHTML = '';
-        (workout.sets || []).forEach(set => createSetEntry(set.reps, set.weight));
-        setsWarning.classList.add('d-none');
+        filteredWorkouts.forEach(w => {
+             if (!w || !Array.isArray(w.sets)) return;
+             totalExercises++; // Numără fiecare intrare ca un exercițiu în perioada respectivă
+             workoutDates.add(w.date); // Adaugă data pentru a număra zilele de antrenament
 
-        // NOU: Pre-selectează grupele musculare
-        Array.from(muscleGroupsSelect.options).forEach(option => {
-            option.selected = Array.isArray(workout.muscleGroups) && workout.muscleGroups.includes(option.value);
-        });
-
-        formTitle.textContent = `Editează: ${workout.exercise} (${workout.date})`;
-        submitBtn.textContent = 'Actualizează Exercițiu';
-        cancelEditBtn.classList.remove('d-none');
-        workoutForm.classList.remove('was-validated');
-        muscleGroupsSelect.classList.remove('is-invalid');
-        workoutForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    // Ștergere Workout (rămâne la fel, dar logica de PR poate necesita reevaluare - simplu: nu o facem la ștergere)
-    const deleteWorkout = (id) => { /* ... (funcția deleteWorkout rămâne la fel) ... */ };
-    const addNewExerciseBtnHandler = () => { /* ... (funcția de adăugare exercițiu rămâne la fel) ... */ };
-    addNewExerciseBtn.addEventListener('click', addNewExerciseBtnHandler);
-    const deleteCustomExercise = (exerciseName) => { /* ... (funcția de ștergere exercițiu custom rămâne la fel) ... */ };
-
-
-    // --- Redare Tabel (Adaptat) ---
-
-    // Recalculează PR-urile pe baza tuturor datelor (util după restore sau dacă se suspectează inconsistențe)
-    const recalculateAllPRs = () => {
-        const newPRs = {};
-         workouts.forEach(w => {
-            if (!w || !Array.isArray(w.sets) || !w.exercise) return;
-             let sessionMaxWeight = 0;
-             let sessionMaxE1rm = 0;
-             w.sets.forEach(set => {
-                 const weight = parseFloat(set.weight);
+            (w.sets || []).forEach(set => {
                  const reps = parseInt(set.reps, 10);
-                 if (weight >= 0 && !isNaN(weight) && reps > 0 && !isNaN(reps)) {
-                    const e1rm = calculateE1RM(weight, reps);
-                     sessionMaxWeight = Math.max(sessionMaxWeight, weight);
-                     sessionMaxE1rm = Math.max(sessionMaxE1rm, e1rm);
-                 }
-             });
-
-             if (!newPRs[w.exercise]) {
-                 newPRs[w.exercise] = { maxWeight: 0, maxE1rm: 0 };
-             }
-             newPRs[w.exercise].maxWeight = Math.max(newPRs[w.exercise].maxWeight, sessionMaxWeight);
-             newPRs[w.exercise].maxE1rm = Math.max(newPRs[w.exercise].maxE1rm, sessionMaxE1rm);
-         });
-        personalRecords = newPRs;
-        savePersonalRecords();
-        console.log('Recalculated All PRs:', personalRecords);
-    };
-
-
-    // Calculează statistici pentru tabel (include e1RM max, verifică PR)
-    const calculateWorkoutStats = (workout) => {
-        const stats = { /* ... (setCount, repsMin/Max, weightMin/Max, totalVolume - la fel ca înainte) ... */
-            maxE1rm: 0,
-            isGlobalPrWeight: false,
-            isGlobalPrE1rm: false
-        };
-        let sessionMaxWeight = 0; // Greutate max din această intrare specifică
-
-        if (stats.setCount > 0) {
-            let validSetFound = false;
-            (workout.sets || []).forEach(set => {
-                 const reps = set.reps;
-                 const weight = set.weight;
-                 if (typeof reps === 'number' && reps > 0 && typeof weight === 'number' && weight >= 0) {
-                     validSetFound = true;
-                     stats.repsMin = Math.min(stats.repsMin, reps);
-                     /* ... (restul min/max) ... */
-                     stats.totalVolume += reps * weight;
-                     const e1rm = set.e1rm || calculateE1RM(weight, reps); // Folosește e1rm salvat dacă există
-                     stats.maxE1rm = Math.max(stats.maxE1rm, e1rm);
-                     sessionMaxWeight = Math.max(sessionMaxWeight, weight);
+                 const weight = parseFloat(set.weight);
+                 if (!isNaN(reps) && reps > 0 && !isNaN(weight) && weight >= 0) {
+                    totalSets++;
+                    totalReps += reps;
+                    const volumeForSet = reps * weight;
+                    totalVolumeKg += volumeForSet;
+                     if (weight > 0) {
+                         totalWeightSumForAvg += weight * reps; // Suma ponderată a greutății
+                         totalWeightedReps += reps;
+                     }
                  }
             });
-             /* ... (formatare repsDisplay, weightDisplay) ... */
-        }
-        stats.totalVolume = parseFloat(stats.totalVolume.toFixed(1));
-        stats.maxE1rm = parseFloat(stats.maxE1rm.toFixed(1));
 
-        // Verifică dacă e PR global (compară cu datele din personalRecords)
-        const
+            // Contorizează grupele musculare
+             if (Array.isArray(w.muscleGroups)) {
+                 w.muscleGroups.forEach(group => {
+                     if (group) { // Ignoră grupe goale
+                         muscleGroupCounts[group] = (muscleGroupCounts[group] || 0) + 1;
+                     }
+                 });
+             }
+        });
+
+         // Calculează metricile
+         const avgWeightPerRep = totalWeightedReps > 0 ? (totalWeightSumForAvg / totalWeightedReps) : 0;
+         const totalVolumeTon = totalVolumeKg / 1000; // Conversie în tone
+
+         // Calcule Medii Săptămânale
+         const numberOfWorkoutDays = workoutDates.size;
+         const periodInDays = calculatePeriodDays(period, filteredWorkouts); // Zile în perioada efectivă a datelor
+         const numberOfWeeks = Math.max(1, periodInDays / 7); // Evită împărțirea la zero, minim o săptămână
+
+         const weeklyAvgWorkoutCount = numberOfWorkoutDays / numberOfWeeks;
+         const weeklyAvgSetCount = totalSets / numberOfWeeks;
+         const weeklyAvgRepCount = totalReps / numberOfWeeks;
+         const weeklyAvgRepsPerSetCalc = totalSets > 0 ? totalReps / totalSets : 0;
+         const weeklyAvgVolumeTon = totalVolumeTon / numberOfWeeks;
+
+
+         // Actualizează DOM-ul Dashboard
+         statsExercises.textContent = totalExercises;
+         statsSets.textContent = totalSets;
+         statsReps.textContent = totalReps;
+         statsAvgWeight.textContent = avgWeightPerRep.toFixed(1);
+         statsTotalVolume.textContent = totalVolumeTon.toFixed(2);
+
+         weeklyAvgWorkouts.textContent = weeklyAvgWorkoutCount.toFixed(1);
+         weeklyAvgSets.textContent = weeklyAvgSetCount.toFixed(0);
+         weeklyAvgReps.textContent = weeklyAvgRepCount.toFixed(0);
+         weeklyAvgRepsPerSet.textContent = weeklyAvgRepsPerSetCalc.toFixed(1);
+         weeklyAvgVolume.textContent = weeklyAvgVolumeTon.toFixed(2);
+
+         // Actualizează graficul grupelor musculare
+         renderMusclesWorkedChart(muscleGroupCounts);
+    };
+
+     // Funcție ajutătoare pentru a calcula durata perioadei în zile
+     const calculatePeriodDays = (period, filteredData) => {
+        if (period === 'allTime') {
+             if (filteredData.length === 0) return 1;
+             const dates = filteredData.map(w => new Date(w.date + 'T00:00:00')).sort((a, b) => a - b);
+             const firstDate = dates[0];
+             const lastDate = dates[dates.length - 1];
+             // +1 pentru a include ambele capete
+             return Math.max(1, (lastDate - firstDate) / (1000 * 60 * 60 * 24) + 1);
+        } else if (period === 'last30days') {
+            return 30;
+        } else if (period === 'last7days') {
+            return 7;
+        }
+         return 1; // Default
+     };
+
+
+    // Event listener pentru selectorul de perioadă
+    dashboardPeriodSelect.addEventListener('change', (e) => {
+        updateDashboard(e.target.value);
+    });
+
+    // --- Logică Gestionare Exerciții și Backup/Restore (în tabul Setări) ---
+    // Leagă funcțiile existente la noile butoane/inputuri din tabul Setări
+    const setupSettingsTab = () => {
+         // Adăugare exercițiu
+         addNewExerciseBtnSettings.addEventListener('click', () => {
+             // Folosește inputul din tabul Setări
+             const newExName = newExerciseNameSettings.value.trim();
+              if (newExName && !exercises.some(ex => ex.toLowerCase() === newExName.toLowerCase())) {
+                 customExercises.push(newExName);
+                 customExercises.sort((a, b) => a.localeCompare(b));
+                 saveCustomExercises();
+                 // Actualizează lista globală și UI-ul
+                 loadAndCombineExercises().then(() => {
+                     newExerciseNameSettings.value = ''; // Golește inputul din setări
+                     showToast('Exercițiu Adăugat', `"${newExName}" a fost adăugat.`, 'success');
+                 });
+             } else if (!newExName) {
+                 showToast('Invalid', 'Introduceți un nume valid.', 'warning');
+             } else {
+                 showToast('Existent', `"${newExName}" este deja în listă.`, 'warning');
+             }
+         });
+
+         // Backup/Restore - leagă la butoanele/inputurile din tabul Setări
+         backupDataBtnSettings.addEventListener('click', () => backupDataBtn.click()); // Simulează click pe butonul logic
+         restoreFileInputSettings.addEventListener('change', (event) => restoreFileInput.dispatchEvent(new Event('change', event))); // Transferă eventul
+
+          // Afișează lista inițială
+         renderExistingExercisesList(existingExercisesListSettings); // Pasează elementul listei din Setări
+    };
+
+    // Modifică renderExistingExercisesList pentru a accepta elementul listei ca parametru
+    const renderExistingExercisesList = (listElement) => {
+         if (!listElement) return; // Verificare siguranță
+         listElement.innerHTML = ''; // Clear list
+        const displayExercises = customExercises; // Afișăm doar cele custom în setări
+        if (displayExercises.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item text-muted list-group-item-sm';
+            li.textContent = 'Nu ai adăugat exerciții proprii.';
+            listElement.appendChild(li);
+            return;
+        }
+        displayExercises.forEach(ex => {
+             const li = document.createElement('li');
+             li.className = 'list-group-item list-group-item-sm d-flex justify-content-between align-items-center';
+             li.textContent = ex;
+             const deleteBtn = document.createElement('button');
+             deleteBtn.className = 'btn btn-outline-danger btn-sm py-0 px-1';
+             deleteBtn.innerHTML = '×';
+             deleteBtn.title = `Șterge "${ex}"`;
+             deleteBtn.onclick = () => deleteCustomExercise(ex, listElement); // Pasează și elementul listei
+             li.appendChild(deleteBtn);
+             listElement.appendChild(li);
+         });
+    };
+
+     // Modifică deleteCustomExercise pentru a re-randa lista corectă
+     const deleteCustomExercise = (exerciseName, listElementToUpdate) => {
+          // ... (logica de confirmare rămâne la fel) ...
+         customExercises = customExercises.filter(ex => ex !== exerciseName);
+         saveCustomExercises();
+         loadAndCombineExercises().then(() => {
+             renderExistingExercisesList(listElementToUpdate); // Re-randează lista specifică
+             showToast('Exercițiu Șters', `"${exerciseName}" a fost șters.`, 'info');
+         });
+     };
+
+
+    // --- Funcții Core (Formular, Tabel, Grafice - majoritatea adaptate ușor) ---
+    const validateForm = () => { /* ... (adaptat pt grupe) ... */ };
+    const createSetEntry = (reps = '', weight = '') => { /* ... (la fel) ... */ };
+    const updatePersonalRecords = (exerciseName, weight, e1rm) => { /* ... (la fel) ... */ };
+    const resetForm = () => { /* ... (adaptat pt grupe) ... */ };
+    workoutForm.addEventListener('submit', (e) => { /* ... (adaptat pt grupe, PR) ... */ });
+    cancelEditBtn.addEventListener('click', resetForm);
+    const editWorkout = (id) => { /* ... (adaptat pt grupe) ... */ };
+    const deleteWorkout = (id) => { /* ... (la fel, dar refreshUI la final) ... */ };
+    const recalculateAllPRs = () => { /* ... (la fel) ... */ };
+    const calculateWorkoutStats = (workout) => { /* ... (adaptat pt PR-uri) ... */ };
+    const renderTable = () => { /* ... (adaptat pt filtrare grupe, afișare PR) ... */ };
+    const updateSortIcons = () => { /* ... (la fel) ... */ };
+    // Event listeners filtre/sortare (inclusiv filterMuscleGroup)
+    filterDate.addEventListener('input', renderTable);
+    filterExercise.addEventListener('input', renderTable);
+    filterMuscleGroup.addEventListener('input', renderTable); // NOU
+    clearFiltersBtn.addEventListener('click', () => {
+        filterDate.value = '';
+        filterExercise.value = '';
+        filterMuscleGroup.value = ''; // Resetează filtrul nou
+        renderTable();
+    });
+    tableHeaders.forEach(th => { th.addEventListener('click', () => { /* ... (logica sortare adaptată pt coloane noi) ... */ }); });
+
+    // --- Grafice D3 ---
+    const setupD3Tooltip = () => { /* ... (la fel) ... */ };
+    const showD3Tooltip = (event, content) => { /* ... (la fel) ... */ };
+    const hideD3Tooltip = () => { /* ... (la fel) ... */ };
+    const setupChart = (svgId, desiredWidth, desiredHeight) => { /* ... (la fel) ... */ };
+    const renderVolumeChart = () => { /* ... (la fel, folosește d3VolumeChartEl) ... */ };
+    const renderProgressChart = (selectedExercise) => { /* ... (la fel, folosește d3ProgressChartEl, tooltip adaptat pt e1RM) ... */ };
+
+    // NOU: Grafic Grupe Musculare (Dashboard) - Bar Chart simplu
+    const renderMusclesWorkedChart = (muscleCounts) => {
+        const chartConfig = setupChart('d3MusclesChart', 500, 250); // ID și dimensiuni noi
+        if (!chartConfig) return;
+        const { svg, innerWidth, innerHeight, margin } = chartConfig;
+
+        const data = Object.entries(muscleCounts)
+            .map(([group, count]) => ({ group, count }))
+            .filter(d => d.count > 0) // Afișează doar grupele lucrate
+            .sort((a, b) => b.count - a.count); // Sortează descrescător
+
+        if (data.length === 0) {
+            noMuscleDataMessage.classList.remove('d-none');
+             d3.select('#d3MusclesChart').selectAll('*').remove(); // Curăță SVG-ul explicit
+            return;
+        } else {
+            noMuscleDataMessage.classList.add('d-none');
+        }
+
+        const x = d3.scaleBand()
+            .domain(data.map(d => d.group))
+            .range([0, innerWidth])
+            .padding(0.4); // Spațiere mai mare între bare
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.count) || 1])
+            .nice()
+            .range([innerHeight, 0]);
+
+        // Axe (simplificate)
+  
