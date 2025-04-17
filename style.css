@@ -16,19 +16,9 @@
     --htb-tag-medium: #ffae42;  /* Portocaliu/Maro pt warning */
     --htb-tag-red: #e74c3c;      /* Roșu pt danger */
     --htb-tag-blue: #3498db;     /* Albastru pt info */
+    --htb-success: #2ecc71;     /* Verde pt succes (alternativ accentului) */
+    --htb-danger: var(--htb-tag-red);
     --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-
-    /* Heatmap Colors (using HTB theme) */
-    --heatmap-color-0: rgba(60, 70, 110, 0.3); /* Base - transparent version of bg-light */
-    --heatmap-color-1: rgba(159, 239, 0, 0.3); /* Light - transparent accent */
-    --heatmap-color-2: rgba(159, 239, 0, 0.6); /* Medium */
-    --heatmap-color-3: rgba(159, 239, 0, 0.9); /* Heavy */
-    --heatmap-color-4: var(--htb-accent);      /* Very Heavy (Optional - full accent) */
-    --heatmap-border-color: rgba(159, 239, 0, 0.1); /* Accent border */
-
-    /* Tooltip Colors */
-    --tooltip-bg: var(--htb-bg-darker);
-    --tooltip-text: var(--htb-text-primary);
 }
 
 /* 2. Override Variabile Bootstrap Globale pt [data-bs-theme="dark"] */
@@ -52,6 +42,31 @@
     --bs-primary-text-emphasis: #111827;
     --bs-primary-bg-subtle: rgba(159, 239, 0, 0.1);
     --bs-primary-border-subtle: rgba(159, 239, 0, 0.4);
+
+    /* Culori Semantice */
+    --bs-success: var(--htb-success);
+    --bs-success-rgb: 46, 204, 113;
+    --bs-success-text-emphasis: var(--htb-text-primary);
+    --bs-success-bg-subtle: rgba(46, 204, 113, 0.15);
+    --bs-success-border-subtle: rgba(46, 204, 113, 0.5);
+
+    --bs-danger: var(--htb-danger);
+    --bs-danger-rgb: 231, 76, 60;
+    --bs-danger-text-emphasis: var(--htb-text-primary);
+    --bs-danger-bg-subtle: rgba(231, 76, 60, 0.15);
+    --bs-danger-border-subtle: rgba(231, 76, 60, 0.5);
+
+    --bs-warning: var(--htb-tag-medium);
+    --bs-warning-rgb: 255, 174, 66;
+    --bs-warning-text-emphasis: #111827;
+    --bs-warning-bg-subtle: rgba(255, 174, 66, 0.15);
+    --bs-warning-border-subtle: rgba(255, 174, 66, 0.5);
+
+    --bs-info: var(--htb-tag-blue);
+    --bs-info-rgb: 52, 152, 219;
+    --bs-info-text-emphasis: var(--htb-text-primary);
+    --bs-info-bg-subtle: rgba(52, 152, 219, 0.15);
+    --bs-info-border-subtle: rgba(52, 152, 219, 0.5);
 
     /* Butoane - General */
     --bs-btn-font-weight: 600;
@@ -92,39 +107,39 @@
     --bs-btn-outline-secondary-hover-color: var(--htb-text-primary);
     --bs-btn-outline-secondary-hover-bg: var(--htb-bg-light);
 
-    --bs-btn-warning-color: var(--bs-primary-text-emphasis);
-    --bs-btn-warning-bg: var(--htb-tag-medium);
-    --bs-btn-warning-border-color: var(--htb-tag-medium);
+    --bs-btn-warning-color: var(--bs-warning-text-emphasis);
+    --bs-btn-warning-bg: var(--bs-warning);
+    --bs-btn-warning-border-color: var(--bs-warning);
     --bs-btn-warning-hover-bg: #fca031;
     --bs-btn-warning-hover-border-color: #fca031;
 
     --bs-btn-danger-color: var(--htb-text-primary);
-    --bs-btn-danger-bg: var(--htb-tag-red);
-    --bs-btn-danger-border-color: var(--htb-tag-red);
+    --bs-btn-danger-bg: var(--bs-danger);
+    --bs-btn-danger-border-color: var(--bs-danger);
     --bs-btn-danger-hover-bg: #c0392b;
     --bs-btn-danger-hover-border-color: #c0392b;
 
-    --bs-btn-outline-danger-color: var(--htb-tag-red);
-    --bs-btn-outline-danger-border-color: var(--htb-tag-red);
+    --bs-btn-outline-danger-color: var(--bs-danger);
+    --bs-btn-outline-danger-border-color: var(--bs-danger);
     --bs-btn-outline-danger-hover-color: var(--htb-text-primary);
-    --bs-btn-outline-danger-hover-bg: var(--htb-tag-red);
+    --bs-btn-outline-danger-hover-bg: var(--bs-danger);
 
     --bs-btn-info-color: var(--htb-text-primary);
-    --bs-btn-info-bg: var(--htb-tag-blue);
-    --bs-btn-info-border-color: var(--htb-tag-blue);
+    --bs-btn-info-bg: var(--bs-info);
+    --bs-btn-info-border-color: var(--bs-info);
     --bs-btn-info-hover-bg: #2980b9;
     --bs-btn-info-hover-border-color: #2980b9;
 
-    --bs-btn-success-color: var(--bs-primary-text-emphasis);
-    --bs-btn-success-bg: var(--htb-accent);
-    --bs-btn-success-border-color: var(--htb-accent);
+    --bs-btn-success-color: var(--bs-primary-text-emphasis); /* Folosim text închis pe verdele nostru */
+    --bs-btn-success-bg: var(--bs-primary); /* Folosim accentul pt success */
+    --bs-btn-success-border-color: var(--bs-primary);
     --bs-btn-success-hover-bg: var(--htb-accent-darker);
     --bs-btn-success-hover-border-color: var(--htb-accent-darker);
 
-    --bs-btn-outline-success-color: var(--htb-accent);
-    --bs-btn-outline-success-border-color: var(--htb-accent);
+    --bs-btn-outline-success-color: var(--bs-primary);
+    --bs-btn-outline-success-border-color: var(--bs-primary);
     --bs-btn-outline-success-hover-color: var(--bs-primary-text-emphasis);
-    --bs-btn-outline-success-hover-bg: var(--htb-accent);
+    --bs-btn-outline-success-hover-bg: var(--bs-primary);
 
     /* Formulare */
     --bs-body-secondary-color: var(--htb-text-muted);
@@ -150,7 +165,7 @@
     --bs-input-group-addon-color: var(--htb-text-secondary);
     --bs-input-group-addon-border-color: var(--htb-border-color);
 
-    /* Tabele */
+    /* Tabele (Păstrăm pt orice tabel rămas, dar nu mai e folosit pt jurnal) */
     --bs-table-bg: transparent;
     --bs-table-border-color: var(--htb-border-color);
     --bs-table-color: var(--htb-text-secondary);
@@ -170,7 +185,7 @@
     --bs-accordion-button-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23adb5bd'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
     --bs-accordion-button-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%239fef00'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 
-    /* Alerte, Toast, List Group (setări de bază ok) */
+    /* Alerte, Toast, List Group */
     --bs-alert-bg: var(--htb-bg-medium);
     --bs-alert-border-color: var(--htb-border-color);
     --bs-alert-color: var(--htb-text-secondary);
@@ -180,16 +195,22 @@
     --bs-toast-header-bg: var(--htb-bg-medium);
     --bs-toast-header-color: var(--htb-text-secondary);
     --bs-toast-header-border-color: var(--htb-border-color);
-    --bs-list-group-bg: transparent;
+    --bs-list-group-bg: transparent; /* Facem transparent by default pt listele din carduri */
     --bs-list-group-color: var(--htb-text-secondary);
     --bs-list-group-border-color: var(--htb-border-color);
     --bs-list-group-action-hover-bg: var(--htb-bg-light);
     --bs-list-group-item-padding-x: 1rem;
     --bs-list-group-item-padding-y: 0.5rem;
-    --bs-list-group-item-bg: transparent; /* Ensure list items are transparent */
-    --bs-list-group-action-color: var(--htb-text-secondary); /* Color for list items */
-    --bs-list-group-action-active-color: var(--htb-text-primary);
-    --bs-list-group-action-active-bg: var(--htb-bg-light);
+
+    /* Carduri */
+    --bs-card-bg: var(--htb-bg-medium);
+    --bs-card-border-color: var(--htb-border-color);
+    --bs-card-cap-bg: rgba(52, 62, 98, 0.5); /* Header card puțin diferit */
+    --bs-card-color: var(--bs-body-color);
+    --bs-card-title-color: var(--bs-heading-color);
+    --bs-card-spacer-y: 1rem;
+    --bs-card-spacer-x: 1rem;
+    --bs-card-border-radius: .375rem; /* Bootstrap default */
 }
 
 /* 3. Stiluri Generale */
@@ -278,43 +299,24 @@ a:hover {
 /* Secțiuni (Carduri) */
 .form-section,
 .backup-restore-section,
-.table-controls,
+.table-controls, /* Păstrăm pt filtre */
 .dashboard-section {
-    background-color: var(--htb-bg-medium);
+    background-color: var(--bs-card-bg);
     padding: 18px; /* Padding uniform */
-    border-radius: 6px;
+    border-radius: var(--bs-card-border-radius);
     margin-bottom: 25px;
-    border: 1px solid var(--htb-border-color);
+    border: 1px solid var(--bs-card-border-color);
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
-/* Ensure sections in rows have consistent bottom margin */
-.row > [class*="col-"] > .dashboard-section {
-    margin-bottom: 0; /* Remove default margin when inside a row */
-}
-.row.gy-3 {
-    margin-bottom: 1rem; /* Add margin below rows */
-}
-
-.dashboard-section h2, /* Main section titles */
+.dashboard-section h2,
 .form-section h2 {
-    font-size: 1.05rem;
+    font-size: 1.05rem; /* Titluri secțiuni */
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--htb-border-color);
     color: var(--htb-text-primary);
     font-weight: 600;
 }
-.dashboard-section h3 { /* Widget titles */
-    font-size: 0.9rem; /* Smaller than h2 */
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--htb-border-color); /* Dashed separator */
-    color: var(--htb-text-secondary);
-    font-weight: 600;
-    text-transform: uppercase; /* Uppercase for distinction */
-    letter-spacing: 0.5px;
-}
-
 /* Stil specific pentru secțiunea de Backup/Restore din Setări */
 .data-management-section h3 {
     font-size: 0.95rem;
@@ -323,84 +325,107 @@ a:hover {
     margin-top: 1rem; /* Spațiu între sub-secțiuni */
     padding-bottom: 5px;
     border-bottom: 1px dashed var(--htb-border-color); /* Separator diferit */
-    text-transform: none; /* Override uppercase if needed */
-    letter-spacing: normal;
 }
 .data-management-section h3:first-of-type {
     margin-top: 0; /* Fără margine sus la primul h3 */
 }
 
-/* Tabel */
-.workout-table-container { margin-top: 20px; }
-#workoutTable { border-collapse: separate; border-spacing: 0; width: 100%; }
-#workoutTable thead { background-color: var(--htb-bg-light); }
-#workoutTable th {
-    font-weight: 600; color: var(--htb-text-primary);
-    padding: 0.5rem 0.6rem; /* Padding optimizat */
-    white-space: nowrap; border-bottom: 2px solid var(--htb-border-color);
-    font-size: 0.85rem; /* Header mai mic */
+/* Jurnal Antrenamente Grupat (NOU) */
+.workout-log-grouped .log-day-group {
+    background-color: var(--bs-card-bg);
+    border: 1px solid var(--bs-card-border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-#workoutTable th .sort-icon {
-    font-size: 0.8em;
-    margin-left: 4px;
+.workout-log-grouped .log-date-header {
+    background-color: var(--bs-card-cap-bg);
+    color: var(--htb-text-primary);
+    font-weight: 600;
+    font-size: 0.9rem; /* Mărime font dată */
+}
+.workout-log-grouped .log-exercise-entry {
+    /* Folosește stilurile .list-group-item by default */
+    border-top: 1px solid var(--htb-border-color); /* Linie separatoare între exerciții */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.workout-log-grouped .log-day-entries .log-exercise-entry:first-child {
+    border-top: none; /* Fără bordură sus la primul exercițiu din zi */
+}
+.workout-log-grouped .exercise-name {
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    font-size: 0.95rem;
+}
+.workout-log-grouped .muscle-groups {
+    font-size: 0.75rem;
     color: var(--htb-text-muted);
-    transition: color 0.2s ease;
 }
-#workoutTable th:hover .sort-icon {
+.workout-log-grouped .entry-actions .btn {
+    padding: .1rem .3rem; /* Butoane mici */
+    font-size: .75rem;
+    margin-left: 3px;
+}
+.workout-log-grouped .sets-summary .badge {
+    font-size: 0.7rem; /* Badge-uri mai mici */
+    padding: 0.25em 0.5em;
+    margin-bottom: 3px; /* Spațiu pt wrap */
+}
+.workout-log-grouped .exercise-stats {
+    font-size: 0.8rem;
     color: var(--htb-text-secondary);
 }
-#workoutTable th .sort-icon.bi-sort-up,
-#workoutTable th .sort-icon.bi-sort-down {
-    color: var(--htb-accent); /* Highlight active sort icon */
+.workout-log-grouped .exercise-stats strong {
+    color: var(--htb-text-secondary);
+    font-weight: 600;
+}
+.workout-log-grouped .comparison-indicator {
+    font-weight: bold;
+    margin-left: 2px;
+    white-space: nowrap;
+}
+.workout-log-grouped .comparison-indicator .bi {
+    font-size: 1.1em; /* Iconițe puțin mai mari */
+    vertical-align: -0.1em;
+}
+/* Culori pt indicatori */
+.workout-log-grouped .comparison-indicator.text-success { color: var(--bs-success) !important; }
+.workout-log-grouped .comparison-indicator.text-danger { color: var(--bs-danger) !important; }
+.workout-log-grouped .comparison-indicator.text-secondary { color: var(--htb-text-muted) !important; } /* Pt neutru */
+
+.workout-log-grouped .details-toggle {
+    font-size: 0.75rem;
+    color: var(--htb-text-muted);
+    cursor: pointer;
+}
+.workout-log-grouped .details-toggle:hover {
+    color: var(--htb-text-secondary);
+}
+.workout-log-grouped .exercise-details {
+    /* d-none este aplicat by default in HTML */
+    font-size: 0.8rem;
+    background-color: rgba(0,0,0,0.1); /* Fundal subtil pt detalii */
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+.workout-log-grouped .notes-text {
+    color: var(--htb-text-secondary);
+    font-style: italic;
 }
 
-#workoutTable td {
-    padding: 0.4rem 0.6rem; /* Padding optimizat */
-    vertical-align: middle; border-top: 1px solid var(--htb-border-color);
-    font-size: 0.85rem; /* Celule mai mici */
-}
-/* Eliminăm striping */
-.table-striped>tbody>tr:nth-of-type(odd)>* { --bs-table-accent-bg: transparent; color: var(--bs-table-color); }
-#workoutTable tbody tr:hover { background-color: var(--bs-table-hover-bg); color: var(--bs-table-hover-color); }
-/* Stil notițe în tabel */
-#workoutTable td small {
-    font-size: 0.75rem; color: var(--htb-text-muted); display: block;
-    max-width: 120px; white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; cursor: default;
-}
-#workoutTable td small:hover { white-space: normal; overflow: visible; max-width: none; }
-/* Butoane acțiuni tabel */
-#workoutTable .text-nowrap .btn { padding: .1rem .3rem; font-size: .75rem; margin-left: 3px; }
-
-/* Grafice */
+/* Grafice (Păstrăm stilurile existente) */
 .chart-container { background-color: var(--htb-bg-medium); padding: 15px; border-radius: 6px; border: 1px solid var(--htb-border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .chart-title { font-size: 1rem; margin-bottom: 15px; font-weight: 600; }
-/* Culori Grafice (actualizate) */
+/* Culori Grafice */
 .bar { fill: var(--htb-tag-blue); transition: fill 0.2s ease; }
 .bar:hover { fill: #5dade2; }
 .line-volume { stroke: var(--htb-accent); stroke-width: 2px; }
 .dot-weight { fill: var(--htb-tag-red); stroke: var(--htb-bg-medium); stroke-width: 1.5px; }
+.line-e1rm { stroke: var(--htb-accent); stroke-width: 2px; } /* Pt grafic progres */
 /* Stiluri axe D3 */
-.chart-container svg text,
-.chart-section svg text { /* Apply to all chart text */
-    fill: var(--htb-text-secondary);
-    font-size: 10px;
-}
-.chart-container svg .domain,
-.chart-section svg .domain { /* Apply to all chart axes */
-    stroke: var(--htb-border-color);
-}
-.chart-container svg .tick line,
-.chart-section svg .tick line { /* Apply to all chart ticks */
-    stroke: var(--htb-border-color);
-    stroke-opacity: 0.4;
-}
-.chart-container svg .axis-label,
-.chart-section svg .axis-label { /* Apply to all chart labels */
-    fill: var(--htb-text-secondary);
-    font-size: 10px;
-    font-weight: 500;
-}
+.chart-container svg text { fill: var(--htb-text-secondary); font-size: 10px; }
+.chart-container svg .domain { stroke: var(--htb-border-color); }
+.chart-container svg .tick line { stroke: var(--htb-border-color); stroke-opacity: 0.4; }
+.chart-container svg .axis-label { fill: var(--htb-text-secondary); font-size: 10px; font-weight: 500; }
 /* Stil specific grafic bare musculare */
 .muscle-bar { fill: var(--htb-accent); } /* Bare verzi */
 .bar-label { /* Etichete pe barele musculare */
@@ -408,197 +433,87 @@ a:hover {
     fill: #111 !important; /* Text închis pentru lizibilitate pe verde */
     font-weight: bold;
 }
-/* Stil specific grafic progres */
-.line-e1rm { stroke: var(--htb-accent); }
-.dot-weight { fill: var(--htb-tag-red); }
-
-
-/* Dashboard Stats */
-.dashboard-header { align-items: baseline; }
-.dashboard-header h1 { margin-bottom: 0; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 18px; } /* Mai multe coloane pe spațiu */
-.stat-item .value { font-size: 1.5rem; font-weight: 700; color: var(--htb-accent); line-height: 1.1; }
-.stat-item .label { font-size: 0.65rem; color: var(--htb-text-muted); text-transform: uppercase; margin-top: 3px; }
-
-/* Dashboard PR List (Istoric) */
-#personalRecordsList .list-group-item { background-color: transparent; border-color: var(--htb-border-color); padding: .5rem 0; font-size: 0.85rem; }
-#personalRecordsList .pr-exercise { font-weight: 600; color: var(--bs-emphasis-color); }
-#personalRecordsList .badge { font-size: 0.75rem; padding: .3em .5em; } /* Adjust badge size */
-#personalRecordsList .badge .pr-type { font-size: 0.65rem; opacity: 0.8; margin-left: 2px; }
-
-/* --- NEW WIDGET STYLES --- */
-
-/* Focus Widget */
-.focus-widget-content i { /* Icon styling */
-    color: var(--htb-tag-blue); /* Use info color */
-}
-.focus-widget-content .focus-text {
-    font-size: 1.1em;
-    color: var(--htb-text-primary);
-    margin-bottom: 0.3rem;
-}
-.focus-widget-content .main-exercise,
-.focus-widget-content .target-details {
-    font-size: 0.85em;
-    color: var(--htb-text-secondary);
-    margin-bottom: 0.2rem;
-}
-
-/* PR Zone Widget */
-.pr-zone-list .list-group-item {
-    background-color: transparent;
-    border-color: var(--htb-border-color) !important; /* Override bootstrap */
-    padding: .4rem 0; /* Reduced padding */
-    font-size: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-}
-.pr-zone-list .pr-zone-exercise {
-    font-weight: 600;
-    color: var(--htb-text-secondary);
-    flex-shrink: 1; /* Allow shrinking */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.pr-zone-list .pr-zone-value {
-    font-weight: bold;
-    color: var(--htb-accent);
-    white-space: nowrap; /* Prevent wrapping */
-}
-.pr-zone-list .pr-zone-date {
-    font-size: 0.7rem;
-    color: var(--htb-text-muted);
-    white-space: nowrap;
-}
-
-/* Recent Sessions Widget */
-#recentSessionsList .list-group-item {
-    background-color: transparent;
-    border-color: var(--htb-border-color) !important;
-    padding: .4rem 0;
-    font-size: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-}
-#recentSessionsList .session-info {
-    flex-grow: 1;
-    overflow: hidden; /* Prevent long text overflow */
-}
-#recentSessionsList .session-title {
-    font-weight: 600;
-    color: var(--htb-text-secondary);
-    display: block; /* Ensure it takes full width */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-#recentSessionsList .session-details {
-    font-size: 0.9em;
-    color: var(--htb-text-muted);
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-#recentSessionsList .session-date {
-    font-size: 0.85em;
-    color: var(--htb-text-muted);
-    white-space: nowrap;
-    flex-shrink: 0; /* Prevent date from shrinking */
-}
-
-/* Consistency Heatmap */
-#consistencyHeatmapContainer svg {
-    max-width: 100%; /* Ensure SVG scales down */
-    height: auto;
-    display: block; /* Remove extra space below */
-    margin: 0 auto; /* Center if container is wider */
-}
+/* Heatmap */
 .heatmap-day {
-    stroke: var(--heatmap-border-color);
+    stroke: var(--htb-border-color);
     stroke-width: 1px;
     shape-rendering: geometricPrecision;
-    rx: 2px;
-    ry: 2px;
-    transition: filter 0.1s ease-in-out, stroke 0.1s ease-in-out;
+    rx: 3px;
+    ry: 3px;
+    transition: filter 0.1s ease-in-out;
 }
-.heatmap-day:hover {
-   filter: brightness(1.2);
-   stroke: var(--htb-accent); /* Highlight border on hover */
-   stroke-width: 1.5px;
-}
-/* Intensity level classes */
+.heatmap-day:hover { filter: brightness(1.1); }
 .heatmap-day-level-0 { fill: var(--heatmap-color-0); }
 .heatmap-day-level-1 { fill: var(--heatmap-color-1); }
 .heatmap-day-level-2 { fill: var(--heatmap-color-2); }
 .heatmap-day-level-3 { fill: var(--heatmap-color-3); }
 .heatmap-day-level-4 { fill: var(--heatmap-color-4); }
+.heatmap-legend .legend-color { width: 10px; height: 10px; border-radius: 2px; border: 1px solid var(--htb-border-color); }
+.heatmap-tooltip { /* Preluat din HTML, ajustăm dacă e nevoie */ }
 
-/* Heatmap Legend */
-.heatmap-legend {
-    font-size: 0.7rem; /* Smaller legend text */
+/* Dashboard Stats */
+.dashboard-header { align-items: baseline; }
+.dashboard-header h1 { margin-bottom: 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 18px; } /* Folosim grid */
+.stat-item .value { font-size: 1.5rem; font-weight: 700; color: var(--htb-accent); line-height: 1.1; }
+.stat-item .label { font-size: 0.65rem; color: var(--htb-text-muted); text-transform: uppercase; margin-top: 3px; }
+
+/* Dashboard PR List (Istoric & Nou) */
+#personalRecordsList .list-group-item,
+#newPrZoneList .list-group-item {
+    background-color: transparent;
+    border-color: var(--htb-border-color);
+    padding: .5rem 0.5rem; /* Ajustat padding */
+    font-size: 0.85rem;
 }
-.heatmap-legend .legend-color {
-    display: inline-block; /* Make them inline */
-    vertical-align: middle;
+#personalRecordsList .pr-exercise,
+#newPrZoneList .pr-exercise {
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+}
+#personalRecordsList .badge,
+#newPrZoneList .badge {
+    font-size: 0.7rem; /* Badge-uri mai mici */
+    padding: 0.3em 0.5em;
+}
+#personalRecordsList .pr-type,
+#newPrZoneList .pr-type {
+    font-size: 0.65rem;
+    opacity: 0.8;
+}
+/* Stil specific pt PR Zone nou */
+#newPrZoneList .list-group-item {
+    border-bottom: 1px dashed var(--htb-border-color); /* Separator diferit */
+}
+#newPrZoneList .list-group-item:last-child {
+    border-bottom: none;
 }
 
-/* Heatmap Tooltip */
-.heatmap-tooltip {
-    position: absolute;
-    background-color: var(--tooltip-bg);
-    color: var(--tooltip-text);
-    padding: 4px 8px; /* Smaller padding */
-    border-radius: 4px;
-    font-size: 0.75em; /* Smaller font */
+/* Dashboard Recent Sessions */
+#recentSessionsList .list-group-item {
+    background-color: transparent;
+    border-color: var(--htb-border-color);
+    padding: .4rem 0.5rem;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Pt ecrane mici */
+    gap: 5px;
+}
+#recentSessionsList .session-exercise {
+    font-weight: 500;
+    color: var(--htb-text-secondary);
+}
+#recentSessionsList .session-details {
+    font-size: 0.75rem;
+    color: var(--htb-text-muted);
+}
+#recentSessionsList .session-date {
+    font-size: 0.7rem;
+    color: var(--htb-text-muted);
     white-space: nowrap;
-    pointer-events: none;
-    transition: opacity 0.1s ease-out;
-    z-index: 1056; /* Ensure above most elements */
-    opacity: 0; /* Hidden by default */
 }
-.heatmap-tooltip strong {
-    color: var(--htb-accent); /* Highlight part of tooltip */
-}
-
-/* Weight Progress Chart (D3) */
-#weightProgressChartContainer {
-    min-height: 255px; /* Ensure space */
-}
-#weightProgressChartContainer svg {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-#d3WeightProgressChart .line { /* Target specific chart if needed */
-    fill: none;
-    stroke: var(--htb-tag-red); /* Use red for weight */
-    stroke-width: 2px;
-}
-#d3WeightProgressChart .dot {
-    fill: var(--htb-tag-red);
-    stroke: var(--htb-bg-medium);
-    stroke-width: 1.5px;
-}
-#d3WeightProgressChart .axis path,
-#d3WeightProgressChart .axis line {
-    stroke: var(--htb-border-color);
-}
-#d3WeightProgressChart .axis text {
-    fill: var(--htb-text-secondary);
-    font-size: 10px;
-}
-#d3WeightProgressChart .grid line {
-    stroke: var(--htb-border-color);
-    stroke-opacity: 0.2; /* Make grid lines very faint */
-}
-
-/* --- END NEW WIDGET STYLES --- */
 
 
 /* Setări */
@@ -639,15 +554,16 @@ a:hover {
     #bottomNav button span { font-size: 0.65rem; }
     #bottomNav { padding: 4px 0; }
 
-    /* Ensure widgets stack nicely */
-    .row.gy-3 { margin-bottom: 0.75rem; } /* Reduce margin between rows */
-    .dashboard-section h3 { font-size: 0.85rem; } /* Slightly smaller widget titles */
+    /* Ajustări Jurnal Grupat pe mobil */
+    .workout-log-grouped .log-exercise-entry { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .workout-log-grouped .entry-main-info { width: 100%; /* Info principal pe tot rândul */ }
+    .workout-log-grouped .entry-actions { width: auto; /* Butoane în dreapta */ margin-left: auto; }
+    .workout-log-grouped .exercise-stats span { margin-right: 10px; /* Mai puțin spațiu între statistici */ }
 }
 
 @media (max-width: 576px) {
-    .stats-grid { grid-template-columns: repeat(3, 1fr); } /* Force 3 columns on smallest */
-    .dashboard-section h3 { font-size: 0.8rem; }
-    .pr-zone-list .list-group-item,
-    #recentSessionsList .list-group-item { font-size: 0.75rem; }
-    .heatmap-legend { flex-wrap: wrap; justify-content: center; } /* Allow legend to wrap */
+    .stats-grid { grid-template-columns: repeat(3, 1fr); } /* Forțăm 3 coloane pe mobil */
+    .workout-log-grouped .exercise-stats { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; } /* Statistici una sub alta */
+    .workout-log-grouped .exercise-stats span { margin-right: 0; }
+    .workout-log-grouped .details-toggle { margin-top: 5px; display: inline-block; }
 }
