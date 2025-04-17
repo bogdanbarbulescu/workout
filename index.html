@@ -45,12 +45,12 @@
 
                 <!-- Rând 1: Data & Grupe -->
                 <div class="col-md-4 col-sm-6">
-                    <label for="date" class="form-label form-label-sm">Data</label>
+                    <label for="date" class="form-label form-label-sm">Data*</label>
                     <input type="date" class="form-control form-control-sm" id="date" name="date" required />
                     <div class="invalid-feedback">Data este obligatorie.</div>
                 </div>
                 <div class="col-md-8 col-sm-6">
-                    <label for="muscleGroups" class="form-label form-label-sm">Grupe Musculare</label>
+                    <label for="muscleGroups" class="form-label form-label-sm">Grupe Musculare*</label>
                     <select class="form-select form-select-sm" id="muscleGroups" name="muscleGroups" multiple required size="4">
                         <option value="Piept">Piept</option><option value="Spate">Spate</option><option value="Umeri">Umeri</option><option value="Biceps">Biceps</option><option value="Triceps">Triceps</option><option value="Cvadriceps">Cvadriceps</option><option value="Femurali">Femurali</option><option value="Fesieri">Fesieri</option><option value="Gambe">Gambe</option><option value="Abdomen">Abdomen</option><option value="Antebraț">Antebraț</option><option value="Full Body">Full Body</option><option value="Cardio">Cardio</option>
                         <!-- Consider using checkboxes or a library for better UX later -->
@@ -61,7 +61,7 @@
 
                 <!-- Rând 2: Exercițiu -->
                 <div class="col-12">
-                    <label for="exercise" class="form-label form-label-sm">Exercițiu</label>
+                    <label for="exercise" class="form-label form-label-sm">Exercițiu*</label>
                     <select class="form-select form-select-sm" id="exercise" name="exercise" required>
                         <option value="" selected disabled>Alegeți...</option>
                         <!-- Populat din JS -->
@@ -71,10 +71,10 @@
 
                 <!-- Rând 3: Seturi -->
                 <div class="col-12 mt-2">
-                    <label class="form-label form-label-sm fw-bold">Seturi:</label>
+                    <label class="form-label form-label-sm fw-bold">Seturi*</label>
                     <div id="setsContainer" class="mb-2">
                         <!-- Set rows added by JS -->
-                         <div class="alert alert-warning d-none p-2" id="setsWarning" style="font-size: 0.8rem;">Adăugați cel puțin un set valid (Rep. & Kg > 0).</div>
+                         
                     </div>
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="addSetBtn"><i class="bi bi-plus-lg"></i> Adaugă Set</button>
                 </div>
@@ -87,7 +87,7 @@
 
                 <!-- Butoane Formular -->
                 <div class="col-12 mt-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm" id="submitBtn">Salvează</button>
+                    <button type="submit" class="btn btn-success btn-sm" id="submitBtn">Salvează</button>
                     <button type="button" class="btn btn-secondary btn-sm d-none" id="cancelEditBtn">Anulează</button>
                 </div>
             </form>
@@ -95,6 +95,7 @@
 
         <!-- Controale Tabel (Filtre) -->
         <div class="table-controls row g-2 align-items-center mt-4"> <!-- Added margin top -->
+            <label for="notes" class="form-label form-label-sm">Filtru</label>
              <div class="col-lg-3 col-md-6 col-sm-12"> <input type="date" id="filterDate" class="form-control form-control-sm" title="Filtrează după dată"> </div>
              <div class="col-lg-3 col-md-6 col-sm-12"> <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează exercițiu..."> </div>
              <div class="col-lg-4 col-md-6 col-sm-12"> <select id="filterMuscleGroup" class="form-select form-select-sm"> <option value="">Filtrează grupă...</option> </select> </div>
@@ -146,7 +147,7 @@
              </div>
         </div>
          <div class="dashboard-section">
-            <h2 class="fs-5">Medii Săptămânale (Estimative)</h2>
+            <h2 class="fs-5">Medii Săptămânale</h2>
              <div class="stats-grid">
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgWorkouts">0</span> <span class="label">Zile Antr./Săpt</span> </div>
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgSets">0</span> <span class="label">Seturi/Săpt</span> </div>
@@ -155,21 +156,94 @@
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgVolume">0 T</span> <span class="label">Volum/Săpt</span> </div>
              </div>
          </div>
-         <div class="dashboard-section">
-             <h2 class="fs-5">Recorduri Personale (Top 5 după e1RM)</h2>
-             <ul id="personalRecordsList" class="list-group list-group-flush">
-                 <li class="list-group-item text-muted d-none" id="noPrMessage">Nu există recorduri înregistrate.</li>
-                 <!-- Populat din JS -->
-             </ul>
+
+        <!-- Rând Nou Widgeturi 1: Focus, PR, Recent -->
+        <div class="row gx-3 gy-3 mt-1">
+            <!-- Focus Widget -->
+            <div class="col-lg-4 col-md-6">
+                <div class="dashboard-section h-100">
+                    <h3 class="fs-6">Focusul Zilei</h3>
+                    <div class="focus-widget-content text-center"> <!-- Added text-center -->
+                        <!-- Placeholder - JS might populate this or it could be static/semi-static -->
+                        <i class="bi bi-bullseye display-4 text-info mb-2"></i> <!-- Example Icon -->
+                        <p class="focus-text fw-bold">Zi de Piept & Triceps</p>
+                        <p class="main-exercise text-muted small">Focus principal: Bench Press</p>
+                        <p class="target-details text-muted small">Target: 4 seturi x 6-8 reps @ 85kg</p>
+                        <button class="btn btn-sm btn-primary mt-2 disabled" title="Funcționalitate neimplementată încă"><i class="bi bi-play-circle"></i> Start Antrenament</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PR Zone Widget -->
+            <div class="col-lg-4 col-md-6">
+                <div class="dashboard-section h-100">
+                    <h3 class="fs-6">Zona PR! <i class="bi bi-star-fill text-warning"></i></h3>
+                    <div id="newPrZoneList" class="pr-zone-list list-group list-group-flush">
+                        <!-- Placeholder: JS will populate this -->
+                        <div class="list-group-item text-muted small text-center">Verificare recorduri...</div>
+                    </div>
+                    <p id="noNewPrMessage" class="text-center text-muted small mt-2 d-none">Niciun record personal recent.</p>
+                </div>
+            </div>
+
+            <!-- Recent Sessions Widget -->
+            <div class="col-lg-4 col-md-12"> <!-- Takes full width on medium/small -->
+                <div class="dashboard-section h-100">
+                    <h3 class="fs-6">Sesiuni Recente</h3>
+                    <ul id="recentSessionsList" class="list-group list-group-flush list-group-sm">
+                        <!-- Placeholder: JS will populate this -->
+                         <li class="list-group-item text-muted small">Se încarcă sesiunile...</li>
+                    </ul>
+                     <li id="noRecentSessionsMessage" class="list-group-item text-muted small d-none">Nu există sesiuni recente.</li>
+                </div>
+            </div>
+        </div><!-- Sfârșit Rând Nou Widgeturi 1 -->
+
+        <!-- Rând Nou Widgeturi 2: Weight Chart & Heatmap -->
+        <div class="row gx-3 gy-3 mt-1">
+            <!-- Weight Progress Chart -->
+            <div class="col-lg-6">
+                <div class="dashboard-section chart-section">
+                    <h3 class="chart-title fs-6">Progres Greutate Corporală (kg)</h3>
+                    <div id="weightProgressChartContainer" style="min-height: 255px;"> <!-- Added min-height -->
+                        <!-- D3 will render SVG here -->
+                         <p class="text-center text-muted small mt-5 pt-5">Se încarcă graficul greutății...</p> <!-- Placeholder -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consistency Heatmap -->
+            <div class="col-lg-6">
+                <div class="dashboard-section chart-section">
+                    <h3 class="chart-title fs-6">Consistență Recentă (Ultimele 4 Săpt.)</h3>
+                    <div id="consistencyHeatmapContainer" class="d-flex justify-content-center mb-2" style="min-height: 100px;"> <!-- Center content and add min-height -->
+                        <!-- D3 will render SVG here -->
+                        <p class="text-center text-muted small mt-4">Se încarcă heatmap...</p> <!-- Placeholder -->
+                    </div>
+                    <div class="heatmap-legend d-flex justify-content-center align-items-center small text-muted">
+                        <span class="legend-label me-1">Puțin</span>
+                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-0); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
+                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-1); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
+                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-2); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
+                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-3); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
+                        <!-- <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-4); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span> -->
+                        <span class="legend-label">Mult</span>
+                    </div>
+                    <!-- Tooltip (initially hidden, controlled by JS) -->
+                    <div id="heatmapTooltip" class="heatmap-tooltip" style="opacity: 0; position: absolute; background: var(--tooltip-bg); color: var(--tooltip-text); padding: 3px 6px; font-size: 0.75rem; border-radius: 3px; pointer-events: none; transition: opacity 0.1s ease-out;">Tooltip</div>
+                </div>
+            </div>
+        </div><!-- Sfârșit Rând Nou Widgeturi 2 -->
+
+         <div class="dashboard-section"> <!-- Moved Muscle Chart here -->
+            <h2 class="fs-5">Grupe Musculare Lucrate (Top 10 - Perioada Selectată)</h2>
+            <div class="chart-container" id="musclesWorkedChartContainer">
+                <svg id="d3MusclesChart" width="100%" height="300"></svg>
+                <p id="noMuscleDataMessage" class="text-center text-muted d-none mt-3">Nu există date pentru perioada selectată.</p>
+            </div>
          </div>
-         <div class="dashboard-section">
-             <h2 class="fs-5">Grupe Musculare Lucrate (Top 10 - Perioada Selectată)</h2>
-             <div class="chart-container" id="musclesWorkedChartContainer">
-                 <svg id="d3MusclesChart" width="100%" height="300"></svg>
-                 <p id="noMuscleDataMessage" class="text-center text-muted d-none mt-3">Nu există date pentru perioada selectată.</p>
-             </div>
-         </div>
-         <div class="row gx-3 gy-3 mt-1">
+
+         <div class="row gx-3 gy-3 mt-1"> <!-- Existing Volume/Progress Row -->
              <div class="col-lg-6">
                  <div class="dashboard-section chart-section mb-0"> <!-- Removed bottom margin -->
                      <h3 class="chart-title fs-6">Volum Total Zilnic (Perioada Selectată)</h3> <!-- Adjusted title -->
@@ -189,6 +263,15 @@
                  </div>
              </div>
          </div>
+
+         <div class="dashboard-section"> <!-- Existing PR List -->
+             <h2 class="fs-5">Recorduri Personale Istoric (Top 5 după e1RM)</h2>
+             <ul id="personalRecordsList" class="list-group list-group-flush">
+                 <li class="list-group-item text-muted d-none" id="noPrMessage">Nu există recorduri înregistrate.</li>
+                 <!-- Populat din JS -->
+             </ul>
+         </div>
+
     </div> <!-- Sfârșit #dashboardTabContent -->
 
 

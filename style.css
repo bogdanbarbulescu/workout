@@ -17,6 +17,18 @@
     --htb-tag-red: #e74c3c;      /* Roșu pt danger */
     --htb-tag-blue: #3498db;     /* Albastru pt info */
     --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+    /* Heatmap Colors (using HTB theme) */
+    --heatmap-color-0: rgba(60, 70, 110, 0.3); /* Base - transparent version of bg-light */
+    --heatmap-color-1: rgba(159, 239, 0, 0.3); /* Light - transparent accent */
+    --heatmap-color-2: rgba(159, 239, 0, 0.6); /* Medium */
+    --heatmap-color-3: rgba(159, 239, 0, 0.9); /* Heavy */
+    --heatmap-color-4: var(--htb-accent);      /* Very Heavy (Optional - full accent) */
+    --heatmap-border-color: rgba(159, 239, 0, 0.1); /* Accent border */
+
+    /* Tooltip Colors */
+    --tooltip-bg: var(--htb-bg-darker);
+    --tooltip-text: var(--htb-text-primary);
 }
 
 /* 2. Override Variabile Bootstrap Globale pt [data-bs-theme="dark"] */
@@ -174,6 +186,10 @@
     --bs-list-group-action-hover-bg: var(--htb-bg-light);
     --bs-list-group-item-padding-x: 1rem;
     --bs-list-group-item-padding-y: 0.5rem;
+    --bs-list-group-item-bg: transparent; /* Ensure list items are transparent */
+    --bs-list-group-action-color: var(--htb-text-secondary); /* Color for list items */
+    --bs-list-group-action-active-color: var(--htb-text-primary);
+    --bs-list-group-action-active-bg: var(--htb-bg-light);
 }
 
 /* 3. Stiluri Generale */
@@ -271,15 +287,34 @@ a:hover {
     border: 1px solid var(--htb-border-color);
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
-.dashboard-section h2,
+/* Ensure sections in rows have consistent bottom margin */
+.row > [class*="col-"] > .dashboard-section {
+    margin-bottom: 0; /* Remove default margin when inside a row */
+}
+.row.gy-3 {
+    margin-bottom: 1rem; /* Add margin below rows */
+}
+
+.dashboard-section h2, /* Main section titles */
 .form-section h2 {
-    font-size: 1.05rem; /* Titluri secțiuni */
+    font-size: 1.05rem;
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--htb-border-color);
     color: var(--htb-text-primary);
     font-weight: 600;
 }
+.dashboard-section h3 { /* Widget titles */
+    font-size: 0.9rem; /* Smaller than h2 */
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--htb-border-color); /* Dashed separator */
+    color: var(--htb-text-secondary);
+    font-weight: 600;
+    text-transform: uppercase; /* Uppercase for distinction */
+    letter-spacing: 0.5px;
+}
+
 /* Stil specific pentru secțiunea de Backup/Restore din Setări */
 .data-management-section h3 {
     font-size: 0.95rem;
@@ -288,6 +323,8 @@ a:hover {
     margin-top: 1rem; /* Spațiu între sub-secțiuni */
     padding-bottom: 5px;
     border-bottom: 1px dashed var(--htb-border-color); /* Separator diferit */
+    text-transform: none; /* Override uppercase if needed */
+    letter-spacing: normal;
 }
 .data-management-section h3:first-of-type {
     margin-top: 0; /* Fără margine sus la primul h3 */
@@ -303,6 +340,20 @@ a:hover {
     white-space: nowrap; border-bottom: 2px solid var(--htb-border-color);
     font-size: 0.85rem; /* Header mai mic */
 }
+#workoutTable th .sort-icon {
+    font-size: 0.8em;
+    margin-left: 4px;
+    color: var(--htb-text-muted);
+    transition: color 0.2s ease;
+}
+#workoutTable th:hover .sort-icon {
+    color: var(--htb-text-secondary);
+}
+#workoutTable th .sort-icon.bi-sort-up,
+#workoutTable th .sort-icon.bi-sort-down {
+    color: var(--htb-accent); /* Highlight active sort icon */
+}
+
 #workoutTable td {
     padding: 0.4rem 0.6rem; /* Padding optimizat */
     vertical-align: middle; border-top: 1px solid var(--htb-border-color);
@@ -330,10 +381,26 @@ a:hover {
 .line-volume { stroke: var(--htb-accent); stroke-width: 2px; }
 .dot-weight { fill: var(--htb-tag-red); stroke: var(--htb-bg-medium); stroke-width: 1.5px; }
 /* Stiluri axe D3 */
-.chart-container svg text { fill: var(--htb-text-secondary); font-size: 10px; }
-.chart-container svg .domain { stroke: var(--htb-border-color); }
-.chart-container svg .tick line { stroke: var(--htb-border-color); stroke-opacity: 0.4; }
-.chart-container svg .axis-label { fill: var(--htb-text-secondary); font-size: 10px; font-weight: 500; }
+.chart-container svg text,
+.chart-section svg text { /* Apply to all chart text */
+    fill: var(--htb-text-secondary);
+    font-size: 10px;
+}
+.chart-container svg .domain,
+.chart-section svg .domain { /* Apply to all chart axes */
+    stroke: var(--htb-border-color);
+}
+.chart-container svg .tick line,
+.chart-section svg .tick line { /* Apply to all chart ticks */
+    stroke: var(--htb-border-color);
+    stroke-opacity: 0.4;
+}
+.chart-container svg .axis-label,
+.chart-section svg .axis-label { /* Apply to all chart labels */
+    fill: var(--htb-text-secondary);
+    font-size: 10px;
+    font-weight: 500;
+}
 /* Stil specific grafic bare musculare */
 .muscle-bar { fill: var(--htb-accent); } /* Bare verzi */
 .bar-label { /* Etichete pe barele musculare */
@@ -341,20 +408,198 @@ a:hover {
     fill: #111 !important; /* Text închis pentru lizibilitate pe verde */
     font-weight: bold;
 }
+/* Stil specific grafic progres */
+.line-e1rm { stroke: var(--htb-accent); }
+.dot-weight { fill: var(--htb-tag-red); }
 
 
 /* Dashboard Stats */
 .dashboard-header { align-items: baseline; }
 .dashboard-header h1 { margin-bottom: 0; }
-.stats-grid { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 18px; } /* Mai multe coloane pe spațiu */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 18px; } /* Mai multe coloane pe spațiu */
 .stat-item .value { font-size: 1.5rem; font-weight: 700; color: var(--htb-accent); line-height: 1.1; }
 .stat-item .label { font-size: 0.65rem; color: var(--htb-text-muted); text-transform: uppercase; margin-top: 3px; }
 
-/* Dashboard PR List */
+/* Dashboard PR List (Istoric) */
 #personalRecordsList .list-group-item { background-color: transparent; border-color: var(--htb-border-color); padding: .5rem 0; font-size: 0.85rem; }
 #personalRecordsList .pr-exercise { font-weight: 600; color: var(--bs-emphasis-color); }
-#personalRecordsList .pr-value { font-weight: bold; color: var(--htb-accent); margin-left: 8px; }
-#personalRecordsList .pr-type { font-size: 0.7rem; color: var(--htb-text-muted); margin-left: 3px; }
+#personalRecordsList .badge { font-size: 0.75rem; padding: .3em .5em; } /* Adjust badge size */
+#personalRecordsList .badge .pr-type { font-size: 0.65rem; opacity: 0.8; margin-left: 2px; }
+
+/* --- NEW WIDGET STYLES --- */
+
+/* Focus Widget */
+.focus-widget-content i { /* Icon styling */
+    color: var(--htb-tag-blue); /* Use info color */
+}
+.focus-widget-content .focus-text {
+    font-size: 1.1em;
+    color: var(--htb-text-primary);
+    margin-bottom: 0.3rem;
+}
+.focus-widget-content .main-exercise,
+.focus-widget-content .target-details {
+    font-size: 0.85em;
+    color: var(--htb-text-secondary);
+    margin-bottom: 0.2rem;
+}
+
+/* PR Zone Widget */
+.pr-zone-list .list-group-item {
+    background-color: transparent;
+    border-color: var(--htb-border-color) !important; /* Override bootstrap */
+    padding: .4rem 0; /* Reduced padding */
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+.pr-zone-list .pr-zone-exercise {
+    font-weight: 600;
+    color: var(--htb-text-secondary);
+    flex-shrink: 1; /* Allow shrinking */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.pr-zone-list .pr-zone-value {
+    font-weight: bold;
+    color: var(--htb-accent);
+    white-space: nowrap; /* Prevent wrapping */
+}
+.pr-zone-list .pr-zone-date {
+    font-size: 0.7rem;
+    color: var(--htb-text-muted);
+    white-space: nowrap;
+}
+
+/* Recent Sessions Widget */
+#recentSessionsList .list-group-item {
+    background-color: transparent;
+    border-color: var(--htb-border-color) !important;
+    padding: .4rem 0;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+#recentSessionsList .session-info {
+    flex-grow: 1;
+    overflow: hidden; /* Prevent long text overflow */
+}
+#recentSessionsList .session-title {
+    font-weight: 600;
+    color: var(--htb-text-secondary);
+    display: block; /* Ensure it takes full width */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#recentSessionsList .session-details {
+    font-size: 0.9em;
+    color: var(--htb-text-muted);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#recentSessionsList .session-date {
+    font-size: 0.85em;
+    color: var(--htb-text-muted);
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent date from shrinking */
+}
+
+/* Consistency Heatmap */
+#consistencyHeatmapContainer svg {
+    max-width: 100%; /* Ensure SVG scales down */
+    height: auto;
+    display: block; /* Remove extra space below */
+    margin: 0 auto; /* Center if container is wider */
+}
+.heatmap-day {
+    stroke: var(--heatmap-border-color);
+    stroke-width: 1px;
+    shape-rendering: geometricPrecision;
+    rx: 2px;
+    ry: 2px;
+    transition: filter 0.1s ease-in-out, stroke 0.1s ease-in-out;
+}
+.heatmap-day:hover {
+   filter: brightness(1.2);
+   stroke: var(--htb-accent); /* Highlight border on hover */
+   stroke-width: 1.5px;
+}
+/* Intensity level classes */
+.heatmap-day-level-0 { fill: var(--heatmap-color-0); }
+.heatmap-day-level-1 { fill: var(--heatmap-color-1); }
+.heatmap-day-level-2 { fill: var(--heatmap-color-2); }
+.heatmap-day-level-3 { fill: var(--heatmap-color-3); }
+.heatmap-day-level-4 { fill: var(--heatmap-color-4); }
+
+/* Heatmap Legend */
+.heatmap-legend {
+    font-size: 0.7rem; /* Smaller legend text */
+}
+.heatmap-legend .legend-color {
+    display: inline-block; /* Make them inline */
+    vertical-align: middle;
+}
+
+/* Heatmap Tooltip */
+.heatmap-tooltip {
+    position: absolute;
+    background-color: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 4px 8px; /* Smaller padding */
+    border-radius: 4px;
+    font-size: 0.75em; /* Smaller font */
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.1s ease-out;
+    z-index: 1056; /* Ensure above most elements */
+    opacity: 0; /* Hidden by default */
+}
+.heatmap-tooltip strong {
+    color: var(--htb-accent); /* Highlight part of tooltip */
+}
+
+/* Weight Progress Chart (D3) */
+#weightProgressChartContainer {
+    min-height: 255px; /* Ensure space */
+}
+#weightProgressChartContainer svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+#d3WeightProgressChart .line { /* Target specific chart if needed */
+    fill: none;
+    stroke: var(--htb-tag-red); /* Use red for weight */
+    stroke-width: 2px;
+}
+#d3WeightProgressChart .dot {
+    fill: var(--htb-tag-red);
+    stroke: var(--htb-bg-medium);
+    stroke-width: 1.5px;
+}
+#d3WeightProgressChart .axis path,
+#d3WeightProgressChart .axis line {
+    stroke: var(--htb-border-color);
+}
+#d3WeightProgressChart .axis text {
+    fill: var(--htb-text-secondary);
+    font-size: 10px;
+}
+#d3WeightProgressChart .grid line {
+    stroke: var(--htb-border-color);
+    stroke-opacity: 0.2; /* Make grid lines very faint */
+}
+
+/* --- END NEW WIDGET STYLES --- */
+
 
 /* Setări */
 .custom-file-upload {
@@ -393,4 +638,16 @@ a:hover {
     #bottomNav button i { font-size: 1.2rem; margin-bottom: 2px; }
     #bottomNav button span { font-size: 0.65rem; }
     #bottomNav { padding: 4px 0; }
-        }
+
+    /* Ensure widgets stack nicely */
+    .row.gy-3 { margin-bottom: 0.75rem; } /* Reduce margin between rows */
+    .dashboard-section h3 { font-size: 0.85rem; } /* Slightly smaller widget titles */
+}
+
+@media (max-width: 576px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); } /* Force 3 columns on smallest */
+    .dashboard-section h3 { font-size: 0.8rem; }
+    .pr-zone-list .list-group-item,
+    #recentSessionsList .list-group-item { font-size: 0.75rem; }
+    .heatmap-legend { flex-wrap: wrap; justify-content: center; } /* Allow legend to wrap */
+}
