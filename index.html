@@ -33,13 +33,13 @@
 <!-- Container Principal -->
 <div class="container main-content py-3">
 
-    <!-- ==================== Tab Content: Jurnal (DOAR FORMULAR) ==================== -->
+    <!-- ==================== Tab Content: Adaugă (Log Form) ==================== -->
     <div id="logTabContent" class="tab-content active"> <!-- Starts active -->
-        <h1 class="mb-4 display-6">Adaugă Antrenament</h1> <!-- Changed Title -->
+        <h1 class="mb-4 display-6">Adaugă Antrenament</h1>
 
         <!-- Formular Adăugare/Editare -->
         <div class="form-section">
-            <h2 id="formTitle" class="mb-3 fs-5">Detalii Exercițiu</h2> <!-- Changed Subtitle -->
+            <h2 id="formTitle" class="mb-3 fs-5">Detalii Exercițiu</h2>
             <form id="workoutForm" class="row g-3 needs-validation" novalidate>
                 <input type="hidden" id="editId" name="editId">
                 <!-- Rând 1: Data & Grupe -->
@@ -50,10 +50,9 @@
                 </div>
                 <div class="col-md-8 col-sm-6">
                     <label for="muscleGroups" class="form-label form-label-sm">Grupe Musculare</label>
-                    <select class="form-select form-select-sm" id="muscleGroups" name="muscleGroups" multiple required size="4">
+                    <select class="form-select form-select-sm" id="muscleGroups" name="muscleGroups" multiple required size="6"> <!-- Increased size -->
                         <option value="Piept">Piept</option><option value="Spate">Spate</option><option value="Umeri">Umeri</option><option value="Biceps">Biceps</option><option value="Triceps">Triceps</option><option value="Cvadriceps">Cvadriceps</option><option value="Femurali">Femurali</option><option value="Fesieri">Fesieri</option><option value="Gambe">Gambe</option><option value="Abdomen">Abdomen</option><option value="Antebraț">Antebraț</option><option value="Full Body">Full Body</option><option value="Cardio">Cardio</option>
                     </select>
-                    
                     <div class="invalid-feedback">Selectați cel puțin o grupă.</div>
                 </div>
                 <!-- Rând 2: Exercițiu -->
@@ -68,9 +67,9 @@
                 <!-- Rând 3: Seturi -->
                 <div class="col-12 mt-2">
                     <label class="form-label form-label-sm fw-bold">Seturi:</label>
+                     <div id="setsWarning" class="alert alert-warning alert-sm py-1 px-2 d-none" style="font-size: 0.8rem;">Introduceți Rep. și Kg valide pentru toate seturile.</div> <!-- Moved warning above sets -->
                     <div id="setsContainer" class="mb-2">
                         <!-- Set rows added by JS -->
-                       
                     </div>
                     <button type="button" class="btn btn-outline-warning btn-sm" id="addSetBtn"><i class="bi bi-plus-lg"></i> Adaugă Set</button>
                 </div>
@@ -86,14 +85,12 @@
                 </div>
             </form>
         </div>
-        <!-- Log display and filters are MOVED from here -->
-
     </div><!-- Sfârșit #logTabContent -->
 
-    <!-- ==================== Tab Content: Dashboard (CU LOG) ==================== -->
-    <div id="dashboardTabContent" class="tab-content"> <!-- No longer active by default -->
+    <!-- ==================== Tab Content: Dashboard (Summaries & Widgets ONLY) ==================== -->
+    <div id="dashboardTabContent" class="tab-content">
         <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
-             <h1 class="display-6 mb-0">Dashboard</h1> <!-- Updated Title -->
+             <h1 class="display-6 mb-0">Dashboard</h1>
              <select class="form-select form-select-sm w-auto" id="dashboardPeriodSelect">
                  <option value="last7days" selected>Ultimele 7 zile</option>
                  <option value="last30days">Ultimele 30 zile</option>
@@ -101,9 +98,9 @@
              </select>
         </div>
 
-        <!-- Widgeturi existente (pot fi rearanjate dacă doriți) -->
+        <!-- Rezumat & Medii -->
         <div class="dashboard-section">
-            <h2 class="fs-5">Rezumat</h2>
+            <h2 class="fs-5">Rezumat Perioadă</h2>
              <div class="stats-grid">
                  <div class="stat-item text-center"> <span class="value" id="statsExercises">0</span> <span class="label">Înregistrări</span> </div>
                  <div class="stat-item text-center"> <span class="value" id="statsSets">0</span> <span class="label">Seturi Totale</span> </div>
@@ -113,7 +110,7 @@
              </div>
         </div>
          <div class="dashboard-section">
-            <h2 class="fs-5">Medii Săptămânale</h2>
+            <h2 class="fs-5">Medii Săptămânale (Perioadă)</h2>
              <div class="stats-grid">
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgWorkouts">0</span> <span class="label">Zile Antr./Săpt</span> </div>
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgSets">0</span> <span class="label">Seturi/Săpt</span> </div>
@@ -122,11 +119,14 @@
                  <div class="stat-item text-center"> <span class="value" id="weeklyAvgVolume">0 T</span> <span class="label">Volum/Săpt</span> </div>
              </div>
          </div>
+
+        <!-- Widget Row 1 -->
         <div class="row gx-3 gy-3 mt-1">
             <div class="col-lg-4 col-md-6">
                 <div class="dashboard-section h-100">
                     <h3 class="fs-6">Focusul Zilei</h3>
                     <div class="focus-widget-content text-center">
+                        <!-- Placeholder - Needs dynamic logic -->
                         <i class="bi bi-bullseye display-4 text-info mb-2"></i>
                         <p class="focus-text fw-bold">Zi de Piept & Triceps</p>
                         <p class="main-exercise text-muted small">Focus principal: Bench Press</p>
@@ -137,108 +137,148 @@
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="dashboard-section h-100">
-                    <h3 class="fs-6">Zona PR! <i class="bi bi-star-fill text-warning"></i></h3>
+                    <h3 class="fs-6">Zona PR Recente! <i class="bi bi-star-fill text-warning"></i> <small>(Ultimele 30 zile)</small></h3>
                     <div id="newPrZoneList" class="pr-zone-list list-group list-group-flush">
+                        <!-- Populated by JS -->
                         <div class="list-group-item text-muted small text-center">Verificare recorduri...</div>
                     </div>
-                    <p id="noNewPrMessage" class="text-center text-muted small mt-2 d-none">Niciun record personal recent.</p>
+                    <p id="noNewPrMessage" class="text-center text-muted small mt-2 d-none">Niciun record personal în ultima lună.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-12">
+            <div class="col-lg-4 col-md-12"> <!-- Takes full width on medium if others wrap -->
                 <div class="dashboard-section h-100">
-                    <h3 class="fs-6">Sesiuni Recente</h3>
+                    <h3 class="fs-6">Sesiuni Recente <small>(Ultimele 5 zile)</small></h3>
                     <ul id="recentSessionsList" class="list-group list-group-flush list-group-sm">
+                         <!-- Populated by JS -->
                          <li class="list-group-item text-muted small">Se încarcă sesiunile...</li>
                     </ul>
-                     <li id="noRecentSessionsMessage" class="list-group-item text-muted small d-none">Nu există sesiuni recente.</li>
+                     <p id="noRecentSessionsMessage" class="text-center text-muted small mt-2 d-none">Nu există sesiuni recente.</p> <!-- Changed to p -->
                 </div>
             </div>
         </div>
+
+        <!-- Widget Row 2 (Charts) -->
         <div class="row gx-3 gy-3 mt-1">
             <div class="col-lg-6">
-                <div class="dashboard-section chart-section">
+                <div class="dashboard-section chart-section h-100"> <!-- Added h-100 -->
                     <h3 class="chart-title fs-6">Progres Greutate Corporală (kg)</h3>
-                    <div id="weightProgressChartContainer" style="min-height: 255px;">
-                         <p class="text-center text-muted small mt-5 pt-5">Se încarcă graficul greutății...</p>
+                    <div id="weightProgressChartContainer" style="min-height: 255px;" class="d-flex align-items-center justify-content-center"> <!-- Centered placeholder -->
+                         <p class="text-center text-muted small">Nu există date. Adaugă greutatea în Setări.</p> <!-- Updated placeholder -->
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="dashboard-section chart-section">
-                    <h3 class="chart-title fs-6">Consistență Recentă (Ultimele 4 Săpt.)</h3>
-                    <div id="consistencyHeatmapContainer" class="d-flex justify-content-center mb-2" style="min-height: 100px;">
-                        <p class="text-center text-muted small mt-4">Se încarcă heatmap...</p>
+                <div class="dashboard-section chart-section h-100"> <!-- Added h-100 -->
+                    <h3 class="chart-title fs-6">Consistență Recentă <small>(Ultimele 4 Săpt.)</small></h3>
+                    <div id="consistencyHeatmapContainer" class="d-flex justify-content-center align-items-center mb-2" style="min-height: 100px;">
+                        <!-- Populated by JS -->
+                        <p class="text-center text-muted small">Se încarcă heatmap...</p>
                     </div>
-                    <div class="heatmap-legend d-flex justify-content-center align-items-center small text-muted">
-                        <span class="legend-label me-1">Puțin</span>
-                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-0); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
-                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-1); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
-                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-2); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
-                        <span class="legend-color me-1" style="width: 10px; height: 10px; background-color: var(--heatmap-color-3); border: 1px solid var(--htb-border-color); border-radius: 2px;"></span>
-                        <span class="legend-label">Mult</span>
+                    <div class="heatmap-legend d-flex justify-content-center align-items-center small text-muted gap-1"> <!-- Added gap -->
+                        <span>Pauză</span>
+                        <span class="legend-color" style="background-color: var(--heatmap-color-0);"></span>
+                        <span class="legend-color" style="background-color: var(--heatmap-color-1);"></span>
+                        <span class="legend-color" style="background-color: var(--heatmap-color-2);"></span>
+                        <span class="legend-color" style="background-color: var(--heatmap-color-3);"></span>
+                        <span class="legend-color" style="background-color: var(--heatmap-color-4);"></span> <!-- Assuming 4 levels + 0 -->
+                        <span>Intens</span>
                     </div>
-                    <div id="heatmapTooltip" class="heatmap-tooltip" style="opacity: 0; position: absolute; background: var(--tooltip-bg); color: var(--tooltip-text); padding: 3px 6px; font-size: 0.75rem; border-radius: 3px; pointer-events: none; transition: opacity 0.1s ease-out;">Tooltip</div>
+                    <div id="heatmapTooltip" class="heatmap-tooltip">Tooltip</div> <!-- Style in CSS -->
                 </div>
             </div>
         </div>
-         <div class="dashboard-section">
-            <h2 class="fs-5">Grupe Musculare Lucrate (Top 10 - Perioada Selectată)</h2>
-            <div class="chart-container" id="musclesWorkedChartContainer">
-                <svg id="d3MusclesChart" width="100%" height="300"></svg>
-                <p id="noMuscleDataMessage" class="text-center text-muted d-none mt-3">Nu există date pentru perioada selectată.</p>
-            </div>
-         </div>
-         <div class="row gx-3 gy-3 mt-1">
-             <div class="col-lg-6">
-                 <div class="dashboard-section chart-section mb-0">
-                     <h3 class="chart-title fs-6">Volum Total Zilnic (Perioada Selectată)</h3>
-                     <svg id="d3VolumeChartDash" width="100%" height="300"></svg>
-                 </div>
-             </div>
-             <div class="col-lg-6">
-                 <div class="dashboard-section chart-section mb-0">
-                     <h3 class="chart-title fs-6">Progres Exercițiu</h3>
-                     <div class="mb-3 px-2">
-                         <select id="progressExerciseSelectDash" class="form-select form-select-sm">
-                             <option value="">Alege un exercițiu...</option>
-                         </select>
+
+        <!-- Other Charts Row -->
+         <div class="dashboard-section mt-3"> <!-- Grouped remaining charts -->
+            <div class="row gx-3 gy-3">
+                <div class="col-lg-6">
+                    <div class="chart-section mb-lg-0"> <!-- No bottom margin on large screens -->
+                        <h3 class="chart-title fs-6">Grupe Musculare Lucrate <small>(Top 10 - Perioada)</small></h3>
+                        <div class="chart-container" id="musclesWorkedChartContainer">
+                            <svg id="d3MusclesChart" width="100%" height="300"></svg>
+                            <p id="noMuscleDataMessage" class="text-center text-muted d-none mt-3">Nu există date pentru perioada selectată.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-6">
+                     <div class="chart-section mb-lg-0"> <!-- No bottom margin on large screens -->
+                         <h3 class="chart-title fs-6">Volum Total Zilnic <small>(Perioada)</small></h3>
+                         <svg id="d3VolumeChartDash" width="100%" height="300"></svg>
                      </div>
-                     <svg id="d3ProgressChartDash" width="100%" height="255"></svg>
+                 </div>
+                 <div class="col-lg-6"> <!-- Progress chart moved here -->
+                     <div class="chart-section mb-0">
+                         <h3 class="chart-title fs-6">Progres Exercițiu <small>(Tot Timpul)</small></h3>
+                         <div class="mb-3 px-2">
+                             <select id="progressExerciseSelectDash" class="form-select form-select-sm">
+                                 <option value="">Alege un exercițiu...</option>
+                                 <!-- Populated by JS -->
+                             </select>
+                         </div>
+                         <svg id="d3ProgressChartDash" width="100%" height="255"></svg>
+                     </div>
+                 </div>
+                 <div class="col-lg-6"> <!-- Historical PRs moved here -->
+                    <div class="dashboard-section mb-0 h-100"> <!-- Use dashboard-section for consistency -->
+                        <h3 class="fs-6">Recorduri Personale Istoric <small>(Top 5 după e1RM)</small></h3>
+                        <ul id="personalRecordsList" class="list-group list-group-flush">
+                            <!-- Populated by JS -->
+                            <li class="list-group-item text-muted d-none" id="noPrMessage">Nu există recorduri înregistrate.</li>
+                        </ul>
+                    </div>
                  </div>
              </div>
          </div>
-         <div class="dashboard-section">
-             <h2 class="fs-5">Recorduri Personale Istoric (Top 5 după e1RM)</h2>
-             <ul id="personalRecordsList" class="list-group list-group-flush">
-                 <li class="list-group-item text-muted d-none" id="noPrMessage">Nu există recorduri înregistrate.</li>
-             </ul>
-         </div>
 
-        <!-- Secțiune NOUĂ pentru Istoric Antrenamente (Log Display) -->
-        <div class="dashboard-section mt-4">
-             <h2 class="fs-5">Istoric Antrenamente</h2>
-
-             <!-- Controale Filtrare (MUTATE AICI) -->
-             <div class="table-controls row g-2 align-items-center mb-3">
-                 <div class="col-lg-3 col-md-6 col-sm-12"> <input type="date" id="filterDate" class="form-control form-control-sm" title="Filtrează după dată"> </div>
-                 <div class="col-lg-3 col-md-6 col-sm-12"> <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează exercițiu..."> </div>
-                 <div class="col-lg-4 col-md-6 col-sm-12"> <select id="filterMuscleGroup" class="form-select form-select-sm"> <option value="">Filtrează grupă...</option> </select> </div>
-                 <div class="col-lg-2 col-md-6 col-sm-12 text-lg-end"> <button id="clearFilters" class="btn btn-warning btn-sm w-100" title="Șterge Filtre"><i class="bi bi-x-circle"></i> Reset</button> </div>
-             </div>
-
-             <!-- Container pentru Jurnalul Grupat (MUTAT AICI) -->
-             <div id="workoutLogContainer" class="mt-3 workout-log-grouped">
-                 <!-- Populat din JS -->
-                 <p id="noDataMessage" class="text-center text-muted d-none mt-3">Nu există antrenamente înregistrate.</p>
-             </div>
-        </div>
+        <!-- LOG HISTORY IS MOVED TO ITS OWN TAB -->
 
     </div> <!-- Sfârșit #dashboardTabContent -->
 
-    <!-- ==================== Tab Content NOU: Plan ==================== -->
+    <!-- ==================== Tab Content NOU: Istoric (Log History) ==================== -->
+    <div id="historyTabContent" class="tab-content">
+        <h1 class="mb-4 display-6">Istoric Antrenamente</h1>
+
+        <!-- Controale Filtrare -->
+         <div class="form-section mb-3"> <!-- Wrap filters in a section -->
+             <h2 class="fs-5 mb-3">Filtrează Jurnal</h2>
+             <div class="table-controls row g-2 align-items-center">
+                 <div class="col-lg-3 col-md-6 col-sm-12">
+                     <label for="filterDate" class="form-label form-label-sm visually-hidden">Filtrează după dată</label>
+                     <input type="date" id="filterDate" class="form-control form-control-sm" title="Filtrează după dată">
+                 </div>
+                 <div class="col-lg-3 col-md-6 col-sm-12">
+                     <label for="filterExercise" class="form-label form-label-sm visually-hidden">Filtrează exercițiu</label>
+                     <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează exercițiu...">
+                 </div>
+                 <div class="col-lg-4 col-md-6 col-sm-12">
+                     <label for="filterMuscleGroup" class="form-label form-label-sm visually-hidden">Filtrează grupă musculară</label>
+                     <select id="filterMuscleGroup" class="form-select form-select-sm">
+                         <option value="">Filtrează grupă...</option>
+                         <!-- Populated by JS -->
+                     </select>
+                 </div>
+                 <div class="col-lg-2 col-md-6 col-sm-12 text-lg-end">
+                     <button id="clearFilters" class="btn btn-warning btn-sm w-100" title="Șterge Filtre"><i class="bi bi-x-circle"></i> Reset</button>
+                 </div>
+             </div>
+         </div>
+
+         <!-- Container pentru Jurnalul Grupat -->
+         <div id="workoutLogContainer" class="workout-log-grouped">
+             <!-- Populat din JS -->
+             <div id="noDataMessage" class="form-section text-center text-muted d-none py-5"> <!-- Styled like a section -->
+                 <i class="bi bi-journal-x fs-1 mb-3"></i>
+                 <p class="mb-0">Nu există antrenamente care să corespundă filtrelor selectate.</p>
+                 <p class="small">Încearcă să ajustezi filtrele sau <a href="#" onclick="document.getElementById('logTabBtn').click(); return false;">adaugă un antrenament nou</a>.</p>
+             </div>
+         </div>
+
+    </div><!-- Sfârșit #historyTabContent -->
+
+    <!-- ==================== Tab Content: Plan ==================== -->
     <div id="planTabContent" class="tab-content">
         <h1 class="mb-4 display-6">Planuri de Antrenament</h1>
-
+        <!-- Plan content remains the same -->
         <div class="accordion" id="planAccordion">
             <!-- Rutina A -->
             <div class="accordion-item">
@@ -261,7 +301,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Rutina B -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingPlanB">
@@ -286,14 +325,13 @@
             </div>
              <!-- Add more routines here if needed -->
         </div>
-
     </div><!-- Sfârșit #planTabContent -->
-
 
     <!-- ==================== Tab Content: Setări ==================== -->
     <div id="settingsTabContent" class="tab-content">
          <h1 class="mb-4 display-6">Setări & Date</h1>
 
+         <!-- Gestionează Exerciții -->
          <div class="form-section">
              <h2 class="mb-3 fs-5">Gestionează Lista de Exerciții</h2>
              <div class="mb-3">
@@ -307,15 +345,45 @@
                  <label class="form-label form-label-sm">Exerciții adăugate de tine:</label>
                  <ul id="existingExercisesListSettings" class="list-group list-group-flush list-group-sm settings-list">
                      <!-- Populat din JS -->
+                     <li class="list-group-item text-muted">Nu ai adăugat exerciții custom.</li>
                  </ul>
              </div>
          </div>
 
+         <!-- NEW: Gestionează Greutate Corporală -->
+         <div class="form-section">
+            <h2 class="mb-3 fs-5">Greutate Corporală</h2>
+            <form id="bodyweightForm" class="row g-2 needs-validation" novalidate> <!-- Simple form -->
+                <div class="col-sm-5">
+                    <label for="bodyweightDate" class="form-label form-label-sm">Data</label>
+                    <input type="date" class="form-control form-control-sm" id="bodyweightDate" required>
+                    <div class="invalid-feedback">Data este obligatorie.</div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="bodyweightValue" class="form-label form-label-sm">Greutate (kg)</label>
+                    <input type="number" step="0.1" min="0" class="form-control form-control-sm" id="bodyweightValue" placeholder="ex: 75.5" required>
+                    <div class="invalid-feedback">Greutatea este obligatorie.</div>
+                </div>
+                <div class="col-sm-3 align-self-end"> <!-- Align button bottom -->
+                    <button type="submit" class="btn btn-primary btn-sm w-100" id="saveBodyweightBtn"><i class="bi bi-save"></i> Salvează</button>
+                </div>
+            </form>
+            <hr class="my-3"> <!-- Separator -->
+            <div>
+                <label class="form-label form-label-sm">Ultimele înregistrări:</label>
+                <ul id="bodyweightLogList" class="list-group list-group-flush list-group-sm settings-list">
+                    <!-- Populat din JS -->
+                    <li class="list-group-item text-muted">Nu există înregistrări de greutate.</li>
+                </ul>
+            </div>
+         </div>
+
+         <!-- Gestionare Date (Backup/Restore/Export) -->
          <div class="form-section data-management-section">
-             <h2 class="mb-3 fs-5">Gestionare Date</h2>
+             <h2 class="mb-3 fs-5">Gestionare Date Aplicație</h2>
              <div class="mb-4">
                  <h3 class="fs-6 mb-2">Backup & Restaurare</h3>
-                 <p class="form-text mb-2" style="font-size: 0.85rem;">Salvează (JSON) sau încarcă toate datele aplicației (antrenamente, exerciții custom, recorduri).</p>
+                 <p class="form-text mb-2" style="font-size: 0.85rem;">Salvează (JSON) sau încarcă toate datele aplicației (antrenamente, exerciții custom, recorduri, greutate corporală).</p>
                  <div class="d-flex gap-2 flex-wrap">
                      <button class="btn btn-info btn-sm" id="backupDataBtnSettings"><i class="bi bi-download"></i> Descarcă Backup</button>
                      <label for="restoreFileSettings" class="btn btn-warning btn-sm custom-file-upload"><i class="bi bi-upload"></i> Încarcă Backup...</label>
@@ -323,7 +391,7 @@
                  </div>
              </div>
              <div>
-                 <h3 class="fs-6 mb-2">Export Jurnal</h3>
+                 <h3 class="fs-6 mb-2">Export Jurnal Antrenamente</h3>
                  <p class="form-text mb-2" style="font-size: 0.85rem;">Descarcă jurnalul de antrenamente într-un format specific.</p>
                  <div class="btn-group btn-group-sm" role="group">
                      <button id="exportCSVSettings" class="btn btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</button>
@@ -337,11 +405,12 @@
 </div><!-- Sfârșit .main-content -->
 
 
-<!-- ==================== Navigare Inferioară (CU PLAN) ==================== -->
+<!-- ==================== Navigare Inferioară (Actualizată) ==================== -->
 <nav id="bottomNav">
-    <button id="logTabBtn" class="active" data-target="logTabContent" title="Adaugă"> <i class="bi bi-plus-square-fill"></i> <span>Adaugă</span> </button> <!-- Changed Icon & Text, Starts Active -->
+    <button id="logTabBtn" class="active" data-target="logTabContent" title="Adaugă"> <i class="bi bi-plus-square-fill"></i> <span>Adaugă</span> </button>
     <button id="dashboardTabBtn" data-target="dashboardTabContent" title="Dashboard"> <i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span> </button>
-    <button id="planTabBtn" data-target="planTabContent" title="Plan"> <i class="bi bi-calendar-check-fill"></i> <span>Plan</span> </button> <!-- New Plan Button -->
+    <button id="historyTabBtn" data-target="historyTabContent" title="Istoric"> <i class="bi bi-list-ul"></i> <span>Istoric</span> </button> <!-- NEW History Button -->
+    <button id="planTabBtn" data-target="planTabContent" title="Plan"> <i class="bi bi-calendar-check-fill"></i> <span>Plan</span> </button>
     <button id="settingsTabBtn" data-target="settingsTabContent" title="Setări"> <i class="bi bi-gear-fill"></i> <span>Setări</span> </button>
 </nav>
 
