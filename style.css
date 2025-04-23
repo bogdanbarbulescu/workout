@@ -643,3 +643,84 @@ a:hover {
     .table-controls .col-lg-2 { text-align: center !important; }
     .table-controls .btn { width: 100%; }
 }
+
+/* Add these styles to your existing style.css file */
+
+/* ... (Keep all existing styles from the previous version) ... */
+
+/* Pagination Controls */
+.pagination-controls {
+    gap: 0.5rem; /* Space between elements */
+}
+.pagination-controls .btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+}
+.pagination-controls .page-info {
+    font-size: 0.85rem;
+    color: var(--htb-text-secondary);
+    white-space: nowrap; /* Prevent wrapping */
+}
+.pagination-controls .btn:disabled {
+    background-color: var(--htb-bg-light);
+    border-color: var(--htb-border-color);
+    color: var(--htb-text-muted);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Plan Tab Enhancements */
+#planTabContent .list-group-item {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+#planTabContent .log-plan-exercise-btn {
+    font-size: 0.7rem; /* Smaller button text */
+    line-height: 1;
+    /* Ensure button doesn't take too much space */
+    flex-shrink: 0;
+    margin-left: 0.5rem; /* Space between text and button */
+}
+#planTabContent .list-group-item > span {
+    /* Allow text to wrap if needed */
+    flex-grow: 1;
+    margin-right: 0.5rem;
+}
+#planTabContent .list-group-item > div {
+    /* Container for multiple buttons */
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+/* Responsive Adjustments for Plan Buttons */
+@media (max-width: 576px) {
+    #planTabContent .list-group-item {
+        flex-direction: column; /* Stack text and button(s) vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+    #planTabContent .list-group-item > span {
+        margin-right: 0;
+        margin-bottom: 0.4rem; /* Space below text */
+    }
+    #planTabContent .list-group-item > button,
+    #planTabContent .list-group-item > div {
+        margin-left: 0; /* Remove left margin when stacked */
+        align-self: flex-end; /* Align button(s) to the right */
+    }
+}
+
+/* Ensure settings list items with buttons align correctly */
+.settings-list .list-group-item button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+/* Adjust dashboard layout after removing focus widget */
+/* If the row previously had 3 cols (lg-4), the remaining 2 can become lg-6 */
+/* Example: If PR Zone and Recent Sessions were in a row with Focus */
+/* #dashboardTabContent .row > .col-lg-4 { */
+    /* @media (min-width: 992px) { */
+        /* flex: 0 0 auto; */
+        /* width: 50%; /* Make remaining 2 columns take half width each */ */
+    /* } */
+/* } */
+/* Note: The provided HTML already adjusted the columns to col-lg-6, so this override might not be needed */
