@@ -1,5 +1,4 @@
-
-// app.js - Gym Log Pro Logic (v6 - Structured Exercises, Filtered Dropdown, Form Polish)
+// app.js - Gym Log Pro Logic (v7 - Collapsible Plans, Exercise Modal)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Constants and State ---
@@ -100,6 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportCSVSettings = document.getElementById('exportCSVSettings');
     const exportTXTSettings = document.getElementById('exportTXTSettings');
     const exportPDFSettings = document.getElementById('exportPDFSettings');
+
+    // Exercise Modal Elements (Added)
+    const exerciseInfoModalElement = document.getElementById('exerciseInfoModal');
+    const exerciseModalTitle = document.getElementById('exerciseModalTitle');
+    const exerciseModalImage = document.getElementById('exerciseModalImage');
+    const exerciseModalGroup = document.getElementById('exerciseModalGroup');
+    const exerciseModalType = document.getElementById('exerciseModalType');
+    const exerciseModalEquipment = document.getElementById('exerciseModalEquipment');
+    const exerciseModalDifficulty = document.getElementById('exerciseModalDifficulty');
+    const exerciseModalExecution = document.getElementById('exerciseModalExecution');
 
     // --- Initialization ---
     async function initializeApp() {
@@ -245,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
          if (hasRelevantPredefined && hasRelevantCustom) {
             const separator = document.createElement('option');
             separator.disabled = true;
-           
+            separator.textContent = '────────── Custom ──────────';
             // Find the first custom exercise in the *sorted unique* list
             const firstCustomIndexInSorted = uniqueCombinedExercises.findIndex(ex => customExercises.includes(ex.value));
 
@@ -380,12 +389,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if(repsInput) {
                 repsInput.id = `reps-${newIndex}`;
                 const repsLabel = row.querySelector(`label[for^="reps-"]`);
-                if(repsLabel) repsLabel.htmlFor = `reps-${newIndex}`; repsLabel.textContent = `Repetări Set ${newIndex}`;
+                if(repsLabel) { repsLabel.htmlFor = `reps-${newIndex}`; repsLabel.textContent = `Repetări Set ${newIndex}`; }
             }
             if(weightInput) {
                  weightInput.id = `weight-${newIndex}`;
                  const weightLabel = row.querySelector(`label[for^="weight-"]`);
-                 if(weightLabel) weightLabel.htmlFor = `weight-${newIndex}`; weightLabel.textContent = `Greutate Set ${newIndex}`;
+                 if(weightLabel) { weightLabel.htmlFor = `weight-${newIndex}`; weightLabel.textContent = `Greutate Set ${newIndex}`; }
             }
             if(removeBtn) removeBtn.title = `Șterge Set ${newIndex}`;
 
@@ -769,10 +778,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (Math.abs(maxWeightOnDate - record.weight) < tolerance) {
                  // Check if the *current* workout being rendered actually contains this max weight
-                 const currentMaxWeight = Math.max(0, ...(workouts.find(w => w.date === workoutDate && w.exercise === exercise)?.sets || []).map(s => s.weight || 0));
-                 if (Math.abs(currentMaxWeight - record.weight) < tolerance) {
-                    isWeightPR = true;
-                 }
+                 // Find the workout being rendered (this requires passing its ID or data)
+                 // For now, assume if *any* workout on the date matches, it's a PR for display purposes
+                 isWeightPR = true; // Simplified check for display
             }
         }
 
@@ -1470,6 +1478,62 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatDate(dateString) { if (!dateString) return new Date().toISOString().split('T')[0]; if (dateString instanceof Date) return dateString.toISOString().split('T')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString; try { return new Date(dateString).toISOString().split('T')[0]; } catch (e) { return new Date().toISOString().split('T')[0]; } }
     function formatDateForDisplay(dateString) { if (!dateString) return '-'; try { const dateObj = (dateString instanceof Date) ? dateString : new Date(dateString + 'T00:00:00'); return new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' }).format(dateObj); } catch (e) { console.warn("Error formatting date:", dateString, e); return dateString; } }
 
+    // *** NEW *** Function to populate and show the exercise info modal
+    function showExerciseInfoModal(exerciseNameRo) {
+        if (!exerciseInfoModalElement) {
+            console.error("Modal element not found");
+            return;
+        }
+
+        const modal = bootstrap.Modal.getOrCreateInstance(exerciseInfoModalElement);
+
+        // Find the exercise data in the predefined list
+        const exerciseData = predefinedExercises.find(ex => ex.name_ro === exerciseNameRo);
+
+        if (exerciseData) {
+            // Populate modal content
+            exerciseModalTitle.textContent = exerciseData.name_ro || 'Detalii Exercițiu';
+            exerciseModalGroup.textContent = exerciseData.muscle_group || '-';
+            exerciseModalType.textContent = exerciseData.type || '-';
+            exerciseModalEquipment.textContent = exerciseData.equipment || '-';
+            exerciseModalDifficulty.textContent = exerciseData.difficulty || '-';
+
+            // --- Image Handling ---
+            const imageName = (exerciseData.name || exerciseData.name_ro)
+                                .toLowerCase()
+                                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                                .replace(/[()]/g, '') // Remove parentheses
+                                .replace(/[^a-z0-9-]/g, ''); // Remove other invalid characters
+            const imagePath = `images/exercises/${imageName}.jpg`; // Adjust path/extension if needed
+
+            exerciseModalImage.src = imagePath;
+            // Fallback image if the specific one fails to load
+            exerciseModalImage.onerror = () => {
+                exerciseModalImage.src = 'images/placeholder.png'; // Path to your placeholder
+                console.warn(`Image not found for ${exerciseNameRo} at ${imagePath}. Using placeholder.`);
+            };
+            exerciseModalImage.alt = exerciseData.name_ro; // Set alt text
+
+            // --- Execution Steps (Placeholder) ---
+            // TODO: Replace this with actual execution steps, potentially from exercises.json
+            exerciseModalExecution.textContent = `Instrucțiuni specifice pentru ${exerciseData.name_ro} ar trebui adăugate aici. Principii generale: Mențineți spatele drept, abdomenul încordat și controlați mișcarea. Evitați balansul.`;
+
+        } else {
+            // Handle case where exercise data is not found (e.g., custom exercise clicked?)
+            exerciseModalTitle.textContent = exerciseNameRo; // Show the clicked name
+            exerciseModalGroup.textContent = 'N/A (Custom?)';
+            exerciseModalType.textContent = '-';
+            exerciseModalEquipment.textContent = '-';
+            exerciseModalDifficulty.textContent = '-';
+            exerciseModalImage.src = 'images/placeholder.png';
+            exerciseModalImage.alt = exerciseNameRo;
+            exerciseModalExecution.textContent = 'Informații detaliate nu sunt disponibile pentru acest exercițiu.';
+            console.warn(`Data not found in predefinedExercises for: ${exerciseNameRo}`);
+        }
+
+        modal.show(); // Show the modal
+    }
+
 
     // --- Event Listeners Setup ---
     function setupEventListeners() {
@@ -1511,8 +1575,35 @@ document.addEventListener('DOMContentLoaded', () => {
         exportTXTSettings.addEventListener('click', handleExportTXT);
         exportPDFSettings.addEventListener('click', handleExportPDF);
 
-        // Plan Tab - Log Exercise Button (Delegated)
-        planTabContent.addEventListener('click', handleLogPlanExerciseClick); // MODIFIED below
+        // Plan Tab - Delegated Listeners for BOTH Log Button and Exercise Name Link
+        planTabContent.addEventListener('click', (event) => {
+            // Check if Log button was clicked
+            const logButton = event.target.closest('.log-plan-exercise-btn');
+            if (logButton) {
+                handleLogPlanExerciseClick(event); // Call the existing log handler
+                return; // Stop further processing
+            }
+
+            // Check if Exercise Name link was clicked
+            const exerciseLink = event.target.closest('.exercise-name-link');
+            if (exerciseLink) {
+                event.preventDefault(); // Prevent default link behavior
+                const exerciseName = exerciseLink.dataset.exerciseName;
+                if (exerciseName) {
+                    showExerciseInfoModal(exerciseName); // Call the new modal handler
+                }
+            }
+        });
+
+        // Add listener for modal hidden event to reset image error handling (optional but good practice)
+         if (exerciseInfoModalElement) {
+             exerciseInfoModalElement.addEventListener('hidden.bs.modal', () => {
+                 if (exerciseModalImage) {
+                     exerciseModalImage.onerror = null; // Remove the error handler
+                     exerciseModalImage.src = 'images/placeholder.png'; // Reset to placeholder
+                 }
+             });
+         }
     }
 
     // MODIFIED: Handle clicking "Log" button from Plan tab

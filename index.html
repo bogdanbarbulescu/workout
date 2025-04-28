@@ -302,229 +302,418 @@
 
     </div><!-- Sfârșit #historyTabContent -->
 
-<!-- ==================== Tab Content: Plan ==================== -->
-<div id="planTabContent" class="tab-content">
-    <h1 class="mb-4 display-6">Planuri de Antrenament</h1>
+    <!-- ==================== Tab Content: Plan ==================== -->
+    <div id="planTabContent" class="tab-content">
+        <h1 class="mb-4 display-6">Planuri de Antrenament</h1>
 
-    <!-- Container for Plan Cards -->
-    <div class="plan-container">
+        <!-- Container for Plan Cards -->
+        <div class="plan-container accordion" id="planCardAccordion"> <!-- Added accordion class and ID -->
 
-        <!-- Rutina A: Push Card -->
-        <div class="card plan-card mb-4 shadow-sm">
-            <div class="card-header plan-card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6 fw-semibold">
-                    <i class="bi bi-person-arms-up me-2"></i>Rutina A: Push (Împins)
-                </h5>
-                <span class="badge bg-info-subtle text-info-emphasis rounded-pill">Piept, Umeri, Triceps</span>
-            
+            <!-- Rutina A: Push Card (Collapsible) -->
+            <div class="card plan-card accordion-item mb-3 shadow-sm"> <!-- Added accordion-item -->
+                <h2 class="card-header plan-card-header accordion-header" id="headingPlanPush"> <!-- Added accordion-header -->
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanPush" aria-expanded="false" aria-controls="collapsePlanPush">
+                        <i class="bi bi-person-arms-up me-2"></i>Rutina A: Push (Împins)
+                        <span class="badge bg-info-subtle text-info-emphasis rounded-pill ms-auto me-3">Piept, Umeri, Triceps</span>
+                    </button>
+                </h2>
+                <div id="collapsePlanPush" class="accordion-collapse collapse" aria-labelledby="headingPlanPush" data-bs-parent="#planCardAccordion">
+                    <div class="card-body accordion-body"> <!-- Added accordion-body -->
+                        <div class="plan-exercise-list">
+                            <!-- Exercise Item 1 -->
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <!-- Make name clickable for modal -->
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Împins la piept cu bară">
+                                        <span class="exercise-name fw-medium">Împins la piept cu bară</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 6-10 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins la piept cu bară" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Exercise Item 2 -->
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Împins deasupra capului cu bară (Presă militară)">
+                                        <span class="exercise-name fw-medium">Împins deasupra capului cu bară (Presă militară)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins deasupra capului cu bară (Presă militară)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <!-- Exercise Item 3 -->
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Împins la piept înclinat cu gantere">
+                                        <span class="exercise-name fw-medium">Împins la piept înclinat cu gantere</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins la piept înclinat cu gantere" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Exercise Item 4 -->
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Ridicări laterale cu gantere">
+                                        <span class="exercise-name fw-medium">Ridicări laterale cu gantere</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">4 seturi x 12-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ridicări laterale cu gantere" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <!-- Exercise Item 5 -->
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Extensii la cablu (sfoară/bară)">
+                                        <span class="exercise-name fw-medium">Extensii la cablu (sfoară/bară)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii la cablu (sfoară/bară)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <!-- Exercise Item 6 -->
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Extensii deasupra capului (ganteră/bară/cablu)">
+                                        <span class="exercise-name fw-medium">Extensii deasupra capului (ganteră/bară/cablu)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii deasupra capului (ganteră/bară/cablu)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End plan-card Push -->
+
+            <!-- Rutina B: Pull Card (Collapsible) -->
+            <div class="card plan-card accordion-item mb-3 shadow-sm">
+                <h2 class="card-header plan-card-header accordion-header" id="headingPlanPull">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanPull" aria-expanded="false" aria-controls="collapsePlanPull">
+                        <i class="bi bi-person-down me-2"></i>Rutina B: Pull (Tras)
+                        <span class="badge bg-info-subtle text-info-emphasis rounded-pill ms-auto me-3">Spate, Biceps, Trapez</span>
+                    </button>
+                </h2>
+                <div id="collapsePlanPull" class="accordion-collapse collapse" aria-labelledby="headingPlanPull" data-bs-parent="#planCardAccordion">
+                    <div class="card-body accordion-body">
+                        <div class="plan-exercise-list">
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Tracțiuni (priză pronată)">
+                                        <span class="exercise-name fw-medium">Tracțiuni (priză pronată) / Tracțiuni la helcometru</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 6-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni (priză pronată)" title="Loghează Pull-up">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> PU
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni la helcometru" title="Loghează Lat Pulldown">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> LPD
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Ramat cu bară din aplecat">
+                                        <span class="exercise-name fw-medium">Ramat cu bară din aplecat / Ramat la cablu din șezut</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                 <div class="exercise-actions btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ramat cu bară din aplecat" title="Loghează Barbell Row">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> BR
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ramat la cablu din șezut" title="Loghează Cable Row">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> CR
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Tracțiuni la față (Face Pull)">
+                                        <span class="exercise-name fw-medium">Tracțiuni la față (Face Pull)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 15-20 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni la față (Face Pull)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Flexii cu bară (dreaptă/EZ)">
+                                        <span class="exercise-name fw-medium">Flexii cu bară (dreaptă/EZ) / Flexii cu gantere</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii cu bară (dreaptă/EZ)" title="Loghează Barbell Curl">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> BC
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii cu gantere (alternativ/simultan)" title="Loghează Dumbbell Curl">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> DC
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Flexii ciocan">
+                                        <span class="exercise-name fw-medium">Flexii ciocan</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii ciocan" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End plan-card Pull -->
+
+            <!-- Rutina C: Legs Card (Collapsible) -->
+            <div class="card plan-card accordion-item mb-3 shadow-sm">
+                <h2 class="card-header plan-card-header accordion-header" id="headingPlanLegs">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanLegs" aria-expanded="false" aria-controls="collapsePlanLegs">
+                       <i class="bi bi-universal-access me-2"></i>Rutina C: Legs (Picioare)
+                       <span class="badge bg-info-subtle text-info-emphasis rounded-pill ms-auto me-3">Cvadricepși, Femurali, Fesieri, Gambe</span>
+                    </button>
+                </h2>
+                <div id="collapsePlanLegs" class="accordion-collapse collapse" aria-labelledby="headingPlanLegs" data-bs-parent="#planCardAccordion">
+                    <div class="card-body accordion-body">
+                        <div class="plan-exercise-list">
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Genuflexiuni cu bară pe spate">
+                                        <span class="exercise-name fw-medium">Genuflexiuni cu bară pe spate</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">4 seturi x 6-10 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Genuflexiuni cu bară pe spate" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Îndreptări românești (RDL)">
+                                        <span class="exercise-name fw-medium">Îndreptări românești (RDL)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Îndreptări românești (RDL)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Presa pentru picioare">
+                                        <span class="exercise-name fw-medium">Presa pentru picioare</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Presa pentru picioare" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Flexii femurale la aparat (șezut)">
+                                        <span class="exercise-name fw-medium">Flexii femurale la aparat (șezut)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii femurale la aparat (șezut)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Extensii pentru cvadriceps">
+                                        <span class="exercise-name fw-medium">Extensii pentru cvadriceps</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii pentru cvadriceps" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Ridicări pe vârfuri din picioare (gambe)">
+                                        <span class="exercise-name fw-medium">Ridicări pe vârfuri din picioare (gambe)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">4 seturi x 15-20 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ridicări pe vârfuri din picioare (gambe)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End plan-card Legs -->
+
+             <!-- Rutina D: Full Body Card (Collapsible) -->
+            <div class="card plan-card accordion-item mb-3 shadow-sm">
+                <h2 class="card-header plan-card-header accordion-header" id="headingPlanFullBody">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanFullBody" aria-expanded="false" aria-controls="collapsePlanFullBody">
+                       <i class="bi bi-body-text me-2"></i>Rutina D: Full Body
+                       <span class="badge bg-info-subtle text-info-emphasis rounded-pill ms-auto me-3">Tot Corpul</span>
+                    </button>
+                </h2>
+                <div id="collapsePlanFullBody" class="accordion-collapse collapse" aria-labelledby="headingPlanFullBody" data-bs-parent="#planCardAccordion">
+                    <div class="card-body accordion-body">
+                         <p class="text-muted small">Antrenament echilibrat pentru toate grupele majore.</p>
+                        <div class="plan-exercise-list">
+                            <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Genuflexiuni cu bară pe spate">
+                                        <span class="exercise-name fw-medium">Genuflexiuni cu bară pe spate</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Genuflexiuni cu bară pe spate" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Împins la piept cu bară">
+                                        <span class="exercise-name fw-medium">Împins la piept cu bară</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins la piept cu bară" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Ramat cu bară din aplecat">
+                                        <span class="exercise-name fw-medium">Ramat cu bară din aplecat</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ramat cu bară din aplecat" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Împins deasupra capului cu bară (Presă militară)">
+                                        <span class="exercise-name fw-medium">Împins deasupra capului cu bară (Presă militară)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins deasupra capului cu bară (Presă militară)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Flexii femurale la aparat (culcat)">
+                                        <span class="exercise-name fw-medium">Flexii femurale la aparat (culcat)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii femurale la aparat (culcat)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Flexii cu gantere (alternativ/simultan)">
+                                        <span class="exercise-name fw-medium">Flexii cu gantere (alternativ/simultan)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii cu gantere (alternativ/simultan)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="plan-exercise-item">
+                                <div class="exercise-details">
+                                    <a href="#" class="exercise-name-link" data-bs-toggle="modal" data-bs-target="#exerciseInfoModal" data-exercise-name="Extensii la cablu (sfoară/bară)">
+                                        <span class="exercise-name fw-medium">Extensii la cablu (sfoară/bară)</span>
+                                    </a>
+                                    <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
+                                </div>
+                                <div class="exercise-actions">
+                                    <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii la cablu (sfoară/bară)" title="Loghează acest exercițiu">
+                                        <i class="bi bi-plus-circle-fill me-1"></i> Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End plan-card Full Body -->
+
+
+            <!-- Create New Plan Button Area -->
+            <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
+                <button class="btn btn-outline-secondary btn-sm disabled" title="Funcționalitate viitoare">
+                    <i class="bi bi-plus-circle"></i> Creează Plan Nou
+                </button>
+                <p class="small text-muted mt-2">(Funcționalitate în dezvoltare)</p>
             </div>
-            <div class="card-body">
-                <!-- Exercise List within the Card -->
-                <div class="plan-exercise-list">
-                    <!-- Exercise Item 1 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Împins la piept cu bară</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 6-10 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins la piept cu bară" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 2 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Împins deasupra capului cu bară (Presă militară)</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins deasupra capului cu bară (Presă militară)" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 3 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Împins la piept înclinat cu gantere</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Împins la piept înclinat cu gantere" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 4 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Ridicări laterale cu gantere</span>
-                            <span class="exercise-sets small text-muted d-block">4 seturi x 12-15 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ridicări laterale cu gantere" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                     <!-- Exercise Item 5 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Extensii la cablu (sfoară/bară)</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii la cablu (sfoară/bară)" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                     <!-- Exercise Item 6 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Extensii deasupra capului (ganteră/bară/cablu)</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii deasupra capului (ganteră/bară/cablu)" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                </div> <!-- End plan-exercise-list -->
-            </div> <!-- End card-body -->
-        </div> <!-- End plan-card A -->
 
-        <!-- Rutina B: Pull & Legs Card -->
-        <div class="card plan-card mb-4 shadow-sm">
-            <div class="card-header plan-card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6 fw-semibold">
-                    <i class="bi bi-universal-access-circle me-2"></i>Rutina B: Pull & Legs (Tras & Picioare)
-                </h5>
-                 <span class="badge bg-info-subtle text-info-emphasis rounded-pill">Spate, Biceps, Picioare</span>
-            </div>
-            <div class="card-body">
-                 <div class="plan-exercise-list">
-                    <!-- Exercise Item 1 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Îndreptări (Convențional) sau Genuflexiuni cu bară pe spate</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 5-8 repetări</span>
-                        </div>
-                        <div class="exercise-actions btn-group btn-group-sm" role="group"> <!-- Group buttons -->
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Îndreptări (Convențional)" title="Loghează Deadlift">
-                                <i class="bi bi-plus-circle-fill me-1"></i> DL
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Genuflexiuni cu bară pe spate" title="Loghează Squat">
-                                <i class="bi bi-plus-circle-fill me-1"></i> SQ
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 2 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Tracțiuni (priză pronată) / Tracțiuni la helcometru</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 8-12 repetări</span>
-                        </div>
-                        <div class="exercise-actions btn-group btn-group-sm" role="group">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni (priză pronată)" title="Loghează Pull-up">
-                                <i class="bi bi-plus-circle-fill me-1"></i> PU
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni la helcometru" title="Loghează Lat Pulldown">
-                                <i class="bi bi-plus-circle-fill me-1"></i> LPD
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 3 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Ramat la cablu din șezut / Ramat cu bară din aplecat</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
-                        </div>
-                         <div class="exercise-actions btn-group btn-group-sm" role="group">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ramat la cablu din șezut" title="Loghează Cable Row">
-                                <i class="bi bi-plus-circle-fill me-1"></i> CR
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Ramat cu bară din aplecat" title="Loghează Barbell Row">
-                                <i class="bi bi-plus-circle-fill me-1"></i> BR
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 4 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Tracțiuni la față (Face Pull)</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 15-20 repetări</span>
-                        </div>
-                        <div class="exercise-actions">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Tracțiuni la față (Face Pull)" title="Loghează acest exercițiu">
-                                <i class="bi bi-plus-circle-fill me-1"></i> Log
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 5 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Presa pentru picioare / Extensii pentru cvadriceps</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
-                        </div>
-                         <div class="exercise-actions btn-group btn-group-sm" role="group">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Presa pentru picioare" title="Loghează Leg Press">
-                                <i class="bi bi-plus-circle-fill me-1"></i> LP
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Extensii pentru cvadriceps" title="Loghează Leg Extension">
-                                <i class="bi bi-plus-circle-fill me-1"></i> LE
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Exercise Item 6 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Flexii femurale la aparat (culcat/șezut)</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 12-15 repetări</span>
-                        </div>
-                         <div class="exercise-actions btn-group btn-group-sm" role="group">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii femurale la aparat (culcat)" title="Loghează Lying Leg Curl">
-                                <i class="bi bi-plus-circle-fill me-1"></i> LLC
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii femurale la aparat (șezut)" title="Loghează Seated Leg Curl">
-                                <i class="bi bi-plus-circle-fill me-1"></i> SLC
-                            </button>
-                         </div>
-                    </div>
-                    <!-- Exercise Item 7 -->
-                    <div class="plan-exercise-item">
-                        <div class="exercise-details">
-                            <span class="exercise-name fw-medium">Flexii cu bară (dreaptă/EZ) / Flexii cu gantere</span>
-                            <span class="exercise-sets small text-muted d-block">3 seturi x 10-15 repetări</span>
-                        </div>
-                        <div class="exercise-actions btn-group btn-group-sm" role="group">
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii cu bară (dreaptă/EZ)" title="Loghează Barbell Curl">
-                                <i class="bi bi-plus-circle-fill me-1"></i> BC
-                            </button>
-                            <button class="btn btn-sm btn-outline-success log-plan-exercise-btn" data-exercise="Flexii cu gantere (alternativ/simultan)" title="Loghează Dumbbell Curl">
-                                <i class="bi bi-plus-circle-fill me-1"></i> DC
-                            </button>
-                        </div>
-                    </div>
-                </div> <!-- End plan-exercise-list -->
-            </div> <!-- End card-body -->
-        </div> <!-- End plan-card B -->
+        </div> <!-- End plan-container -->
+    </div><!-- Sfârșit #planTabContent -->
 
-        <!-- Add more routine cards here if needed -->
-
-        <!-- Create New Plan Button Area -->
-        <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
-            <button class="btn btn-outline-secondary btn-sm disabled" title="Funcționalitate viitoare">
-                <i class="bi bi-plus-circle"></i> Creează Plan Nou
-            </button>
-            <p class="small text-muted mt-2">(Funcționalitate în dezvoltare)</p>
-        </div>
-
-    </div> <!-- End plan-container -->
-</div><!-- Sfârșit #planTabContent -->
 
     <!-- ==================== Tab Content: Setări ==================== -->
     <div id="settingsTabContent" class="tab-content">
@@ -612,6 +801,48 @@
     <button id="planTabBtn" data-target="planTabContent" title="Plan"> <i class="bi bi-calendar-check-fill"></i> <span>Plan</span> </button>
     <button id="settingsTabBtn" data-target="settingsTabContent" title="Setări"> <i class="bi bi-gear-fill"></i> <span>Setări</span> </button>
 </nav>
+
+<!-- ==================== Exercise Info Modal ==================== -->
+<div class="modal fade" id="exerciseInfoModal" tabindex="-1" aria-labelledby="exerciseModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exerciseModalTitle">Detalii Exercițiu</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-md-5 mb-3 mb-md-0 text-center">
+                <img id="exerciseModalImage" src="images/placeholder.png" class="img-fluid rounded exercise-modal-image" alt="Imagine exercițiu">
+               
+            </div>
+            <div class="col-md-7">
+                <h5>Informații Generale</h5>
+                <ul class="list-unstyled exercise-info-list">
+                    <li><strong>Grupă Musculară:</strong> <span id="exerciseModalGroup">-</span></li>
+                    <li><strong>Tip:</strong> <span id="exerciseModalType" class="text-capitalize">-</span></li>
+                    <li><strong>Echipament:</strong> <span id="exerciseModalEquipment" class="text-capitalize">-</span></li>
+                    <li><strong>Dificultate:</strong> <span id="exerciseModalDifficulty" class="text-capitalize">-</span></li>
+                </ul>
+                <hr>
+                <h5>Mod de Execuție</h5>
+                <p id="exerciseModalExecution" class="small">
+                    <!-- Placeholder text - replace with actual instructions if available -->
+                    Consultați un antrenor calificat sau resurse video de încredere pentru a asigura forma corectă.
+                    Mențineți spatele drept, abdomenul încordat și controlați mișcarea pe tot parcursul execuției.
+                    Evitați balansul excesiv și concentrați-vă pe contracția mușchiului vizat.
+                </p>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Închide</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ==================== END Exercise Info Modal ==================== -->
+
 
 <!-- JS Dependencies & App Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
