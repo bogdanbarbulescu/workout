@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
          if (hasRelevantPredefined && hasRelevantCustom) {
             const separator = document.createElement('option');
             separator.disabled = true;
-            separator.textContent = '────────── Custom ──────────';
+            
             // Find the first custom exercise in the *sorted unique* list
             const firstCustomIndexInSorted = uniqueCombinedExercises.findIndex(ex => customExercises.includes(ex.value));
 
