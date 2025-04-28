@@ -5,11 +5,14 @@
     <title>Gym Log Pro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- JS Dependencies -->
+    <!-- JS Dependencies (Load before app.js) -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -47,22 +50,39 @@
                 </div>
                 <div class="col-md-8 col-sm-6">
                     <label for="muscleGroups" class="form-label form-label-sm">Grupe Musculare</label>
+                    <!-- Updated options to match exercises.json muscle_group values -->
                     <select class="form-select form-select-sm" id="muscleGroups" name="muscleGroups" multiple required size="6">
-                        <option value="Piept">Piept</option><option value="Spate">Spate</option><option value="Umeri">Umeri</option><option value="Biceps">Biceps</option><option value="Triceps">Triceps</option><option value="Cvadriceps">Cvadriceps</option><option value="Femurali">Femurali</option><option value="Fesieri">Fesieri</option><option value="Gambe">Gambe</option><option value="Abdomen">Abdomen</option><option value="Antebraț">Antebraț</option><option value="Full Body">Full Body</option><option value="Cardio">Cardio</option>
+                        <option value="Piept">Piept</option>
+                        <option value="Spate">Spate</option>
+                        <option value="Umeri">Umeri</option>
+                        <option value="Trapez">Trapez</option>
+                        <option value="Biceps">Biceps</option>
+                        <option value="Triceps">Triceps</option>
+                        <option value="Coapse - Cvadricepși">Coapse - Cvadricepși</option>
+                        <option value="Coapse - Biceps femural">Coapse - Biceps femural</option>
+                        <option value="Coapse - Aductori">Coapse - Aductori</option>
+                        <option value="Fesieri">Fesieri</option>
+                        <option value="Gambe">Gambe</option>
+                        <option value="Abdomen">Abdomen</option>
+                        <option value="Antebraț">Antebraț</option>
+                        <!-- Add other relevant groups if needed, e.g., Full Body, Cardio -->
+                        <!-- <option value="Full Body">Full Body</option> -->
+                        <!-- <option value="Cardio">Cardio</option> -->
                     </select>
                     <div class="invalid-feedback">Selectați cel puțin o grupă.</div>
                 </div>
                 <div class="col-12">
                     <label for="exercise" class="form-label form-label-sm">Exercițiu</label>
-                    <select class="form-select form-select-sm" id="exercise" name="exercise" required>
-                        <option value="" selected disabled>Alegeți...</option>
+                    <!-- Dropdown is now populated dynamically based on muscle group selection -->
+                    <select class="form-select form-select-sm" id="exercise" name="exercise" required disabled>
+                        <option value="" selected disabled>Selectați o grupă musculară...</option>
                         <!-- Populat din JS -->
                     </select>
                     <div class="invalid-feedback">Exercițiul este obligatoriu.</div>
                 </div>
                 <div class="col-12 mt-2">
                     <label class="form-label form-label-sm fw-bold">Seturi:</label>
-                     <div id="setsWarning" class="alert alert-warning alert-sm py-1 px-2 d-none" style="font-size: 0.8rem;">Introduceți Rep. și Kg valide pentru toate seturile.</div>
+                     <div id="setsWarning" class="alert alert-warning alert-sm py-1 px-2 d-none" style="font-size: 0.8rem;">Introduceți Rep. și Kg valide (>0) pentru toate seturile.</div>
                     <div id="setsContainer" class="mb-2">
                         <!-- Set rows added by JS -->
                     </div>
@@ -82,9 +102,9 @@
 
     <!-- ==================== Tab Content: Dashboard ==================== -->
     <div id="dashboardTabContent" class="tab-content">
-        <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
-             <h1 class="display-6 mb-0">Dashboard</h1>
-             <select class="form-select form-select-sm w-auto" id="dashboardPeriodSelect">
+        <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+             <h1 class="display-6 mb-0 fs-3">Dashboard</h1>
+             <select class="form-select form-select-sm w-auto" id="dashboardPeriodSelect" aria-label="Selectează perioada pentru dashboard">
                  <option value="last7days" selected>Ultimele 7 zile</option>
                  <option value="last30days">Ultimele 30 zile</option>
                  <option value="allTime">Tot timpul</option>
@@ -113,31 +133,30 @@
              </div>
          </div>
 
-        <!-- Widget Row 1 (Focus Removed) -->
+        <!-- Widget Row 1 -->
         <div class="row gx-3 gy-3 mt-1">
-            <!-- Focus Widget Removed -->
-            <div class="col-lg-6 col-md-6"> <!-- Adjusted width -->
-                <div class="dashboard-section h-100">
-                    <h3 class="fs-6">Zona PR Recente! <i class="bi bi-star-fill text-warning"></i> <small>(Ultimele 30 zile)</small></h3>
-                    <div id="newPrZoneList" class="pr-zone-list list-group list-group-flush">
-                        <div class="list-group-item text-muted small text-center">Verificare recorduri...</div>
+            <div class="col-lg-6 col-md-6">
+                <div class="dashboard-section h-100 d-flex flex-column">
+                    <h3 class="fs-6 mb-2">Zona PR Recente <i class="bi bi-star-fill text-warning"></i> <small>(Ultimele 30 zile)</small></h3>
+                    <div id="newPrZoneList" class="pr-zone-list list-group list-group-flush flex-grow-1">
+                        <!-- Populated by JS -->
                     </div>
-                    <p id="noNewPrMessage" class="text-center text-muted small mt-2 d-none">Niciun record personal în ultima lună.</p>
+                    <p id="noNewPrMessage" class="text-center text-muted small mt-2 mb-0 d-none">Niciun record personal în ultima lună.</p>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6"> <!-- Adjusted width -->
-                <div class="dashboard-section h-100">
-                    <h3 class="fs-6">Sesiuni Recente <small>(Ultimele 5 zile)</small></h3>
-                    <ul id="recentSessionsList" class="list-group list-group-flush list-group-sm">
-                         <li class="list-group-item text-muted small">Se încarcă sesiunile...</li>
+            <div class="col-lg-6 col-md-6">
+                <div class="dashboard-section h-100 d-flex flex-column">
+                    <h3 class="fs-6 mb-2">Sesiuni Recente <small>(Ultimele 5 zile)</small></h3>
+                    <ul id="recentSessionsList" class="list-group list-group-flush list-group-sm flex-grow-1">
+                         <!-- Populated by JS -->
                     </ul>
-                     <p id="noRecentSessionsMessage" class="text-center text-muted small mt-2 d-none">Nu există sesiuni recente.</p>
+                     <p id="noRecentSessionsMessage" class="text-center text-muted small mt-2 mb-0 d-none">Nu există sesiuni recente.</p>
                 </div>
             </div>
         </div>
 
         <!-- Widget Row 2 (Charts) -->
-        <div class="row gx-3 gy-3 mt-1">
+        <div class="row gx-3 gy-3 mt-3"> <!-- Increased top margin -->
             <div class="col-lg-6">
                 <div class="dashboard-section chart-section h-100">
                     <h3 class="chart-title fs-6">Progres Greutate Corporală (kg)</h3>
@@ -152,7 +171,7 @@
                     <div id="consistencyHeatmapContainer" class="d-flex justify-content-center align-items-center mb-2" style="min-height: 100px;">
                         <p class="text-center text-muted small">Se încarcă heatmap...</p>
                     </div>
-                    <div class="heatmap-legend d-flex justify-content-center align-items-center small text-muted gap-1">
+                    <div class="heatmap-legend d-flex justify-content-center align-items-center small text-muted gap-1 flex-wrap">
                         <span>Pauză</span>
                         <span class="legend-color" style="background-color: var(--heatmap-color-0);"></span>
                         <span class="legend-color" style="background-color: var(--heatmap-color-1);"></span>
@@ -170,7 +189,7 @@
          <div class="dashboard-section mt-3">
             <div class="row gx-3 gy-3">
                 <div class="col-lg-6">
-                    <div class="chart-section mb-lg-0">
+                    <div class="chart-section mb-lg-0 h-100"> <!-- Added h-100 -->
                         <h3 class="chart-title fs-6">Grupe Musculare Lucrate <small>(Top 10 - Perioada)</small></h3>
                         <div class="chart-container" id="musclesWorkedChartContainer">
                             <svg id="d3MusclesChart" width="100%" height="300"></svg>
@@ -179,28 +198,30 @@
                     </div>
                 </div>
                  <div class="col-lg-6">
-                     <div class="chart-section mb-lg-0">
+                     <div class="chart-section mb-lg-0 h-100"> <!-- Added h-100 -->
                          <h3 class="chart-title fs-6">Volum Total Zilnic <small>(Perioada)</small></h3>
                          <svg id="d3VolumeChartDash" width="100%" height="300"></svg>
                      </div>
                  </div>
                  <div class="col-lg-6">
-                     <div class="chart-section mb-0">
+                     <div class="chart-section mb-0 h-100"> <!-- Added h-100 -->
                          <h3 class="chart-title fs-6">Progres Exercițiu <small>(Tot Timpul)</small></h3>
                          <div class="mb-3 px-2">
-                             <select id="progressExerciseSelectDash" class="form-select form-select-sm">
+                             <select id="progressExerciseSelectDash" class="form-select form-select-sm" aria-label="Selectează exercițiu pentru grafic progres">
                                  <option value="">Alege un exercițiu...</option>
+                                 <!-- Populated by JS -->
                              </select>
                          </div>
                          <svg id="d3ProgressChartDash" width="100%" height="255"></svg>
                      </div>
                  </div>
                  <div class="col-lg-6">
-                    <div class="dashboard-section mb-0 h-100">
-                        <h3 class="fs-6">Recorduri Personale Istoric <small>(Top 5 după e1RM)</small></h3>
-                        <ul id="personalRecordsList" class="list-group list-group-flush">
-                            <li class="list-group-item text-muted d-none" id="noPrMessage">Nu există recorduri înregistrate.</li>
+                    <div class="dashboard-section mb-0 h-100 d-flex flex-column"> <!-- Added h-100 and flex -->
+                        <h3 class="fs-6 mb-2">Recorduri Personale Istoric <small>(Top 5 după e1RM)</small></h3>
+                        <ul id="personalRecordsList" class="list-group list-group-flush flex-grow-1">
+                            <!-- Populated by JS -->
                         </ul>
+                         <p id="noPrMessage" class="text-center text-muted small mt-2 mb-0 d-none">Nu există recorduri înregistrate.</p>
                     </div>
                  </div>
              </div>
@@ -214,19 +235,20 @@
         <!-- Controale Filtrare -->
          <div class="form-section mb-3">
              <h2 class="fs-5 mb-3">Filtrează Jurnal</h2>
-             <div class="table-controls row g-2 align-items-center">
+             <div class="table-controls row g-2 align-items-end"> <!-- Changed align-items-center to align-items-end -->
                  <div class="col-lg-3 col-md-6 col-sm-12">
-                     <label for="filterDate" class="form-label form-label-sm visually-hidden">Filtrează după dată</label>
+                     <label for="filterDate" class="form-label form-label-sm">După dată</label>
                      <input type="date" id="filterDate" class="form-control form-control-sm" title="Filtrează după dată">
                  </div>
                  <div class="col-lg-3 col-md-6 col-sm-12">
-                     <label for="filterExercise" class="form-label form-label-sm visually-hidden">Filtrează exercițiu</label>
-                     <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Filtrează exercițiu...">
+                     <label for="filterExercise" class="form-label form-label-sm">După exercițiu</label>
+                     <input type="text" id="filterExercise" class="form-control form-control-sm" placeholder="Nume exercițiu...">
                  </div>
                  <div class="col-lg-4 col-md-6 col-sm-12">
-                     <label for="filterMuscleGroup" class="form-label form-label-sm visually-hidden">Filtrează grupă musculară</label>
-                     <select id="filterMuscleGroup" class="form-select form-select-sm">
-                         <option value="">Filtrează grupă...</option>
+                     <label for="filterMuscleGroup" class="form-label form-label-sm">După grupă musculară</label>
+                     <select id="filterMuscleGroup" class="form-select form-select-sm" aria-label="Filtrează după grupă musculară">
+                         <option value="">Toate grupele...</option>
+                         <!-- Populated by JS based on logged data -->
                      </select>
                  </div>
                  <div class="col-lg-2 col-md-6 col-sm-12 text-lg-end">
@@ -236,16 +258,16 @@
          </div>
 
          <!-- Container pentru Jurnalul Grupat -->
-         <div id="workoutLogContainer" class="workout-log-grouped mb-3"> <!-- Added mb-3 -->
+         <div id="workoutLogContainer" class="workout-log-grouped mb-3">
              <!-- Populat din JS -->
              <div id="noDataMessage" class="form-section text-center text-muted d-none py-5">
                  <i class="bi bi-journal-x fs-1 mb-3"></i>
-                 <p class="mb-0">Nu există antrenamente care să corespundă filtrelor selectate.</p>
-                 <p class="small">Încearcă să ajustezi filtrele sau <a href="#" onclick="document.getElementById('logTabBtn').click(); return false;">adaugă un antrenament nou</a>.</p>
+                 <p class="mb-1">Nu există antrenamente care să corespundă filtrelor selectate.</p>
+                 <p class="small mb-0">Încearcă să ajustezi filtrele sau <a href="#" onclick="document.getElementById('logTabBtn').click(); return false;">adaugă un antrenament nou</a>.</p>
              </div>
          </div>
 
-         <!-- NEW: Pagination Controls -->
+         <!-- Pagination Controls -->
          <div id="paginationControls" class="d-flex justify-content-center align-items-center mt-3 pagination-controls">
              <!-- Populat din JS -->
          </div>
@@ -268,29 +290,30 @@
                     <div class="accordion-body">
                         <p class="text-muted small">Focus pe Piept, Umeri, Triceps.</p>
                         <ul class="list-group list-group-flush">
+                            <!-- Ensure data-exercise matches name_ro from exercises.json -->
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Bench Press (Bară):</strong> 3 seturi x 6-10 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Bench Press (Bară - Împins la piept)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Împins la piept cu bară:</strong> 3 seturi x 6-10 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Împins la piept cu bară" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Overhead Press (Bară/Ganteră):</strong> 3 seturi x 8-12 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Overhead Press (Bară - Presă militară)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Împins deasupra capului cu bară (Presă militară):</strong> 3 seturi x 8-12 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Împins deasupra capului cu bară (Presă militară)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Incline Dumbbell Press (Ganteră):</strong> 3 seturi x 10-15 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Incline Bench Press (Ganteră)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Împins la piept înclinat cu gantere:</strong> 3 seturi x 10-15 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Împins la piept înclinat cu gantere" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Lateral Raise (Ganteră/Cablu):</strong> 4 seturi x 12-15 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Dumbbell Lateral Raise (Ganteră)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Ridicări laterale cu gantere:</strong> 4 seturi x 12-15 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Ridicări laterale cu gantere" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Triceps Pushdown (Cablu):</strong> 3 seturi x 10-15 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Triceps Pushdown (Cablu)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Extensii la cablu (sfoară/bară):</strong> 3 seturi x 10-15 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Extensii la cablu (sfoară/bară)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Overhead Triceps Extension (Cablu/Ganteră):</strong> 3 seturi x 12-15 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Overhead Triceps Extension (Ganteră/Bară/Cablu)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Extensii deasupra capului (ganteră/bară/cablu):</strong> 3 seturi x 12-15 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Extensii deasupra capului (ganteră/bară/cablu)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                         </ul>
                     </div>
@@ -309,46 +332,49 @@
                          <p class="text-muted small">Focus pe Spate, Biceps, Picioare.</p>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Deadlift sau Squat:</strong> 3 seturi x 5-8 repetări</span>
+                                <span><strong>Îndreptări (Convențional) sau Genuflexiuni cu bară pe spate:</strong> 3 seturi x 5-8 repetări</span>
                                 <div> <!-- Wrap buttons -->
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Deadlift (Îndreptări - Conventional)" title="Loghează Deadlift"><i class="bi bi-pencil-square"></i> DL</button>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Squat (Bară - Genuflexiune)" title="Loghează Squat"><i class="bi bi-pencil-square"></i> SQ</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Îndreptări (Convențional)" title="Loghează Deadlift"><i class="bi bi-pencil-square"></i> DL</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Genuflexiuni cu bară pe spate" title="Loghează Squat"><i class="bi bi-pencil-square"></i> SQ</button>
                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Pull-up / Lat Pulldown:</strong> 3 seturi x 8-12 repetări</span>
+                                <span><strong>Tracțiuni (priză pronată) / Tracțiuni la helcometru:</strong> 3 seturi x 8-12 repetări</span>
                                 <div>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Pull-up (Tracțiuni priză pronată)" title="Loghează Pull-up"><i class="bi bi-pencil-square"></i> PU</button>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Lat Pulldown (Aparat helcometru - Priză largă/îngustă/neutră)" title="Loghează Lat Pulldown"><i class="bi bi-pencil-square"></i> LPD</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Tracțiuni (priză pronată)" title="Loghează Pull-up"><i class="bi bi-pencil-square"></i> PU</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Tracțiuni la helcometru" title="Loghează Lat Pulldown"><i class="bi bi-pencil-square"></i> LPD</button>
                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Seated Cable Row / Barbell Row:</strong> 3 seturi x 10-15 repetări</span>
+                                <span><strong>Ramat la cablu din șezut / Ramat cu bară din aplecat:</strong> 3 seturi x 10-15 repetări</span>
                                  <div>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Cable Row (Seated - Cablu)" title="Loghează Cable Row"><i class="bi bi-pencil-square"></i> CR</button>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Barbell Row (Aplecat)" title="Loghează Barbell Row"><i class="bi bi-pencil-square"></i> BR</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Ramat la cablu din șezut" title="Loghează Cable Row"><i class="bi bi-pencil-square"></i> CR</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Ramat cu bară din aplecat" title="Loghează Barbell Row"><i class="bi bi-pencil-square"></i> BR</button>
                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Face Pull (Cablu):</strong> 3 seturi x 15-20 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Face Pull (Cablu)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Tracțiuni la față (Face Pull):</strong> 3 seturi x 15-20 repetări</span>
+                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Tracțiuni la față (Face Pull)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Leg Press / Leg Extension:</strong> 3 seturi x 12-15 repetări</span>
+                                <span><strong>Presa pentru picioare / Extensii pentru cvadriceps:</strong> 3 seturi x 12-15 repetări</span>
                                  <div>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Leg Press (Aparat)" title="Loghează Leg Press"><i class="bi bi-pencil-square"></i> LP</button>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Leg Extension (Aparat)" title="Loghează Leg Extension"><i class="bi bi-pencil-square"></i> LE</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Presa pentru picioare" title="Loghează Leg Press"><i class="bi bi-pencil-square"></i> LP</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Extensii pentru cvadriceps" title="Loghează Leg Extension"><i class="bi bi-pencil-square"></i> LE</button>
                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Leg Curl (Hamstring):</strong> 3 seturi x 12-15 repetări</span>
-                                <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Leg Curl (Aparat - Culcat/Șezând/Stând)" title="Loghează acest exercițiu"><i class="bi bi-pencil-square"></i> Log</button>
+                                <span><strong>Flexii femurale la aparat (culcat/șezut):</strong> 3 seturi x 12-15 repetări</span>
+                                 <div>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Flexii femurale la aparat (culcat)" title="Loghează Lying Leg Curl"><i class="bi bi-pencil-square"></i> LLC</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Flexii femurale la aparat (șezut)" title="Loghează Seated Leg Curl"><i class="bi bi-pencil-square"></i> SLC</button>
+                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>Barbell Curl / Dumbbell Curl:</strong> 3 seturi x 10-15 repetări</span>
+                                <span><strong>Flexii cu bară (dreaptă/EZ) / Flexii cu gantere:</strong> 3 seturi x 10-15 repetări</span>
                                 <div>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Barbell Curl (Bară dreaptă/EZ)" title="Loghează Barbell Curl"><i class="bi bi-pencil-square"></i> BC</button>
-                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Bicep Curl (Ganteră - Alternativ/Simultan)" title="Loghează Dumbbell Curl"><i class="bi bi-pencil-square"></i> DC</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1 me-1" data-exercise="Flexii cu bară (dreaptă/EZ)" title="Loghează Barbell Curl"><i class="bi bi-pencil-square"></i> BC</button>
+                                    <button class="btn btn-sm btn-outline-primary log-plan-exercise-btn py-0 px-1" data-exercise="Flexii cu gantere (alternativ/simultan)" title="Loghează Dumbbell Curl"><i class="bi bi-pencil-square"></i> DC</button>
                                 </div>
                             </li>
                         </ul>
@@ -356,7 +382,6 @@
                 </div>
             </div>
              <!-- Add more routines here if needed -->
-             <!-- TODO: Add functionality to create/edit custom plans -->
              <div class="text-center mt-4">
                  <button class="btn btn-secondary btn-sm disabled" title="Funcționalitate viitoare"><i class="bi bi-plus-circle"></i> Creează Plan Nou</button>
              </div>
@@ -371,7 +396,7 @@
          <div class="form-section">
              <h2 class="mb-3 fs-5">Gestionează Lista de Exerciții</h2>
              <div class="mb-3">
-                 <label for="newExerciseNameSettings" class="form-label form-label-sm">Adaugă exercițiu nou:</label>
+                 <label for="newExerciseNameSettings" class="form-label form-label-sm">Adaugă exercițiu custom:</label>
                  <div class="input-group input-group-sm">
                      <input type="text" class="form-control" id="newExerciseNameSettings" placeholder="Nume exercițiu nou">
                      <button class="btn btn-success" type="button" id="addNewExerciseBtnSettings"><i class="bi bi-plus-circle-fill"></i> Adaugă</button>
@@ -381,6 +406,7 @@
                  <label class="form-label form-label-sm">Exerciții adăugate de tine:</label>
                  <ul id="existingExercisesListSettings" class="list-group list-group-flush list-group-sm settings-list">
                      <li class="list-group-item text-muted">Nu ai adăugat exerciții custom.</li>
+                     <!-- Populated by JS -->
                  </ul>
              </div>
          </div>
@@ -397,7 +423,7 @@
                 <div class="col-sm-4">
                     <label for="bodyweightValue" class="form-label form-label-sm">Greutate (kg)</label>
                     <input type="number" step="0.1" min="0" class="form-control form-control-sm" id="bodyweightValue" placeholder="ex: 75.5" required>
-                    <div class="invalid-feedback">Greutatea este obligatorie.</div>
+                    <div class="invalid-feedback">Greutatea este obligatorie (>0).</div>
                 </div>
                 <div class="col-sm-3 align-self-end">
                     <button type="submit" class="btn btn-primary btn-sm w-100" id="saveBodyweightBtn"><i class="bi bi-save"></i> Salvează</button>
@@ -405,9 +431,10 @@
             </form>
             <hr class="my-3">
             <div>
-                <label class="form-label form-label-sm">Ultimele înregistrări:</label>
+                <label class="form-label form-label-sm">Ultimele înregistrări (max 10):</label>
                 <ul id="bodyweightLogList" class="list-group list-group-flush list-group-sm settings-list">
                     <li class="list-group-item text-muted">Nu există înregistrări de greutate.</li>
+                    <!-- Populated by JS -->
                 </ul>
             </div>
          </div>
@@ -417,7 +444,7 @@
              <h2 class="mb-3 fs-5">Gestionare Date Aplicație</h2>
              <div class="mb-4">
                  <h3 class="fs-6 mb-2">Backup & Restaurare</h3>
-                 <p class="form-text mb-2" style="font-size: 0.85rem;">Salvează (JSON) sau încarcă toate datele aplicației (antrenamente, exerciții custom, recorduri, greutate corporală).</p>
+                 <p class="form-text mb-2" style="font-size: 0.85rem;">Salvează (JSON) sau încarcă toate datele aplicației (antrenamente, exerciții custom, recorduri, greutate corporală). Datele sunt stocate doar local în browser.</p>
                  <div class="d-flex gap-2 flex-wrap">
                      <button class="btn btn-info btn-sm" id="backupDataBtnSettings"><i class="bi bi-download"></i> Descarcă Backup</button>
                      <label for="restoreFileSettings" class="btn btn-warning btn-sm custom-file-upload"><i class="bi bi-upload"></i> Încarcă Backup...</label>
@@ -427,7 +454,7 @@
              <div>
                  <h3 class="fs-6 mb-2">Export Jurnal Antrenamente</h3>
                  <p class="form-text mb-2" style="font-size: 0.85rem;">Descarcă jurnalul de antrenamente într-un format specific.</p>
-                 <div class="btn-group btn-group-sm" role="group">
+                 <div class="btn-group btn-group-sm" role="group" aria-label="Butoane export date">
                      <button id="exportCSVSettings" class="btn btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</button>
                      <button id="exportTXTSettings" class="btn btn-outline-secondary"><i class="bi bi-file-earmark-text"></i> Export TXT</button>
                      <button id="exportPDFSettings" class="btn btn-outline-danger"><i class="bi bi-file-earmark-pdf"></i> Export PDF</button>
@@ -449,8 +476,8 @@
 </nav>
 
 <!-- JS Dependencies & App Script -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="app.js"></script> <!-- Load your app logic last -->
 
 </body>
 </html>

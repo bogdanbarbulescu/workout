@@ -1,4 +1,4 @@
-// app.js - Gym Log Pro Logic (v4 - Pagination, Plan Buttons, Bodyweight Active)
+// app.js - Gym Log Pro Logic (v5 - Structured Exercises, Filtered Dropdown)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Constants and State ---
@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const HISTORY_ITEMS_PER_PAGE = 15; // Items per page for workout history
 
     let workouts = loadData(WORKOUT_STORAGE_KEY, []);
-    let customExercises = loadData(EXERCISE_STORAGE_KEY, []);
+    let customExercises = loadData(EXERCISE_STORAGE_KEY, []); // Still stores strings
     let personalRecords = loadData(PR_STORAGE_KEY, {});
     let bodyWeightLog = loadData(BODYWEIGHT_STORAGE_KEY, []);
 
-    let predefinedExercises = [];
+    let predefinedExercises = []; // Will hold the array of exercise OBJECTS
     let editingId = null;
     let filterDebounceTimer = null;
     let historyCurrentPage = 1; // State for pagination
@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const workoutForm = document.getElementById('workoutForm');
     const formTitle = document.getElementById('formTitle');
     const dateInput = document.getElementById('date');
-    const muscleGroupsSelect = document.getElementById('muscleGroups');
-    const exerciseSelect = document.getElementById('exercise');
+    const muscleGroupsSelect = document.getElementById('muscleGroups'); // *** Key element for filtering
+    const exerciseSelect = document.getElementById('exercise');         // *** Target dropdown
     const setsContainer = document.getElementById('setsContainer');
     const addSetBtn = document.getElementById('addSetBtn');
     const notesInput = document.getElementById('notes');
@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const weeklyAvgReps = document.getElementById('weeklyAvgReps');
     const weeklyAvgRepsPerSet = document.getElementById('weeklyAvgRepsPerSet');
     const weeklyAvgVolume = document.getElementById('weeklyAvgVolume');
-    // const focusWidgetContent = document.querySelector('.focus-widget-content'); // REMOVED
     const newPrZoneList = document.getElementById('newPrZoneList');
     const noNewPrMessage = document.getElementById('noNewPrMessage');
     const recentSessionsList = document.getElementById('recentSessionsList');
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const noMuscleDataMessage = document.getElementById('noMuscleDataMessage');
     const d3VolumeChartDashSvg = document.getElementById('d3VolumeChartDash');
     const d3ProgressChartDashSvg = document.getElementById('d3ProgressChartDash');
-    const progressExerciseSelectDash = document.getElementById('progressExerciseSelectDash');
+    const progressExerciseSelectDash = document.getElementById('progressExerciseSelectDash'); // Dashboard dropdown
     const personalRecordsList = document.getElementById('personalRecordsList');
     const noPrMessage = document.getElementById('noPrMessage');
 
@@ -103,15 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     async function initializeApp() {
-        showTab('logTabContent'); // Start on Log tab
+        showTab('logTabContent');
         setDefaultDate();
         setDefaultBodyweightDate();
-        await loadPredefinedExercises();
-        populateExerciseDropdown();
+        await loadPredefinedExercises(); // Load the new structure
+        resetExerciseDropdown(); // Set initial state for exercise dropdown
         renderCustomExercisesList();
         renderBodyWeightLogList();
         setupEventListeners();
-        addSetRow();
+        addSetRow(); // Add initial set row
+        populateProgressExerciseDropdownDash(); // Populate dashboard dropdown separately
     }
 
     // --- Data Handling ---
@@ -123,6 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parsed = JSON.parse(data);
                 return Array.isArray(parsed) ? parsed.sort((a, b) => a.date.localeCompare(b.date)) : defaultValue;
             }
+            // Ensure custom exercises are loaded as an array
+            if (key === EXERCISE_STORAGE_KEY && data) {
+                 const parsed = JSON.parse(data);
+                 return Array.isArray(parsed) ? parsed : defaultValue;
+            }
             return data ? JSON.parse(data) : defaultValue;
         } catch (e) {
             console.error(`Error loading data for key "${key}":`, e);
@@ -132,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveData(key, data) {
-        try {
+         try {
             // Ensure bodyweight log remains sorted when saving
             if (key === BODYWEIGHT_STORAGE_KEY && Array.isArray(data)) {
                 data.sort((a, b) => a.date.localeCompare(b.date));
@@ -148,12 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('exercises.json');
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            predefinedExercises = await response.json();
-            predefinedExercises.sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
+            predefinedExercises = await response.json(); // Now loads array of objects
+            // Sort by Romanian name
+            predefinedExercises.sort((a, b) => (a.name_ro || a.name).localeCompare(b.name_ro || b.name, 'ro', { sensitivity: 'base' }));
+            console.log("Predefined exercises loaded:", predefinedExercises.length);
         } catch (error) {
             console.error('Error loading predefined exercises:', error);
             showToast('Eroare Încărcare Exerciții', 'Nu s-a putut încărca lista de exerciții predefinite.', 'warning');
-            predefinedExercises = ["Bench Press", "Squat", "Deadlift"];
+            predefinedExercises = []; // Default to empty if load fails
         }
     }
 
@@ -174,27 +181,108 @@ document.addEventListener('DOMContentLoaded', () => {
         if (bodyweightDateInput) bodyweightDateInput.value = new Date().toISOString().split('T')[0];
     }
 
-    function populateExerciseDropdown() {
-        const allExercises = [...new Set([...predefinedExercises, ...customExercises])].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
-        exerciseSelect.innerHTML = '<option value="" selected disabled>Alegeți...</option>';
-        allExercises.forEach(ex => {
+    // NEW: Function to set the initial/disabled state of the exercise dropdown
+    function resetExerciseDropdown() {
+        exerciseSelect.innerHTML = '<option value="" selected disabled>Selectați o grupă musculară...</option>';
+        exerciseSelect.disabled = true;
+        // Ensure validation state is also reset if using Bootstrap validation classes
+        exerciseSelect.classList.remove('is-invalid', 'is-valid');
+    }
+
+    // MODIFIED: Renamed and changed logic for the main exercise dropdown
+    function updateExerciseDropdown() {
+        const selectedMuscleGroups = Array.from(muscleGroupsSelect.selectedOptions).map(option => option.value);
+        const previouslySelectedExercise = exerciseSelect.value; // Store previous selection
+
+        exerciseSelect.innerHTML = ''; // Clear existing options
+
+        if (selectedMuscleGroups.length === 0) {
+            resetExerciseDropdown(); // Disable if no group is selected
+            return;
+        }
+
+        exerciseSelect.disabled = false;
+        exerciseSelect.innerHTML = '<option value="" selected disabled>Alegeți exercițiul...</option>'; // Add default prompt
+
+        // Filter predefined exercises based on selected muscle groups
+        const filteredPredefined = predefinedExercises.filter(ex =>
+            selectedMuscleGroups.includes(ex.muscle_group)
+        );
+
+        // Combine filtered predefined and all custom exercises
+        // Create a structure consistent for sorting/display
+        const combinedExercises = [
+            ...filteredPredefined.map(ex => ({ name: ex.name_ro, value: ex.name_ro })), // Use name_ro for both display and value
+            ...customExercises.map(ex => ({ name: ex, value: ex })) // Custom exercises are just strings
+        ];
+
+        // Remove duplicates that might arise if a custom exercise has the same name as a predefined one
+        const uniqueExerciseMap = new Map();
+        combinedExercises.forEach(ex => {
+            if (!uniqueExerciseMap.has(ex.value)) {
+                uniqueExerciseMap.set(ex.value, ex);
+            }
+        });
+        const uniqueCombinedExercises = Array.from(uniqueExerciseMap.values());
+
+
+        // Sort the unique combined list alphabetically by display name
+        uniqueCombinedExercises.sort((a, b) => a.name.localeCompare(b.name, 'ro', { sensitivity: 'base' }));
+
+        // Populate the dropdown
+        uniqueCombinedExercises.forEach(ex => {
             const option = document.createElement('option');
-            option.value = ex;
-            option.textContent = ex;
+            option.value = ex.value; // Store the value (Romanian name or custom string)
+            option.textContent = ex.name; // Display name
             exerciseSelect.appendChild(option);
         });
 
-        const uniqueExercisesInLog = [...new Set(workouts.map(w => w.exercise))].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
-        progressExerciseSelectDash.innerHTML = '<option value="">Alege un exercițiu...</option>';
-        uniqueExercisesInLog.forEach(ex => {
-             const option = document.createElement('option');
-             option.value = ex;
-             option.textContent = ex;
-             progressExerciseSelectDash.appendChild(option);
-         });
+         // Add a separator if both predefined and custom exist AND are relevant to selection
+         const hasRelevantPredefined = filteredPredefined.length > 0;
+         const hasRelevantCustom = customExercises.length > 0; // Always include custom for now
+
+         if (hasRelevantPredefined && hasRelevantCustom) {
+            const separator = document.createElement('option');
+            separator.disabled = true;
+            separator.textContent = '────────── Custom ──────────';
+            // Find the first custom exercise in the *sorted unique* list
+            const firstCustomIndexInSorted = uniqueCombinedExercises.findIndex(ex => customExercises.includes(ex.value));
+
+            if (firstCustomIndexInSorted !== -1) {
+                 // Find the corresponding option element in the dropdown
+                 const firstCustomOption = exerciseSelect.querySelector(`option[value="${CSS.escape(uniqueCombinedExercises[firstCustomIndexInSorted].value)}"]`);
+                 if (firstCustomOption) {
+                     exerciseSelect.insertBefore(separator, firstCustomOption);
+                 }
+            }
+         }
+
+         // Try to re-select the previously selected exercise if it's still in the list
+         if (previouslySelectedExercise && exerciseSelect.querySelector(`option[value="${CSS.escape(previouslySelectedExercise)}"]`)) {
+             exerciseSelect.value = previouslySelectedExercise;
+         }
+
+         // Reset validation state after update
+         exerciseSelect.classList.remove('is-invalid', 'is-valid');
     }
 
+    // NEW: Separate function to populate the dashboard's exercise dropdown
+    function populateProgressExerciseDropdownDash() {
+         const uniqueExercisesInLog = [...new Set(workouts.map(w => w.exercise))]
+             .sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
+
+         progressExerciseSelectDash.innerHTML = '<option value="">Alege un exercițiu...</option>';
+         uniqueExercisesInLog.forEach(ex => {
+              const option = document.createElement('option');
+              option.value = ex; // Value is the exercise name as logged
+              option.textContent = ex; // Display name is the same
+              progressExerciseSelectDash.appendChild(option);
+          });
+     }
+
+
     function populateMuscleGroupFilter() {
+        // Keep existing populateMuscleGroupFilter function - it works based on logged data
         const muscleGroups = [...new Set(workouts.flatMap(w => w.muscleGroups))].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
         filterMuscleGroupSelect.innerHTML = '<option value="">Filtrează grupă...</option>';
         muscleGroups.forEach(group => {
@@ -210,9 +298,9 @@ document.addEventListener('DOMContentLoaded', () => {
         workoutForm.classList.remove('was-validated');
         setDefaultDate();
         Array.from(muscleGroupsSelect.options).forEach(option => option.selected = false);
-        exerciseSelect.value = "";
+        resetExerciseDropdown(); // Reset exercise dropdown to initial disabled state
         setsContainer.innerHTML = '';
-        addSetRow();
+        addSetRow(); // Add the first set row back
         notesInput.value = '';
         editingId = null;
         editIdInput.value = '';
@@ -223,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addSetRow(reps = '', weight = '') {
+        // Keep existing addSetRow function
         const setDiv = document.createElement('div');
         setDiv.classList.add('row', 'g-2', 'mb-2', 'set-row', 'align-items-center');
         setDiv.innerHTML = `
@@ -252,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
      function validateSets() {
+        // Keep existing validateSets function
          const setRows = setsContainer.querySelectorAll('.set-row');
          let isValid = true;
          if (setRows.length === 0) isValid = false;
@@ -269,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
      }
 
     function getSetsData() {
+        // Keep existing getSetsData function
         const sets = [];
         setsContainer.querySelectorAll('.set-row').forEach(row => {
             const reps = row.querySelector('.reps-input').value;
@@ -280,8 +371,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return sets;
     }
 
-    // --- Workout Log Rendering (History Tab) with Pagination ---
+    // --- Workout Log Rendering (History Tab) ---
     function renderWorkoutLog() {
+        // Keep existing renderWorkoutLog function, including pagination logic
+        // No changes needed here as it reads from saved `workouts` data.
         workoutLogContainer.innerHTML = '<div class="text-center p-3"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Se încarcă jurnalul...</div>';
         paginationControlsContainer.innerHTML = ''; // Clear pagination while loading
 
@@ -290,7 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Calculate pagination details
         const totalItems = filteredWorkouts.length;
         const totalPages = Math.ceil(totalItems / HISTORY_ITEMS_PER_PAGE);
-        historyCurrentPage = Math.max(1, Math.min(historyCurrentPage, totalPages)); // Ensure current page is valid
+        historyCurrentPage = Math.max(1, Math.min(historyCurrentPage, totalPages || 1)); // Ensure current page is valid (handle totalPages=0)
+
 
         const startIndex = (historyCurrentPage - 1) * HISTORY_ITEMS_PER_PAGE;
         const endIndex = startIndex + HISTORY_ITEMS_PER_PAGE;
@@ -302,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (totalItems === 0) {
                 noDataMessage.classList.remove('d-none');
+                paginationControlsContainer.innerHTML = ''; // Ensure no controls if no data
                 return;
             }
             noDataMessage.classList.add('d-none');
@@ -378,6 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render Pagination Controls
     function renderPaginationControls(totalPages, totalItems) {
+        // Keep existing renderPaginationControls function
         paginationControlsContainer.innerHTML = ''; // Clear previous
 
         if (totalPages <= 1) {
@@ -407,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Pagination Button Clicks (Delegated)
     function handlePaginationClick(event) {
+        // Keep existing handlePaginationClick function
         const button = event.target.closest('button');
         if (!button) return; // Click wasn't on a button
 
@@ -426,9 +523,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     // Helper for comparison indicators
     function generateComparisonHTML(current, previous, type) {
+        // Keep existing generateComparisonHTML function
         let comparisonHTML = `<span class="comparison-indicator ${type}-comparison text-muted" title="vs ${previous?.toFixed(type === 'volume' ? 0 : 1) ?? 'N/A'}"><i class="bi bi-dash-lg"></i></span>`;
         if (previous === null || previous === undefined) return comparisonHTML;
         const unit = type === 'e1rm' ? ' kg' : '';
@@ -447,6 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper to find previous workout
     function findPreviousWorkout(currentWorkout, sortedWorkouts) {
+        // Keep existing findPreviousWorkout function
         const currentIndex = sortedWorkouts.findIndex(w => w.id === currentWorkout.id);
         if (currentIndex === -1) return null;
         for (let i = currentIndex + 1; i < sortedWorkouts.length; i++) {
@@ -457,12 +555,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add Listeners for Log Entries (Edit/Delete/Toggle Notes) - Delegated
     function addLogEntryActionListeners() {
+        // Keep existing addLogEntryActionListeners function
         workoutLogContainer.removeEventListener('click', handleLogEntryClick); // Remove previous listener
         workoutLogContainer.addEventListener('click', handleLogEntryClick);
     }
 
     // Delegated click handler for log entries
     function handleLogEntryClick(event) {
+        // Keep existing handleLogEntryClick function
         const target = event.target;
         const entryDiv = target.closest('.log-exercise-entry');
         if (!entryDiv) return; // Click was outside an entry
@@ -489,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggle Notes visibility (takes entryDiv as argument)
     function handleToggleNotes(entryDiv) {
+        // Keep existing handleToggleNotes function
         const detailsDiv = entryDiv.querySelector('.exercise-details');
         const toggleLink = entryDiv.querySelector('.details-toggle');
         if (detailsDiv) {
@@ -501,6 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Tab Navigation ---
     function showTab(tabId) {
+        // Keep most of existing showTab function
         tabContents.forEach(tab => tab.classList.remove('active'));
         bottomNavButtons.forEach(btn => btn.classList.remove('active'));
         const activeTab = document.getElementById(tabId);
@@ -509,27 +611,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeButton) activeButton.classList.add('active');
 
         // Call specific functions based on the activated tab
-        if (tabId === 'dashboardTabContent') updateDashboard();
-        else if (tabId === 'historyTabContent') {
+        if (tabId === 'dashboardTabContent') {
+            updateDashboard(); // Includes populating its own dropdown now
+        } else if (tabId === 'historyTabContent') {
             populateMuscleGroupFilter();
-            historyCurrentPage = 1; // Reset to first page when navigating to history
+            historyCurrentPage = 1;
             renderWorkoutLog();
-        }
-        else if (tabId === 'settingsTabContent') {
+        } else if (tabId === 'settingsTabContent') {
             renderCustomExercisesList();
             renderBodyWeightLogList();
+        } else if (tabId === 'logTabContent') {
+            // No need to populate dropdown here anymore, it happens on muscle group change
+            // Reset form if navigating TO log tab? Optional.
+            // resetForm(); // Uncomment if you want form reset on tab switch
         }
-        else if (tabId === 'logTabContent') populateExerciseDropdown();
-        // Plan tab is static for now, listener is delegated
     }
 
     // --- Calculations (Volume, E1RM) ---
+    // Keep existing calculation functions: calculateVolume, calculateE1RM, calculateMaxE1RM
     function calculateVolume(workoutArray) {
         return workoutArray.reduce((totalVol, workout) => totalVol + workout.sets.reduce((vol, set) => vol + (set.reps * set.weight), 0), 0);
     }
     function calculateE1RM(weight, reps) {
         if (reps <= 0 || weight <= 0) return 0;
         if (reps === 1) return weight;
+        // Using Brzycki formula
         const denominator = 1.0278 - (0.0278 * reps);
         return denominator > 0 ? weight / denominator : 0;
     }
@@ -538,35 +644,73 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.max(0, ...sets.map(set => calculateE1RM(set.weight, set.reps)));
     }
 
+
     // --- Update PRs ---
+    // Keep existing PR functions: updatePersonalRecords, checkForPR
      function updatePersonalRecords(exercise, sets, workoutDate) {
          const currentMaxWeightSet = sets.reduce((maxSet, currentSet) => (currentSet.weight > (maxSet?.weight || 0) ? currentSet : maxSet), null);
          const currentMaxWeight = currentMaxWeightSet ? currentMaxWeightSet.weight : 0;
          const currentMaxE1RM = calculateMaxE1RM(sets);
          const currentVolume = calculateVolume([{ sets }]);
          let recordUpdated = false;
-         if (!personalRecords[exercise]) personalRecords[exercise] = { weight: 0, volume: 0, e1rm: 0, weightDate: '', volumeDate: '', e1rmDate: '' };
+
+         if (!personalRecords[exercise]) {
+             personalRecords[exercise] = { weight: 0, volume: 0, e1rm: 0, weightDate: '', volumeDate: '', e1rmDate: '' };
+         }
+
          const record = personalRecords[exercise];
-         if (currentMaxWeight > record.weight) { record.weight = currentMaxWeight; record.weightDate = workoutDate; recordUpdated = true; }
-         if (currentVolume > record.volume) { record.volume = currentVolume; record.volumeDate = workoutDate; recordUpdated = true; }
-         if (currentMaxE1RM > record.e1rm) { record.e1rm = currentMaxE1RM; record.e1rmDate = workoutDate; recordUpdated = true; }
-         if (recordUpdated) { saveData(PR_STORAGE_KEY, personalRecords); console.log(`PR updated for ${exercise} on ${workoutDate}:`, record); return true; }
-         return false;
+
+         // Update only if the new value is strictly greater
+         if (currentMaxWeight > record.weight) {
+             record.weight = currentMaxWeight;
+             record.weightDate = workoutDate;
+             recordUpdated = true;
+         }
+         if (currentVolume > record.volume) {
+             record.volume = currentVolume;
+             record.volumeDate = workoutDate;
+             recordUpdated = true;
+         }
+         if (currentMaxE1RM > record.e1rm) {
+             record.e1rm = currentMaxE1RM;
+             record.e1rmDate = workoutDate;
+             recordUpdated = true;
+         }
+
+         if (recordUpdated) {
+             saveData(PR_STORAGE_KEY, personalRecords);
+             console.log(`PR updated for ${exercise} on ${workoutDate}:`, record);
+             return true; // Indicates a new PR was set *by this update*
+         }
+         return false; // No new PR set by this specific update
      }
 
-     // Check if the *current* workout entry matches the date a PR was set
      function checkForPR(exercise, volume, maxE1RM, workoutDate) {
         const record = personalRecords[exercise];
         if (!record) return false;
-        // Check if date matches AND value is equal or greater (handles multiple entries on same day)
-        const checkWeight = () => {
-            if (!record.weightDate || record.weightDate !== workoutDate) return false;
-            const maxWeightThisEntry = Math.max(0, ...workouts.find(w => w.date === workoutDate && w.exercise === exercise)?.sets.map(s => s.weight) ?? []);
-            return maxWeightThisEntry >= record.weight;
+
+        // Use a small tolerance for floating point comparisons
+        const tolerance = 0.01;
+
+        // Check if the current workout's values match the recorded PR values *and* the date matches
+        const isVolumePR = record.volumeDate === workoutDate && Math.abs(volume - record.volume) < tolerance;
+        const isE1rmPR = record.e1rmDate === workoutDate && Math.abs(maxE1RM - record.e1rm) < tolerance;
+
+        // Check for max weight PR separately
+        let isWeightPR = false;
+        if (record.weightDate === workoutDate) {
+            // Find the specific workout entry on that date for the exercise
+            const workoutEntry = workouts.find(w => w.id && w.date === workoutDate && w.exercise === exercise); // Check ID exists for safety
+            if (workoutEntry && workoutEntry.sets) {
+                const maxWeightThisEntry = Math.max(0, ...workoutEntry.sets.map(s => s.weight));
+                // Check if the max weight in *this specific entry* matches the record
+                if (Math.abs(maxWeightThisEntry - record.weight) < tolerance) {
+                    isWeightPR = true;
+                }
+            }
         }
-        return (record.volumeDate === workoutDate && volume >= record.volume) ||
-               (record.e1rmDate === workoutDate && maxE1RM >= record.e1rm) ||
-               checkWeight();
+
+        return isVolumePR || isE1rmPR || isWeightPR;
      }
 
     // --- Event Handlers ---
@@ -575,62 +719,152 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFormSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
+
+        // Ensure an exercise is selected from the dynamic dropdown
+        if (exerciseSelect.value === "") {
+             exerciseSelect.classList.add('is-invalid'); // Manually add invalid class
+        } else {
+             exerciseSelect.classList.remove('is-invalid');
+        }
+
         const isValid = workoutForm.checkValidity();
         const areSetsValid = validateSets();
-        workoutForm.classList.add('was-validated');
-        if (!isValid || !areSetsValid) {
+        workoutForm.classList.add('was-validated'); // Trigger Bootstrap validation styles
+
+        if (!isValid || !areSetsValid || exerciseSelect.value === "") {
              if (!areSetsValid) showToast('Eroare Formular', 'Verificați seturile introduse (Rep. și Kg > 0 obligatorii).', 'warning');
+             else if (exerciseSelect.value === "") showToast('Eroare Formular', 'Vă rugăm selectați un exercițiu.', 'warning');
              else showToast('Eroare Formular', 'Vă rugăm completați câmpurile obligatorii.', 'warning');
-            const firstInvalid = workoutForm.querySelector(':invalid');
-            if (firstInvalid) firstInvalid.focus();
+
+            const firstInvalid = workoutForm.querySelector(':invalid:not(select#exercise)'); // Find first invalid excluding the exercise select initially
+            if (firstInvalid) {
+                firstInvalid.focus();
+            } else if (exerciseSelect.value === "") {
+                 exerciseSelect.focus(); // Focus exercise if it's the issue
+            }
+
             return;
         }
+
+        // Proceed if valid
         const workoutData = {
-            id: editingId || Date.now().toString(), date: dateInput.value,
+            id: editingId || Date.now().toString(),
+            date: dateInput.value,
             muscleGroups: Array.from(muscleGroupsSelect.selectedOptions).map(option => option.value),
-            exercise: exerciseSelect.value, sets: getSetsData(), notes: notesInput.value.trim()
+            exercise: exerciseSelect.value, // Value is now name_ro or custom string
+            sets: getSetsData(),
+            notes: notesInput.value.trim()
         };
+
         let actionType = 'adăugat';
         if (editingId) {
             const index = workouts.findIndex(w => w.id === editingId);
-            if (index > -1) { workouts[index] = workoutData; actionType = 'actualizat'; }
-            else { workouts.push(workoutData); console.warn("Editing ID existed but workout not found, adding as new."); }
-        } else workouts.push(workoutData);
+            if (index > -1) {
+                workouts[index] = workoutData;
+                actionType = 'actualizat';
+            } else {
+                workouts.push(workoutData); // Should not happen, but fallback
+                console.warn("Editing ID existed but workout not found, adding as new.");
+            }
+        } else {
+            workouts.push(workoutData);
+        }
+
         const prSetByThisEntry = updatePersonalRecords(workoutData.exercise, workoutData.sets, workoutData.date);
         saveData(WORKOUT_STORAGE_KEY, workouts);
         showToast('Succes', `Antrenament ${actionType} cu succes!`);
+
         if (prSetByThisEntry && actionType === 'adăugat') {
             setTimeout(() => showToast('Record Personal!', `Nou record stabilit pentru ${workoutData.exercise}!`, 'info'), 600);
         }
-        populateMuscleGroupFilter();
-        populateExerciseDropdown();
-        resetForm();
-        // If user was on history tab, update it, otherwise stay on form tab
+
+        populateMuscleGroupFilter(); // Update history filter options
+        populateProgressExerciseDropdownDash(); // Update dashboard dropdown options
+        resetForm(); // Reset the form
+
+        // If user was on history tab, update it
         if (document.getElementById('historyTabContent').classList.contains('active')) {
              historyCurrentPage = 1; // Go to first page to see the new entry
              renderWorkoutLog();
         }
     }
 
-    // Edit Workout Button Click (takes ID)
+    // Edit Workout Button Click
     function handleEdit(id) {
         const workout = workouts.find(w => w.id === id);
-        if (!workout) { showToast('Eroare', 'Nu s-a găsit înregistrarea pentru editare.', 'danger'); return; }
+        if (!workout) {
+            showToast('Eroare', 'Nu s-a găsit înregistrarea pentru editare.', 'danger');
+            return;
+        }
+
         showTab('logTabContent'); // Switch to form tab
-        editingId = id; editIdInput.value = id;
-        formTitle.textContent = 'Editează Exercițiu'; submitBtn.textContent = 'Actualizează';
-        cancelEditBtn.classList.remove('d-none'); dateInput.value = workout.date;
-        Array.from(muscleGroupsSelect.options).forEach(option => option.selected = workout.muscleGroups.includes(option.value));
-        exerciseSelect.value = workout.exercise; notesInput.value = workout.notes;
-        setsContainer.innerHTML = '';
-        if (workout.sets && workout.sets.length > 0) workout.sets.forEach(set => addSetRow(set.reps, set.weight));
-        else addSetRow();
-        validateSets();
+
+        // Reset form fields before populating
+        resetForm(); // This will disable exerciseSelect initially
+
+        editingId = id;
+        editIdInput.value = id;
+        formTitle.textContent = 'Editează Exercițiu';
+        submitBtn.textContent = 'Actualizează';
+        cancelEditBtn.classList.remove('d-none');
+
+        dateInput.value = workout.date;
+        notesInput.value = workout.notes;
+
+        // Select Muscle Groups FIRST
+        Array.from(muscleGroupsSelect.options).forEach(option => {
+            option.selected = workout.muscleGroups.includes(option.value);
+        });
+
+        // Manually trigger the update for the exercise dropdown based on selected groups
+        updateExerciseDropdown(); // This enables and populates exerciseSelect
+
+        // NOW select the exercise
+        exerciseSelect.value = workout.exercise;
+
+        // If the exercise isn't in the list (e.g., custom exercise deleted, or group mismatch), handle gracefully
+        if (exerciseSelect.value !== workout.exercise && !exerciseSelect.disabled) {
+            console.warn(`Exercise "${workout.exercise}" not found in dropdown for selected groups. Adding temporarily.`);
+            // Check if it's a known custom exercise first
+            const isKnownCustom = customExercises.includes(workout.exercise);
+            const tempOption = document.createElement('option');
+            tempOption.value = workout.exercise;
+            tempOption.textContent = workout.exercise + (isKnownCustom ? " (Custom)" : " (Nelistat/Grup Incorect)");
+            // Insert it alphabetically if possible, otherwise append
+             let inserted = false;
+             for (let i = 1; i < exerciseSelect.options.length; i++) { // Start from 1 to skip "Alegeți..."
+                 if (workout.exercise.localeCompare(exerciseSelect.options[i].textContent, 'ro', { sensitivity: 'base' }) < 0) {
+                     exerciseSelect.insertBefore(tempOption, exerciseSelect.options[i]);
+                     inserted = true;
+                     break;
+                 }
+             }
+             if (!inserted) {
+                 exerciseSelect.appendChild(tempOption);
+             }
+
+            exerciseSelect.value = workout.exercise;
+            showToast('Atenție', `Exercițiul "${workout.exercise}" nu se potrivește grupelor selectate sau a fost șters. A fost adăugat temporar.`, 'warning');
+        }
+
+
+        // Populate Sets
+        setsContainer.innerHTML = ''; // Clear default row added by resetForm
+        if (workout.sets && workout.sets.length > 0) {
+            workout.sets.forEach(set => addSetRow(set.reps, set.weight));
+        } else {
+            addSetRow(); // Add one empty row if no sets existed
+        }
+        validateSets(); // Validate sets after populating
+
         logTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Delete Workout Button Click (takes ID)
+
+    // Delete Workout Button Click
     function handleDelete(id) {
+        // Keep existing handleDelete function
+        // It correctly updates workouts array and calls necessary render/populate functions
         const workout = workouts.find(w => w.id === id);
         if (!workout) { showToast('Eroare', 'Nu s-a găsit înregistrarea pentru ștergere.', 'danger'); return; }
         if (confirm(`Sunteți sigur că doriți să ștergeți înregistrarea pentru ${workout.exercise} din ${formatDateForDisplay(workout.date)}?`)) {
@@ -646,7 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             renderWorkoutLog(); // Re-render current view
             populateMuscleGroupFilter();
-            populateExerciseDropdown();
+            populateProgressExerciseDropdownDash(); // Update dashboard dropdown
             showToast('Șters', 'Înregistrarea a fost ștearsă.', 'success');
             // Update dashboard if it's the active tab
             if (document.getElementById('dashboardTabContent').classList.contains('active')) updateDashboard();
@@ -657,6 +891,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleCancelEdit() { resetForm(); }
 
     // --- Filtering (History Tab) ---
+    // Keep existing filtering functions: debounce, handleFilterChange, debouncedFilterHandler, handleClearFilters, filterWorkouts
+    // These work on the saved `workouts` data and are independent of the form changes.
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -680,6 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const muscleGroupFilter = filterMuscleGroupSelect.value;
         const filtered = workouts.filter(w => {
             const matchDate = !dateFilter || w.date === dateFilter;
+            // Filter exercise based on the logged exercise name (string)
             const matchExercise = !exerciseFilter || w.exercise.toLowerCase().includes(exerciseFilter);
             const matchMuscleGroup = !muscleGroupFilter || w.muscleGroups.includes(muscleGroupFilter);
             return matchDate && matchExercise && matchMuscleGroup;
@@ -688,28 +925,31 @@ document.addEventListener('DOMContentLoaded', () => {
         return filtered.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
     }
 
+
     // --- Dashboard ---
     function getWorkoutsForPeriod(period) {
+        // Keep existing getWorkoutsForPeriod function
         const now = new Date(); let startDate = new Date(); startDate.setHours(0, 0, 0, 0);
         switch (period) {
             case 'last7days': startDate.setDate(now.getDate() - 6); break;
             case 'last30days': startDate.setDate(now.getDate() - 29); break;
             case 'allTime': return [...workouts];
-            default: startDate.setDate(now.getDate() - 6);
+            default: startDate.setDate(now.getDate() - 6); // Default to last 7 days
         }
         const startDateString = startDate.toISOString().split('T')[0];
         return workouts.filter(w => w.date >= startDateString);
     }
 
     function updateDashboard() {
+        // Keep most of existing updateDashboard function
         const period = dashboardPeriodSelect.value;
         const periodWorkouts = getWorkoutsForPeriod(period);
         // Stats
         const totalEntries = periodWorkouts.length;
-        const totalSets = periodWorkouts.reduce((sum, w) => sum + w.sets.length, 0);
-        const totalReps = periodWorkouts.reduce((sum, w) => sum + w.sets.reduce((s, set) => s + set.reps, 0), 0);
-        const setsWithWeight = periodWorkouts.flatMap(w => w.sets).filter(s => s.weight > 0);
-        const totalWeightSum = setsWithWeight.reduce((sum, set) => sum + set.weight, 0);
+        const totalSets = periodWorkouts.reduce((sum, w) => sum + (w.sets?.length || 0), 0); // Safer access
+        const totalReps = periodWorkouts.reduce((sum, w) => sum + (w.sets?.reduce((s, set) => s + (set.reps || 0), 0) || 0), 0); // Safer access
+        const setsWithWeight = periodWorkouts.flatMap(w => w.sets || []).filter(s => s.weight > 0); // Safer access
+        const totalWeightSum = setsWithWeight.reduce((sum, set) => sum + (set.weight || 0), 0);
         const avgWeight = setsWithWeight.length > 0 ? (totalWeightSum / setsWithWeight.length) : 0;
         const totalVolume = calculateVolume(periodWorkouts);
         statsExercises.textContent = totalEntries; statsSets.textContent = totalSets; statsReps.textContent = totalReps;
@@ -720,8 +960,12 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (period === 'allTime') {
             if (workouts.length > 0) {
                 const sortedByDate = [...workouts].sort((a, b) => a.date.localeCompare(b.date));
-                const minDate = new Date(sortedByDate[0].date); const maxDate = new Date(sortedByDate[sortedByDate.length - 1].date);
-                daysInPeriod = Math.max(1, Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1);
+                const minDate = new Date(sortedByDate[0].date);
+                // Find the last date properly
+                const maxDate = new Date(sortedByDate[sortedByDate.length - 1].date);
+                // Calculate difference in days
+                const timeDiff = maxDate.getTime() - minDate.getTime();
+                daysInPeriod = Math.max(1, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1); // +1 to include both start and end day
             } else daysInPeriod = 1;
         }
         const weeksInPeriod = Math.max(1, daysInPeriod / 7);
@@ -729,21 +973,29 @@ document.addEventListener('DOMContentLoaded', () => {
         weeklyAvgWorkouts.textContent = (uniqueWorkoutDays / weeksInPeriod).toFixed(1); weeklyAvgSets.textContent = (totalSets / weeksInPeriod).toFixed(1);
         weeklyAvgReps.textContent = (totalReps / weeksInPeriod).toFixed(1); weeklyAvgRepsPerSet.textContent = totalSets > 0 ? (totalReps / totalSets).toFixed(1) : '0';
         weeklyAvgVolume.textContent = ((totalVolume / 1000) / weeksInPeriod).toFixed(2) + ' T';
+
         // Renders
-        renderPersonalRecords(); renderMuscleGroupsChart(periodWorkouts); renderVolumeChartDash(periodWorkouts);
-        handleProgressExerciseChangeDash(); renderPrZoneWidget(); renderRecentSessionsWidget();
-        renderWeightProgressChart(); renderConsistencyHeatmap();
+        renderPersonalRecords();
+        renderMuscleGroupsChart(periodWorkouts); // Uses logged data
+        renderVolumeChartDash(periodWorkouts);   // Uses logged data
+        // populateProgressExerciseDropdownDash(); // Already called separately or on init/update
+        handleProgressExerciseChangeDash(); // Render progress chart based on selection
+        renderPrZoneWidget();
+        renderRecentSessionsWidget();
+        renderWeightProgressChart();
+        renderConsistencyHeatmap();
     }
 
     // Render Historical PRs (on Dashboard)
     function renderPersonalRecords() {
+        // Keep existing renderPersonalRecords function
         personalRecordsList.innerHTML = '';
         const sortedRecords = Object.entries(personalRecords)
             .map(([exercise, data]) => ({ exercise, ...data }))
             .filter(record => record.e1rm > 0 || record.weight > 0 || record.volume > 0)
-            .sort((a, b) => (b.e1rm || 0) - (a.e1rm || 0));
+            .sort((a, b) => (b.e1rm || 0) - (a.e1rm || 0)); // Sort by e1RM descending
         noPrMessage.classList.toggle('d-none', sortedRecords.length > 0);
-        const topRecords = sortedRecords.slice(0, 5);
+        const topRecords = sortedRecords.slice(0, 5); // Show top 5
         topRecords.forEach(record => {
             const li = document.createElement('li');
             li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'flex-wrap', 'py-1', 'px-2');
@@ -756,15 +1008,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             personalRecordsList.appendChild(li);
         });
-         if (sortedRecords.length === 0) personalRecordsList.innerHTML = '<li class="list-group-item text-muted small text-center" id="noPrMessage">Nu există recorduri înregistrate.</li>';
+         if (sortedRecords.length === 0) {
+             // Ensure the noPrMessage is correctly handled if it exists
+             if(noPrMessage) noPrMessage.classList.remove('d-none');
+             else personalRecordsList.innerHTML = '<li class="list-group-item text-muted small text-center" id="noPrMessage">Nu există recorduri înregistrate.</li>'; // Add ID back if needed
+         } else {
+             if(noPrMessage) noPrMessage.classList.add('d-none');
+         }
     }
 
-    // --- Dashboard Chart Rendering (Muscle, Volume, Progress) ---
+    // --- Dashboard Chart Rendering ---
+    // Keep existing chart rendering functions: renderMuscleGroupsChart, renderVolumeChartDash, handleProgressExerciseChangeDash, renderWeightProgressChart, renderConsistencyHeatmap
+    // These generally rely on the `workouts` array which remains unchanged in structure.
      function renderMuscleGroupsChart(data) {
          const svg = d3.select("#d3MusclesChart"); svg.selectAll("*").remove();
-         const muscleCounts = data.reduce((acc, workout) => { workout.muscleGroups.forEach(group => { acc[group] = (acc[group] || 0) + 1; }); return acc; }, {});
+         const muscleCounts = data.reduce((acc, workout) => {
+             (workout.muscleGroups || []).forEach(group => { // Safer access
+                 acc[group] = (acc[group] || 0) + 1;
+             });
+             return acc;
+         }, {});
          const sortedMuscles = Object.entries(muscleCounts).sort(([, a], [, b]) => b - a).slice(0, 10);
-         noMuscleDataMessage.classList.toggle('d-none', sortedMuscles.length > 0);
+         noMuscleDataMessage.classList.toggle('d-none', sortedMuscles.length === 0);
          d3MusclesChartContainer.style.display = 'block'; svg.style('display', sortedMuscles.length > 0 ? 'block' : 'none');
          if (sortedMuscles.length === 0) return;
          const { width, height } = svg.node().getBoundingClientRect(); const margin = { top: 20, right: 20, bottom: 70, left: 40 };
@@ -799,7 +1064,11 @@ document.addEventListener('DOMContentLoaded', () => {
          if (!selectedExercise) { svg.append("text").attr("x", "50%").attr("y", "50%").attr("text-anchor", "middle").attr("fill", "var(--htb-text-muted)").text("Selectați un exercițiu."); return; }
          const exerciseData = workouts.filter(w => w.exercise === selectedExercise).sort((a, b) => a.date.localeCompare(b.date));
          if (exerciseData.length === 0) { svg.append("text").attr("x", "50%").attr("y", "50%").attr("text-anchor", "middle").attr("fill", "var(--htb-text-muted)").text("Nu există date."); return; }
-         const progressData = exerciseData.map(workout => ({ date: d3.timeParse("%Y-%m-%d")(workout.date), maxE1RM: calculateMaxE1RM(workout.sets), maxWeight: Math.max(0, ...workout.sets.map(s => s.weight)) })).filter(d => d.date);
+         const progressData = exerciseData.map(workout => ({
+             date: d3.timeParse("%Y-%m-%d")(workout.date),
+             maxE1RM: calculateMaxE1RM(workout.sets || []), // Safer access
+             maxWeight: Math.max(0, ...(workout.sets || []).map(s => s.weight || 0)) // Safer access
+         })).filter(d => d.date);
          if (progressData.length === 0) { svg.append("text").attr("x", "50%").attr("y", "50%").attr("text-anchor", "middle").attr("fill", "var(--htb-text-muted)").text("Eroare date progres."); return; }
          const { width, height } = svg.node().getBoundingClientRect(); const margin = { top: 20, right: 50, bottom: 50, left: 50 };
          const chartWidth = width - margin.left - margin.right; const chartHeight = height - margin.top - margin.bottom;
@@ -817,37 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
          legend.append("circle").attr("cx", 0).attr("cy", 0).attr("r", 4).style("fill", "var(--htb-tag-red)"); legend.append("text").attr("x", 10).attr("y", 0).text("Greutate Max");
          legend.append("line").attr("x1", 100).attr("y1", 0).attr("x2", 120).attr("y2", 0).attr("stroke", "var(--htb-accent)").attr("stroke-width", 2); legend.append("text").attr("x", 130).attr("y", 0).text("e1RM Est.");
      }
-
-    // --- Dashboard Widget Rendering ---
-    function renderPrZoneWidget() {
-        newPrZoneList.innerHTML = ''; const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
-        const recentPRs = Object.entries(personalRecords).map(([exercise, data]) => ({ exercise, ...data }))
-            .filter(record => (record.e1rmDate && record.e1rmDate >= thirtyDaysAgoStr) || (record.weightDate && record.weightDate >= thirtyDaysAgoStr) || (record.volumeDate && record.volumeDate >= thirtyDaysAgoStr))
-            .sort((a, b) => Math.max(new Date(b.e1rmDate||0).getTime(), new Date(b.weightDate||0).getTime(), new Date(b.volumeDate||0).getTime()) - Math.max(new Date(a.e1rmDate||0).getTime(), new Date(a.weightDate||0).getTime(), new Date(a.volumeDate||0).getTime()));
-        noNewPrMessage.classList.toggle('d-none', recentPRs.length > 0); if (recentPRs.length === 0) return;
-        recentPRs.slice(0, 5).forEach(record => {
-            const li = document.createElement('div'); li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'flex-wrap', 'py-1', 'px-2');
-            li.innerHTML = `<span class="pr-exercise small me-2">${record.exercise}</span> <div class="text-end small">
-                ${(record.e1rm > 0 && record.e1rmDate >= thirtyDaysAgoStr) ? `<span class="badge bg-primary rounded-pill me-1 mb-1" title="e1RM (${formatDateForDisplay(record.e1rmDate)})"><i class="bi bi-bullseye"></i> ${record.e1rm.toFixed(1)}kg</span>` : ''}
-                ${(record.weight > 0 && record.weightDate >= thirtyDaysAgoStr) ? `<span class="badge bg-success rounded-pill me-1 mb-1" title="Greutate (${formatDateForDisplay(record.weightDate)})"><i class="bi bi-barbell"></i> ${record.weight.toFixed(1)}kg</span>` : ''}
-                ${(record.volume > 0 && record.volumeDate >= thirtyDaysAgoStr) ? `<span class="badge bg-warning text-dark rounded-pill mb-1" title="Volum (${formatDateForDisplay(record.volumeDate)})"><i class="bi bi-graph-up"></i> ${record.volume.toFixed(0)}</span>` : ''}
-                </div>`;
-            newPrZoneList.appendChild(li);
-        });
-    }
-    function renderRecentSessionsWidget() {
-        recentSessionsList.innerHTML = ''; const uniqueDates = [...new Set(workouts.map(w => w.date))].sort((a, b) => b.localeCompare(a));
-        noRecentSessionsMessage.classList.toggle('d-none', uniqueDates.length > 0); if (uniqueDates.length === 0) return;
-        const recentDates = uniqueDates.slice(0, 5);
-        recentDates.forEach(date => {
-            const workoutsOnDate = workouts.filter(w => w.date === date); const exercisesString = workoutsOnDate.map(w => w.exercise).slice(0, 3).join(', ') + (workoutsOnDate.length > 3 ? '...' : '');
-            const totalSets = workoutsOnDate.reduce((sum, w) => sum + w.sets.length, 0); const li = document.createElement('li');
-            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'py-1', 'px-2');
-            li.innerHTML = `<div class="small"><strong class="d-block">${formatDateForDisplay(date)}</strong><span class="text-muted">${exercisesString || 'N/A'}</span></div><span class="badge bg-secondary rounded-pill">${totalSets} seturi</span>`;
-            recentSessionsList.appendChild(li);
-        });
-    }
-    function renderWeightProgressChart() {
+     function renderWeightProgressChart() {
         const svgContainer = d3.select(weightProgressChartContainer); svgContainer.select("svg").remove(); // Clear previous SVG
         const weightData = [...bodyWeightLog].map(d => ({ ...d, date: d3.timeParse("%Y-%m-%d")(d.date) })).filter(d => d.date && d.weight > 0).sort((a, b) => a.date - b.date);
         if (weightData.length < 2) { svgContainer.html(`<div class="d-flex align-items-center justify-content-center h-100"><p class="text-center text-muted small">Nu există suficiente date (${weightData.length}) pentru grafic.<br>Adaugă greutatea în Setări.</p></div>`); return; }
@@ -866,9 +1105,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderConsistencyHeatmap() {
         const svg = d3.select(consistencyHeatmapContainer); svg.selectAll("*").remove();
         const numberOfWeeks = 4; const cellSize = 12; const cellSpacing = 2;
-        const workoutStatsByDate = workouts.reduce((acc, w) => { const date = w.date; if (!acc[date]) acc[date] = { sets: 0, volume: 0, count: 0 }; acc[date].sets += w.sets.length; acc[date].volume += calculateVolume([w]); acc[date].count += 1; return acc; }, {});
+        const workoutStatsByDate = workouts.reduce((acc, w) => {
+            const date = w.date;
+            if (!acc[date]) acc[date] = { sets: 0, volume: 0, count: 0 };
+            acc[date].sets += w.sets?.length || 0; // Safer access
+            acc[date].volume += calculateVolume([w]);
+            acc[date].count += 1;
+            return acc;
+        }, {});
         // Intensity based on sets: 0=rest, 1=<6 sets, 2=6-11 sets, 3=12-19 sets, 4=20+ sets
-        const getIntensityLevel = (dateString) => { const stats = workoutStatsByDate[dateString]; if (!stats) return 0; if (stats.sets >= 20) return 4; if (stats.sets >= 12) return 3; if (stats.sets >= 6) return 2; return 1; };
+        const getIntensityLevel = (dateString) => {
+            const stats = workoutStatsByDate[dateString];
+            if (!stats || stats.sets === 0) return 0; // Explicitly check for 0 sets
+            if (stats.sets >= 20) return 4;
+            if (stats.sets >= 12) return 3;
+            if (stats.sets >= 6) return 2;
+            return 1; // Any workout with > 0 sets is at least level 1
+        };
         const today = d3.timeDay.floor(new Date()); const endDate = d3.timeDay.offset(today, 1); const startDate = d3.timeSunday.offset(today, -(numberOfWeeks - 1)); const allDays = d3.timeDays(startDate, endDate);
         const tooltip = d3.select(heatmapTooltip); const weekCount = d3.timeWeek.count(startDate, endDate); const svgHeight = weekCount * (cellSize + cellSpacing); const svgWidth = 7 * (cellSize + cellSpacing);
         svg.attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`).attr('width', '100%').attr('max-width', `${svgWidth}px`).attr('height', svgHeight).attr('preserveAspectRatio', 'xMidYMin meet');
@@ -882,8 +1135,50 @@ document.addEventListener('DOMContentLoaded', () => {
             .on('mouseout', () => { tooltip.style('opacity', 0); });
     }
 
+    // --- Dashboard Widget Rendering ---
+    // Keep existing widget functions: renderPrZoneWidget, renderRecentSessionsWidget
+    function renderPrZoneWidget() {
+        newPrZoneList.innerHTML = ''; const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+        const recentPRs = Object.entries(personalRecords).map(([exercise, data]) => ({ exercise, ...data }))
+            .filter(record => (record.e1rmDate && record.e1rmDate >= thirtyDaysAgoStr) || (record.weightDate && record.weightDate >= thirtyDaysAgoStr) || (record.volumeDate && record.volumeDate >= thirtyDaysAgoStr))
+            .sort((a, b) => Math.max(new Date(b.e1rmDate||0).getTime(), new Date(b.weightDate||0).getTime(), new Date(b.volumeDate||0).getTime()) - Math.max(new Date(a.e1rmDate||0).getTime(), new Date(a.weightDate||0).getTime(), new Date(a.volumeDate||0).getTime())); // Sort by most recent PR date
+        noNewPrMessage.classList.toggle('d-none', recentPRs.length === 0); if (recentPRs.length === 0) return;
+        recentPRs.slice(0, 5).forEach(record => { // Show top 5 most recent
+            const li = document.createElement('div'); li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'flex-wrap', 'py-1', 'px-2');
+            // Only show the PR type that falls within the last 30 days
+            let badgesHTML = '';
+            if (record.e1rm > 0 && record.e1rmDate >= thirtyDaysAgoStr) {
+                badgesHTML += `<span class="badge bg-primary rounded-pill me-1 mb-1" title="e1RM (${formatDateForDisplay(record.e1rmDate)})"><i class="bi bi-bullseye"></i> ${record.e1rm.toFixed(1)}kg</span>`;
+            }
+            if (record.weight > 0 && record.weightDate >= thirtyDaysAgoStr) {
+                 badgesHTML += `<span class="badge bg-success rounded-pill me-1 mb-1" title="Greutate (${formatDateForDisplay(record.weightDate)})"><i class="bi bi-barbell"></i> ${record.weight.toFixed(1)}kg</span>`;
+            }
+             if (record.volume > 0 && record.volumeDate >= thirtyDaysAgoStr) {
+                 badgesHTML += `<span class="badge bg-warning text-dark rounded-pill mb-1" title="Volum (${formatDateForDisplay(record.volumeDate)})"><i class="bi bi-graph-up"></i> ${record.volume.toFixed(0)}</span>`;
+            }
+
+            li.innerHTML = `<span class="pr-exercise small me-2">${record.exercise}</span> <div class="text-end small">${badgesHTML}</div>`;
+            newPrZoneList.appendChild(li);
+        });
+    }
+    function renderRecentSessionsWidget() {
+        recentSessionsList.innerHTML = ''; const uniqueDates = [...new Set(workouts.map(w => w.date))].sort((a, b) => b.localeCompare(a));
+        noRecentSessionsMessage.classList.toggle('d-none', uniqueDates.length === 0); if (uniqueDates.length === 0) return;
+        const recentDates = uniqueDates.slice(0, 5);
+        recentDates.forEach(date => {
+            const workoutsOnDate = workouts.filter(w => w.date === date); const exercisesString = workoutsOnDate.map(w => w.exercise).slice(0, 3).join(', ') + (workoutsOnDate.length > 3 ? '...' : '');
+            const totalSets = workoutsOnDate.reduce((sum, w) => sum + (w.sets?.length || 0), 0); // Safer access
+            const li = document.createElement('li');
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'py-1', 'px-2');
+            li.innerHTML = `<div class="small"><strong class="d-block">${formatDateForDisplay(date)}</strong><span class="text-muted">${exercisesString || 'N/A'}</span></div><span class="badge bg-secondary rounded-pill">${totalSets} seturi</span>`;
+            recentSessionsList.appendChild(li);
+        });
+    }
+
     // --- Settings ---
     function renderCustomExercisesList() {
+        // Keep existing renderCustomExercisesList function
+        // Custom exercises are still stored as strings.
         existingExercisesListSettings.innerHTML = ''; if (customExercises.length === 0) { existingExercisesListSettings.innerHTML = '<li class="list-group-item text-muted">Nu ai adăugat exerciții custom.</li>'; return; }
         [...customExercises].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' })).forEach(ex => {
             const li = document.createElement('li'); li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center'); li.textContent = ex;
@@ -893,21 +1188,52 @@ document.addEventListener('DOMContentLoaded', () => {
         existingExercisesListSettings.removeEventListener('click', handleDeleteCustomExerciseClick); existingExercisesListSettings.addEventListener('click', handleDeleteCustomExerciseClick);
     }
     function handleDeleteCustomExerciseClick(event) {
+        // Keep existing handleDeleteCustomExerciseClick function
         if (event.target.closest('.btn-outline-danger')) { const button = event.target.closest('button'); const exerciseToDelete = button.dataset.exercise; if (exerciseToDelete) handleDeleteCustomExercise(exerciseToDelete); }
     }
     function handleAddCustomExercise() {
+        // Keep existing handleAddCustomExercise function
+        // It adds a string to customExercises array.
         const newExercise = newExerciseNameSettings.value.trim(); if (!newExercise) { showToast('Atenție', 'Introduceți un nume valid.', 'warning'); return; }
-        const allExercisesLower = [...predefinedExercises, ...customExercises].map(e => e.toLowerCase()); if (allExercisesLower.includes(newExercise.toLowerCase())) { showToast('Eroare', 'Acest exercițiu există deja.', 'warning'); return; }
-        customExercises.push(newExercise); saveData(EXERCISE_STORAGE_KEY, customExercises); renderCustomExercisesList(); populateExerciseDropdown(); newExerciseNameSettings.value = ''; showToast('Succes', `Exercițiul "${newExercise}" a fost adăugat.`, 'success');
+        // Check against both predefined (name_ro) and existing custom
+        const predefinedLower = predefinedExercises.map(e => (e.name_ro || e.name).toLowerCase());
+        const customLower = customExercises.map(e => e.toLowerCase());
+        if (predefinedLower.includes(newExercise.toLowerCase()) || customLower.includes(newExercise.toLowerCase())) {
+            showToast('Eroare', 'Acest exercițiu există deja.', 'warning'); return;
+        }
+        customExercises.push(newExercise);
+        saveData(EXERCISE_STORAGE_KEY, customExercises);
+        renderCustomExercisesList();
+        // Optionally update the main dropdown if the log tab is active and a muscle group is selected
+        if (document.getElementById('logTabContent').classList.contains('active') && muscleGroupsSelect.selectedOptions.length > 0) {
+            updateExerciseDropdown();
+        }
+        newExerciseNameSettings.value = '';
+        showToast('Succes', `Exercițiul "${newExercise}" a fost adăugat.`, 'success');
     }
     function handleDeleteCustomExercise(exerciseToDelete) {
+        // Keep existing handleDeleteCustomExercise function
+        // It removes a string from customExercises array.
         const isUsed = workouts.some(workout => workout.exercise === exerciseToDelete); let proceed = true;
         if (isUsed) proceed = confirm(`Atenție! Exercițiul "${exerciseToDelete}" este folosit în ${workouts.filter(w => w.exercise === exerciseToDelete).length} înregistrări. Ștergerea lui NU va șterge înregistrările.\n\nContinuați cu ștergerea exercițiului din lista custom?`);
         else proceed = confirm(`Sunteți sigur că doriți să ștergeți exercițiul custom "${exerciseToDelete}"?`);
-        if (proceed) { const index = customExercises.findIndex(ex => ex === exerciseToDelete); if (index > -1) { customExercises.splice(index, 1); saveData(EXERCISE_STORAGE_KEY, customExercises); renderCustomExercisesList(); populateExerciseDropdown(); showToast('Succes', `Exercițiul "${exerciseToDelete}" a fost șters din lista custom.`, 'success'); } else showToast('Eroare', `Exercițiul "${exerciseToDelete}" nu a fost găsit.`, 'danger'); }
+        if (proceed) {
+            const index = customExercises.findIndex(ex => ex === exerciseToDelete);
+            if (index > -1) {
+                customExercises.splice(index, 1);
+                saveData(EXERCISE_STORAGE_KEY, customExercises);
+                renderCustomExercisesList();
+                 // Optionally update the main dropdown if the log tab is active and a muscle group is selected
+                if (document.getElementById('logTabContent').classList.contains('active') && muscleGroupsSelect.selectedOptions.length > 0) {
+                    updateExerciseDropdown();
+                }
+                showToast('Succes', `Exercițiul "${exerciseToDelete}" a fost șters din lista custom.`, 'success');
+            } else showToast('Eroare', `Exercițiul "${exerciseToDelete}" nu a fost găsit.`, 'danger');
+        }
     }
 
     // --- Bodyweight Logging (Settings Tab) ---
+    // Keep existing bodyweight functions: renderBodyWeightLogList, handleDeleteBodyweightClick, handleBodyweightSubmit, handleDeleteBodyweight
     function renderBodyWeightLogList() {
         bodyweightLogList.innerHTML = ''; if (bodyWeightLog.length === 0) { bodyweightLogList.innerHTML = '<li class="list-group-item text-muted">Nu există înregistrări de greutate.</li>'; return; }
         const sortedLog = [...bodyWeightLog].sort((a, b) => b.date.localeCompare(a.date)); // Display descending
@@ -929,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingIndex = bodyWeightLog.findIndex(entry => entry.date === newEntry.date);
         if (existingIndex > -1) {
              bodyWeightLog[existingIndex].weight = newEntry.weight; // Update weight
-             // Keep original ID for stability if updating
+             newEntry.id = bodyWeightLog[existingIndex].id; // Keep original ID for stability if updating
              showToast('Actualizat', 'Greutatea pentru această dată a fost actualizată.', 'success');
         } else {
             bodyWeightLog.push(newEntry);
@@ -939,16 +1265,26 @@ document.addEventListener('DOMContentLoaded', () => {
         saveData(BODYWEIGHT_STORAGE_KEY, bodyWeightLog);
         renderBodyWeightLogList(); // Update list in settings (shows DESC)
         bodyweightValueInput.value = ''; // Clear only weight input
-        updateDashboard(); // Update the dashboard chart
+        // Update the dashboard chart if the dashboard is active or becomes active
+        if (document.getElementById('dashboardTabContent').classList.contains('active')) {
+             renderWeightProgressChart();
+        }
     }
     function handleDeleteBodyweight(entryId) {
         const entryToDelete = bodyWeightLog.find(entry => entry.id === entryId); if (!entryToDelete) return;
         if (confirm(`Sunteți sigur că doriți să ștergeți înregistrarea de greutate (${entryToDelete.weight.toFixed(1)} kg) din ${formatDateForDisplay(entryToDelete.date)}?`)) {
-            bodyWeightLog = bodyWeightLog.filter(entry => entry.id !== entryId); saveData(BODYWEIGHT_STORAGE_KEY, bodyWeightLog); showToast('Șters', 'Înregistrarea de greutate a fost ștearsă.', 'success'); renderBodyWeightLogList(); updateDashboard();
+            bodyWeightLog = bodyWeightLog.filter(entry => entry.id !== entryId); saveData(BODYWEIGHT_STORAGE_KEY, bodyWeightLog); showToast('Șters', 'Înregistrarea de greutate a fost ștearsă.', 'success'); renderBodyWeightLogList();
+            // Update the dashboard chart if the dashboard is active or becomes active
+             if (document.getElementById('dashboardTabContent').classList.contains('active')) {
+                 renderWeightProgressChart();
+             }
         }
     }
 
+
     // --- Data Management (Backup/Restore/Export) ---
+    // Keep existing data management functions: handleBackupData, handleRestoreData, handleExportCSV, handleExportTXT, handleExportPDF
+    // These work on the main data arrays/objects.
     function handleBackupData() {
         const allData = { workouts, customExercises, personalRecords, bodyWeightLog }; const dataStr = JSON.stringify(allData, null, 2); const blob = new Blob([dataStr], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `gym_log_pro_backup_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Backup Complet', 'Backup-ul datelor a fost descărcat.', 'info');
     }
@@ -958,14 +1294,30 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = function(e) {
             try {
                 const restoredData = JSON.parse(e.target.result);
-                if (restoredData && typeof restoredData === 'object' && Array.isArray(restoredData.workouts) && Array.isArray(restoredData.customExercises) && typeof restoredData.personalRecords === 'object' && (restoredData.bodyWeightLog === undefined || Array.isArray(restoredData.bodyWeightLog))) {
+                // Basic validation of the restored structure
+                if (restoredData && typeof restoredData === 'object' &&
+                    Array.isArray(restoredData.workouts) &&
+                    Array.isArray(restoredData.customExercises) && // Expecting array of strings
+                    typeof restoredData.personalRecords === 'object' &&
+                    (restoredData.bodyWeightLog === undefined || Array.isArray(restoredData.bodyWeightLog)))
+                {
                     if (confirm('ATENȚIE: Datele curente vor fi suprascrise. Continuați?')) {
-                        workouts = restoredData.workouts; customExercises = restoredData.customExercises; personalRecords = restoredData.personalRecords; bodyWeightLog = restoredData.bodyWeightLog || [];
-                        saveData(WORKOUT_STORAGE_KEY, workouts); saveData(EXERCISE_STORAGE_KEY, customExercises); saveData(PR_STORAGE_KEY, personalRecords); saveData(BODYWEIGHT_STORAGE_KEY, bodyWeightLog);
-                        initializeApp(); // Re-init completely
-                        showToast('Restaurare Completă', 'Datele au fost restaurate.', 'success'); showTab('dashboardTabContent');
+                        workouts = restoredData.workouts;
+                        customExercises = restoredData.customExercises; // Restore as array of strings
+                        personalRecords = restoredData.personalRecords;
+                        bodyWeightLog = restoredData.bodyWeightLog || [];
+
+                        saveData(WORKOUT_STORAGE_KEY, workouts);
+                        saveData(EXERCISE_STORAGE_KEY, customExercises);
+                        saveData(PR_STORAGE_KEY, personalRecords);
+                        saveData(BODYWEIGHT_STORAGE_KEY, bodyWeightLog);
+
+                        // Re-initialize the entire app state after restore
+                        initializeApp(); // This will reload predefined, reset form, etc.
+                        showToast('Restaurare Completă', 'Datele au fost restaurate.', 'success');
+                        showTab('dashboardTabContent'); // Go to dashboard after restore
                     } else showToast('Anulat', 'Restaurarea a fost anulată.', 'info');
-                } else throw new Error("Structura JSON invalidă.");
+                } else throw new Error("Structura JSON invalidă sau date lipsă.");
             } catch (err) { console.error("Error parsing restore file:", err); showToast('Eroare Restaurare', `Nu s-a putut restaura: ${err.message}`, 'danger'); }
             finally { restoreFileSettings.value = ''; }
         };
@@ -975,27 +1327,55 @@ document.addEventListener('DOMContentLoaded', () => {
         if (workouts.length === 0) { showToast('Info', 'Nu există date.', 'info'); return; }
         const headers = ["Data", "Exercitiu", "Grupe Musculare", "Set", "Repetari", "Greutate (kg)", "Note"]; let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
         const sortedWorkouts = [...workouts].sort((a, b) => a.date.localeCompare(b.date) || a.exercise.localeCompare(b.exercise));
-        sortedWorkouts.forEach(workout => { workout.sets.forEach((set, index) => { const row = [ formatDateForDisplay(workout.date), `"${workout.exercise.replace(/"/g, '""')}"`, `"${workout.muscleGroups.join(', ')}"`, index + 1, set.reps, set.weight, index === 0 ? `"${workout.notes ? workout.notes.replace(/"/g, '""') : ''}"` : '""' ]; csvContent += row.join(",") + "\n"; }); });
+        sortedWorkouts.forEach(workout => {
+            (workout.sets || []).forEach((set, index) => { // Safer access
+                const row = [
+                    formatDateForDisplay(workout.date),
+                    `"${workout.exercise.replace(/"/g, '""')}"`,
+                    `"${(workout.muscleGroups || []).join(', ')}"`, // Safer access
+                    index + 1,
+                    set.reps || 0,
+                    set.weight || 0,
+                    index === 0 ? `"${workout.notes ? workout.notes.replace(/"/g, '""') : ''}"` : '""'
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+        });
         const encodedUri = encodeURI(csvContent); const link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `gym_log_pro_export_${new Date().toISOString().split('T')[0]}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast('Export CSV', 'Datele exportate în CSV.', 'success');
     }
     function handleExportTXT() {
         if (workouts.length === 0) { showToast('Info', 'Nu există date.', 'info'); return; } let txtContent = "Jurnal Antrenamente Gym Log Pro\n=================================\n\n";
         const groupedByDate = workouts.reduce((acc, workout) => { const dateKey = workout.date; if (!acc[dateKey]) acc[dateKey] = []; acc[dateKey].push(workout); return acc; }, {}); const sortedDates = Object.keys(groupedByDate).sort((a, b) => a.localeCompare(b));
-        sortedDates.forEach(dateKey => { txtContent += `Data: ${formatDateForDisplay(dateKey)}\n-----------------\n`; const workoutsForDay = groupedByDate[dateKey]; workoutsForDay.forEach(workout => { txtContent += `- ${workout.exercise} (${workout.muscleGroups.join(', ')})\n`; workout.sets.forEach((set, index) => { txtContent += `  Set ${index + 1}: ${set.reps} reps @ ${set.weight} kg\n`; }); if (workout.notes) txtContent += `  Notițe: ${workout.notes}\n`; txtContent += "\n"; }); txtContent += "\n"; });
+        sortedDates.forEach(dateKey => { txtContent += `Data: ${formatDateForDisplay(dateKey)}\n-----------------\n`; const workoutsForDay = groupedByDate[dateKey]; workoutsForDay.forEach(workout => { txtContent += `- ${workout.exercise} (${(workout.muscleGroups || []).join(', ')})\n`; (workout.sets || []).forEach((set, index) => { txtContent += `  Set ${index + 1}: ${set.reps || 0} reps @ ${set.weight || 0} kg\n`; }); if (workout.notes) txtContent += `  Notițe: ${workout.notes}\n`; txtContent += "\n"; }); txtContent += "\n"; });
         const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `gym_log_pro_export_${new Date().toISOString().split('T')[0]}.txt`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Export TXT', 'Datele exportate în TXT.', 'success');
     }
     function handleExportPDF() {
         if (workouts.length === 0) { showToast('Info', 'Nu există date.', 'info'); return; } if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined' || typeof window.jspdf.plugin.autotable === 'undefined') { showToast('Eroare PDF', 'Librăria jsPDF/AutoTable lipsește.', 'danger'); console.error("jsPDF or AutoTable not loaded!"); return; } const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const tableColumn = ["Data", "Exercițiu", "Grupe", "Seturi", "Rep. Totale", "Volum", "e1RM Max"]; const tableRows = []; const sortedWorkouts = [...workouts].sort((a, b) => a.date.localeCompare(b.date));
-        sortedWorkouts.forEach(workout => { const totalReps = workout.sets.reduce((sum, set) => sum + set.reps, 0); const volume = calculateVolume([workout]); const maxE1RM = calculateMaxE1RM(workout.sets); tableRows.push([ formatDateForDisplay(workout.date), workout.exercise, workout.muscleGroups.join(', '), workout.sets.length, totalReps, volume.toFixed(0), maxE1RM.toFixed(1) + ' kg' ]); });
+        sortedWorkouts.forEach(workout => {
+            const totalReps = (workout.sets || []).reduce((sum, set) => sum + (set.reps || 0), 0); // Safer access
+            const volume = calculateVolume([workout]);
+            const maxE1RM = calculateMaxE1RM(workout.sets || []); // Safer access
+            tableRows.push([
+                formatDateForDisplay(workout.date),
+                workout.exercise,
+                (workout.muscleGroups || []).join(', '), // Safer access
+                workout.sets?.length || 0, // Safer access
+                totalReps,
+                volume.toFixed(0),
+                maxE1RM.toFixed(1) + ' kg'
+            ]);
+        });
         doc.setFontSize(18); doc.text("Jurnal Antrenamente - Gym Log Pro", 14, 20); doc.setFontSize(11); doc.setTextColor(100);
         doc.autoTable({ head: [tableColumn], body: tableRows, startY: 30, theme: 'grid', headStyles: { fillColor: [22, 160, 133] }, styles: { fontSize: 8, cellPadding: 2 }, columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 45 }, 2: { cellWidth: 35 }, 3: { cellWidth: 15, halign: 'center' }, 4: { cellWidth: 20, halign: 'center' }, 5: { cellWidth: 25, halign: 'right' }, 6: { cellWidth: 30, halign: 'right' } } });
         doc.save(`gym_log_pro_export_${new Date().toISOString().split('T')[0]}.pdf`); showToast('Export PDF', 'Datele exportate în PDF.', 'success');
     }
 
     // --- Utility Functions ---
+    // Keep existing utility functions: formatDate, formatDateForDisplay
     function formatDate(dateString) { if (!dateString) return new Date().toISOString().split('T')[0]; if (dateString instanceof Date) return dateString.toISOString().split('T')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString; try { return new Date(dateString).toISOString().split('T')[0]; } catch (e) { return new Date().toISOString().split('T')[0]; } }
     function formatDateForDisplay(dateString) { if (!dateString) return '-'; try { const dateObj = (dateString instanceof Date) ? dateString : new Date(dateString + 'T00:00:00'); return new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' }).format(dateObj); } catch (e) { console.warn("Error formatting date:", dateString, e); return dateString; } }
+
 
     // --- Event Listeners Setup ---
     function setupEventListeners() {
@@ -1003,13 +1383,14 @@ document.addEventListener('DOMContentLoaded', () => {
         workoutForm.addEventListener('submit', handleFormSubmit);
         addSetBtn.addEventListener('click', () => addSetRow());
         cancelEditBtn.addEventListener('click', handleCancelEdit);
+        muscleGroupsSelect.addEventListener('change', updateExerciseDropdown); // *** ADDED listener
 
-        // Log History Filtering & Pagination (History Tab)
+        // Log History Filtering & Pagination
         filterDateInput.addEventListener('change', handleFilterChange);
         filterExerciseInput.addEventListener('input', debouncedFilterHandler);
         filterMuscleGroupSelect.addEventListener('change', handleFilterChange);
         clearFiltersBtn.addEventListener('click', handleClearFilters);
-        // Pagination listener added dynamically
+        // Pagination listener added dynamically in renderPaginationControls
 
         // Bottom Navigation
         bottomNavButtons.forEach(button => {
@@ -1023,11 +1404,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Settings - Custom Exercises
         addNewExerciseBtnSettings.addEventListener('click', handleAddCustomExercise);
         newExerciseNameSettings.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomExercise(); } });
-        // Delete listener delegated
+        // Delete listener delegated in renderCustomExercisesList
 
         // Settings - Bodyweight
         bodyweightForm.addEventListener('submit', handleBodyweightSubmit);
-        // Delete listener delegated
+        // Delete listener delegated in renderBodyWeightLogList
 
         // Settings - Data Management
         backupDataBtnSettings.addEventListener('click', handleBackupData);
@@ -1037,37 +1418,81 @@ document.addEventListener('DOMContentLoaded', () => {
         exportPDFSettings.addEventListener('click', handleExportPDF);
 
         // Plan Tab - Log Exercise Button (Delegated)
-        planTabContent.addEventListener('click', handleLogPlanExerciseClick);
+        planTabContent.addEventListener('click', handleLogPlanExerciseClick); // MODIFIED below
     }
 
-    // Handle clicking "Log" button from Plan tab
+    // MODIFIED: Handle clicking "Log" button from Plan tab
     function handleLogPlanExerciseClick(event) {
         const button = event.target.closest('.log-plan-exercise-btn');
         if (!button) return;
 
-        const exerciseName = button.dataset.exercise;
-        if (!exerciseName) return;
+        const exerciseNameRo = button.dataset.exercise; // This should be the Romanian name
+        if (!exerciseNameRo) return;
 
-        // Check if exercise exists in the dropdown
-        const exerciseExists = [...exerciseSelect.options].some(opt => opt.value === exerciseName);
+        // Find the exercise object in the predefined list
+        const exerciseData = predefinedExercises.find(ex => ex.name_ro === exerciseNameRo);
+        const isCustom = !exerciseData && customExercises.includes(exerciseNameRo);
 
-        if (!exerciseExists) {
-            showToast('Atenție', `Exercițiul "${exerciseName}" nu este în lista curentă. Adaugă-l din Setări întâi.`, 'warning');
+        if (!exerciseData && !isCustom) {
+            showToast('Eroare', `Exercițiul "${exerciseNameRo}" din plan nu a fost găsit în lista predefinită sau custom.`, 'danger');
             return;
         }
 
+        // Determine the muscle group (only for predefined exercises)
+        const muscleGroupToSelect = exerciseData ? exerciseData.muscle_group : null;
+
         showTab('logTabContent'); // Switch to Add tab
-        resetForm(); // Start with a clean form
-        exerciseSelect.value = exerciseName; // Pre-fill exercise
+        resetForm(); // Start with a clean form (disables exercise dropdown)
+
+        // Select the muscle group IF it's a predefined exercise
+        if (muscleGroupToSelect) {
+            // Find the option element and select it
+            const muscleOption = Array.from(muscleGroupsSelect.options).find(opt => opt.value === muscleGroupToSelect);
+            if (muscleOption) {
+                // Deselect any currently selected options first for single selection behavior simulation
+                Array.from(muscleGroupsSelect.options).forEach(opt => opt.selected = false);
+                muscleOption.selected = true;
+            } else {
+                console.warn(`Muscle group "${muscleGroupToSelect}" for exercise "${exerciseNameRo}" not found in select list.`);
+                showToast('Atenție', `Grupa musculară "${muscleGroupToSelect}" nu a fost găsită în listă.`, 'warning');
+            }
+        } else {
+             // For custom exercises, we don't know the group, leave it unselected.
+             showToast('Info', `Selectați grupa musculară potrivită pentru exercițiul custom "${exerciseNameRo}".`, 'info');
+        }
+
+        // Trigger the dropdown update based on the (potentially) selected muscle group
+        updateExerciseDropdown(); // This enables and populates the exercise dropdown
+
+        // Now, try to select the exercise in the (now populated) dropdown
+        exerciseSelect.value = exerciseNameRo;
+
+        // Check if selection worked (it might fail for custom if no group selected, or if group wasn't found)
+        if (exerciseSelect.value !== exerciseNameRo && !exerciseSelect.disabled) {
+             console.warn(`Failed to pre-select exercise "${exerciseNameRo}". It might require a different muscle group selection or wasn't found.`);
+             // Add a temporary option if it's missing but shouldn't be (e.g., custom exercise that should be visible)
+             if(isCustom && muscleGroupsSelect.selectedOptions.length > 0) { // Only add temp if a group IS selected
+                 const tempOpt = document.createElement('option');
+                 tempOpt.value = exerciseNameRo;
+                 tempOpt.textContent = exerciseNameRo + " (Custom)";
+                 exerciseSelect.appendChild(tempOpt); // Append might be okay here
+                 exerciseSelect.value = exerciseNameRo;
+             } else if (!isCustom && muscleGroupToSelect) {
+                 showToast('Atenție', `Selectați grupa musculară corectă (${muscleGroupToSelect}) pentru a vedea "${exerciseNameRo}".`, 'warning');
+             }
+        }
+
 
         // Scroll form into view and focus first set input
         logTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
         const firstRepsInput = setsContainer.querySelector('.reps-input');
         if (firstRepsInput) {
-            setTimeout(() => firstRepsInput.focus(), 150); // Slightly longer timeout
+            setTimeout(() => firstRepsInput.focus(), 250); // Slightly longer timeout for UI updates
         }
 
-        showToast('Info', `Exercițiul "${exerciseName}" pre-selectat. Completează seturile.`, 'info');
+        if (exerciseSelect.value === exerciseNameRo) {
+             showToast('Info', `Exercițiul "${exerciseNameRo}" pre-selectat. Completează seturile.`, 'info');
+        }
     }
 
 

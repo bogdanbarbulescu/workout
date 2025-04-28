@@ -1,130 +1,882 @@
 [
-  "Ab Wheel Rollout",
-  "Arnold Press (Ganteră)",
-  "Barbell Curl (Bară dreaptă/EZ)",
-  "Barbell Row (Aplecat)",
-  "Bench Press (Bară - Împins la piept)",
-  "Bench Press Înclinat (Bară)",
-  "Bench Press Declinat (Bară)",
-  "Bent Over Lateral Raise (Ganteră/Cablu)",
-  "Bicep Curl (Ganteră - Alternativ/Simultan)",
-  "Box Squat",
-  "Bulgarian Split Squat",
-  "Cable Crossover (Cablu)",
-  "Cable Crunch (Cablu)",
-  "Cable Lateral Raise (Cablu)",
-  "Cable Pushdown (Cablu - Sfoară/Bară V/Bară dreaptă)",
-  "Cable Row (Seated - Cablu)",
-  "Calf Raise (La aparat/Stând/Șezând)",
-  "Chest Dip (Paralele - focus Piept)",
-  "Chin-up (Tracțiuni priză supinată)",
-  "Concentration Curl (Ganteră)",
-  "Crunch (Abdomene)",
-  "Deadlift (Îndreptări - Conventional)",
-  "Deadlift (Romanian - RDL)",
-  "Deadlift (Sumo)",
-  "Decline Bench Press (Ganteră)",
-  "Decline Crunch",
-  "Dumbbell Bench Press (Ganteră - Împins la piept)",
-  "Dumbbell Curl (Ganteră)",
-  "Dumbbell Fly (Ganteră - Fluturări)",
-  "Dumbbell Front Raise (Ganteră)",
-  "Dumbbell Lateral Raise (Ganteră)",
-  "Dumbbell Pullover (Ganteră)",
-  "Dumbbell Row (Ganteră - Ramat)",
-  "Dumbbell Shrug (Ganteră - Ridicări umeri)",
-  "Dumbbell Shoulder Press (Ganteră - Presă umeri)",
-  "Face Pull (Cablu)",
-  "Flat Bench Dumbbell Fly (Ganteră)",
-  "Front Squat (Bară)",
-  "Glute Bridge",
-  "Glute Kickback (Cablu/Aparat)",
-  "Goblet Squat (Ganteră/Kettlebell)",
-  "Good Morning (Bară)",
-  "Hack Squat (Aparat)",
-  "Hammer Curl (Ganteră)",
-  "Hanging Leg Raise (La bară)",
-  "Hip Abduction (Aparat)",
-  "Hip Adduction (Aparat)",
-  "Hip Thrust (Bară/Aparat)",
-  "Hyperextension (Extensii spate)",
-  "Incline Bench Press (Ganteră)",
-  "Incline Dumbbell Curl (Ganteră)",
-  "Incline Dumbbell Fly (Ganteră)",
-  "Lat Pulldown (Aparat helcometru - Priză largă/îngustă/neutră)",
-  "Lateral Raise (Aparat)",
-  "Leg Curl (Aparat - Culcat/Șezând/Stând)",
-  "Leg Extension (Aparat)",
-  "Leg Press (Aparat)",
-  "Lunge (Mers/Static - Bară/Ganteră)",
-  "Machine Chest Fly (Aparat - Fluturări)",
-  "Machine Chest Press (Aparat - Împins)",
-  "Machine Lateral Raise (Aparat)",
-  "Machine Preacher Curl (Aparat)",
-  "Machine Row (Aparat)",
-  "Machine Shoulder Press (Aparat)",
-  "Overhead Press (Bară - Presă militară)",
-  "Overhead Triceps Extension (Ganteră/Bară/Cablu)",
-  "Pec Deck (Aparat)",
-  "Pendlay Row (Bară)",
-  "Plank (Planșă)",
-  "Preacher Curl (Bară/Ganteră)",
-  "Pull-up (Tracțiuni priză pronată)",
-  "Push-up (Flotare)",
-  "Rack Pull",
-  "Rear Delt Fly (Aparat/Ganteră/Cablu)",
-  "Reverse Crunch",
-  "Reverse Grip Lat Pulldown (Aparat helcometru)",
-  "Russian Twist",
-  "Seated Calf Raise (Aparat)",
-  "Seated Dumbbell Shoulder Press (Ganteră)",
-  "Shrug (Bară - Ridicări umeri)",
-  "Side Plank",
-  "Single Arm Dumbbell Row (Ganteră)",
-  "Skullcrusher (Bară EZ/Ganteră - Extensii triceps culcat)",
-  "Smith Machine Bench Press",
-  "Smith Machine Squat",
-  "Squat (Bară - Genuflexiune)",
-  "Standing Calf Raise (Aparat/Liber)",
-  "Stiff-Legged Deadlift (Bară)",
-  "Straight Arm Pulldown (Cablu)",
-  "T-Bar Row",
-  "Triceps Dip (Paralele/Bancă - focus Triceps)",
-  "Triceps Pushdown (Cablu)",
-  "Upright Row (Bară/Ganteră/Cablu)",
-  "Weighted Crunch",
-  "Horizontal Cable Row (Spate scripete orizontal)",
-  "Vertical Pulldown (Scripete vertical)",
-  "Cable Row (Tras aparat spate)",
-  "Back Machine Row (Aparat spate)",
-  "Dumbbell Deadlift (Îndreptări cu gantere)",
-  "Cable Triceps Extension (Triceps scripete)",
-  "Shrug (Trapez)",
-  "Incline Bench Press (Împins piept înclinat)",
-  "Dumbbell Bench Press (Împins cu gantere)",
-  "Machine Chest Press (Împins la aparat orizontal)",
-  "Decline Bench Press (Declinat gantere)",
-  "Cable Curl (Scripete)",
-  "Barbell Row (Ramat orizontal)",
-  "Cable Row (Tras aparat)",
-  "Face Pull (Scripete disc)",
-  "Dumbbell Deadlift (Îndreptări cu gantera)",
-  "Leg Curl (Flexii picioare)",
-  "Machine Squat (Genuflexiuni aparat)",
-  "Calf Raise (Gambe)",
-  "Hip Adduction (Aductori)",
-  "Hamstring Curl (Biceps femural)",
-  "Dumbbell Shoulder Press (Împins umeri)",
-  "Dumbbell Lateral Raise (Ridicări laterale ganteră)",
-  "Dumbbell Front Raise (Ridicări disc frontal)",
-  "Machine Chest Press (Piept aparat orizontal)",
-  "Bench Press (Împins orizontal)",
-  "Cable Crossover (Scripete declinat)",
-  "Barbell Row (Ramat orizontal)",
-  "Vertical Row (Ramat vertical)",
-  "Cable Row (Tras aparat orizontal)",
-  "Dumbbell Deadlift (Îndreptări gantere)",
-  "Dumbbell Shrug (Trapez gantere)",
-  "Cable Curl (Biceps scripete)",
-  "Hammer Curl (Biceps ciocane)"
+  {
+    "muscle_group": "Piept",
+    "name": "Barbell Bench Press",
+    "name_ro": "Împins la piept cu bară",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Incline Barbell Bench Press",
+    "name_ro": "Împins la piept înclinat cu bară",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Decline Barbell Bench Press",
+    "name_ro": "Împins la piept declinat cu bară",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Dumbbell Bench Press",
+    "name_ro": "Împins la piept cu gantere",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Incline Dumbbell Bench Press",
+    "name_ro": "Împins la piept înclinat cu gantere",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Decline Dumbbell Bench Press",
+    "name_ro": "Împins la piept declinat cu gantere",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Machine Chest Press",
+    "name_ro": "Împins la piept la aparat",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Cable Crossover",
+    "name_ro": "Fluturări la cablu",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Pec Deck",
+    "name_ro": "Fluturări la aparat (Pec Deck)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Machine Chest Fly",
+    "name_ro": "Fluturări la piept la aparat",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Chest Dip",
+    "name_ro": "Paralele pentru piept",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Push-up",
+    "name_ro": "Flotări",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Incline Push-up",
+    "name_ro": "Flotări înclinate",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Decline Push-up",
+    "name_ro": "Flotări declinate",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Dumbbell Fly",
+    "name_ro": "Fluturări cu gantere",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+   {
+    "muscle_group": "Piept",
+    "name": "Incline Dumbbell Fly",
+    "name_ro": "Fluturări înclinate cu gantere",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Piept",
+    "name": "Dumbbell Pullover",
+    "name_ro": "Pullover cu gantera",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+   {
+    "muscle_group": "Piept",
+    "name": "Smith Machine Bench Press",
+    "name_ro": "Împins la piept la aparatul Smith",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Pull-up",
+    "name_ro": "Tracțiuni (priză pronată)",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Chin-up",
+    "name_ro": "Tracțiuni (priză supinată)",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Lat Pulldown",
+    "name_ro": "Tracțiuni la helcometru",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Reverse Grip Lat Pulldown",
+    "name_ro": "Tracțiuni la helcometru (priză inversă)",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Bent-over Barbell Row",
+    "name_ro": "Ramat cu bară din aplecat",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Pendlay Row",
+    "name_ro": "Ramat Pendlay",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Bent-over Dumbbell Row",
+    "name_ro": "Ramat cu gantere din aplecat",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "T-Bar Row",
+    "name_ro": "Ramat la T-bar",
+    "type": "compound",
+    "equipment": "barbell/machine",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Seated Cable Row",
+    "name_ro": "Ramat la cablu din șezut",
+    "type": "compound",
+    "equipment": "cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Machine Row",
+    "name_ro": "Ramat la aparat",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Single-arm Dumbbell Row",
+    "name_ro": "Ramat cu gantera din sprijin",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Deadlift",
+    "name_ro": "Îndreptări (Convențional)",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "advanced"
+  },
+   {
+    "muscle_group": "Spate",
+    "name": "Sumo Deadlift",
+    "name_ro": "Îndreptări (Sumo)",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Dumbbell Deadlift",
+    "name_ro": "Îndreptări cu gantere",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Rack Pull",
+    "name_ro": "Îndreptări parțiale (Rack Pull)",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Straight-arm Pulldown",
+    "name_ro": "Tracțiuni cu brațele drepte la cablu",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Inverted Row",
+    "name_ro": "Ramat orizontal la bară (Inverted Row)",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Spate",
+    "name": "Hyperextension",
+    "name_ro": "Extensii pentru spate (Hiperextensii)",
+    "type": "isolation",
+    "equipment": "bodyweight/machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Overhead Barbell Press",
+    "name_ro": "Împins deasupra capului cu bară (Presă militară)",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Seated Dumbbell Shoulder Press",
+    "name_ro": "Împins cu gantere din șezut",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Standing Dumbbell Shoulder Press",
+    "name_ro": "Împins cu gantere din picioare",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Machine Shoulder Press",
+    "name_ro": "Împins la umeri la aparat",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Arnold Press",
+    "name_ro": "Împins Arnold",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Lateral Raise",
+    "name_ro": "Ridicări laterale cu gantere",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Cable Lateral Raise",
+    "name_ro": "Ridicări laterale la cablu",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "intermediate"
+  },
+   {
+    "muscle_group": "Umeri",
+    "name": "Machine Lateral Raise",
+    "name_ro": "Ridicări laterale la aparat",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Front Dumbbell Raise",
+    "name_ro": "Ridicări frontale cu gantere",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Face Pull",
+    "name_ro": "Tracțiuni la față (Face Pull)",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Reverse Pec Deck Fly",
+    "name_ro": "Fluturări inverse la aparat (Pec Deck)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+   {
+    "muscle_group": "Umeri",
+    "name": "Bent Over Lateral Raise",
+    "name_ro": "Fluturări din aplecat (gantere/cablu)",
+    "type": "isolation",
+    "equipment": "dumbbell/cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Barbell Upright Row",
+    "name_ro": "Ramat vertical cu bară",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Umeri",
+    "name": "Dumbbell Upright Row",
+    "name_ro": "Ramat vertical cu gantere",
+    "type": "compound",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Trapez",
+    "name": "Barbell Shrug",
+    "name_ro": "Ridicări de umeri cu bară (Trapez)",
+    "type": "isolation",
+    "equipment": "barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Trapez",
+    "name": "Dumbbell Shrug",
+    "name_ro": "Ridicări de umeri cu gantere (Trapez)",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Barbell Curl",
+    "name_ro": "Flexii cu bară (dreaptă/EZ)",
+    "type": "isolation",
+    "equipment": "barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Dumbbell Curl",
+    "name_ro": "Flexii cu gantere (alternativ/simultan)",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Hammer Curl",
+    "name_ro": "Flexii ciocan",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Concentration Curl",
+    "name_ro": "Flexii concentrate",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Incline Dumbbell Curl",
+    "name_ro": "Flexii înclinate cu gantere",
+    "type": "isolation",
+    "equipment": "dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Preacher Curl",
+    "name_ro": "Flexii la bancă Scott (bară/gantere)",
+    "type": "isolation",
+    "equipment": "barbell/dumbbell/machine",
+    "difficulty": "beginner"
+  },
+   {
+    "muscle_group": "Biceps",
+    "name": "Machine Preacher Curl",
+    "name_ro": "Flexii la aparat (bancă Scott)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Biceps",
+    "name": "Cable Curl",
+    "name_ro": "Flexii la cablu (scripete)",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Close-Grip Bench Press",
+    "name_ro": "Împins la piept cu priză îngustă",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Triceps Dip",
+    "name_ro": "Paralele pentru triceps (sau la bancă)",
+    "type": "compound",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Cable Pushdown",
+    "name_ro": "Extensii la cablu (sfoară/bară)",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Overhead Triceps Extension",
+    "name_ro": "Extensii deasupra capului (ganteră/bară/cablu)",
+    "type": "isolation",
+    "equipment": "dumbbell/barbell/cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Skullcrusher",
+    "name_ro": "Extensii din culcat (Skullcrusher - bară EZ/gantere)",
+    "type": "isolation",
+    "equipment": "barbell/dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Triceps",
+    "name": "Cable Triceps Extension",
+    "name_ro": "Extensii triceps la scripete",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Barbell Back Squat",
+    "name_ro": "Genuflexiuni cu bară pe spate",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Front Squat",
+    "name_ro": "Genuflexiuni cu bară în față",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Smith Machine Squat",
+    "name_ro": "Genuflexiuni la aparatul Smith",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+   {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Machine Squat",
+    "name_ro": "Genuflexiuni la aparat",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Leg Press",
+    "name_ro": "Presa pentru picioare",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Hack Squat",
+    "name_ro": "Hack Squat la aparat",
+    "type": "compound",
+    "equipment": "machine",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Bulgarian Split Squat",
+    "name_ro": "Genuflexiuni bulgărești",
+    "type": "compound",
+    "equipment": "dumbbell/bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Walking Lunges",
+    "name_ro": "Fandări mergând",
+    "type": "compound",
+    "equipment": "bodyweight/dumbbell/barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Static Lunges",
+    "name_ro": "Fandări statice",
+    "type": "compound",
+    "equipment": "bodyweight/dumbbell/barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Step-Up",
+    "name_ro": "Urcări pe bancă/step",
+    "type": "compound",
+    "equipment": "bodyweight/dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Leg Extension",
+    "name_ro": "Extensii pentru cvadriceps",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Box Squat",
+    "name_ro": "Genuflexiuni pe cutie (Box Squat)",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Cvadricepși",
+    "name": "Goblet Squat",
+    "name_ro": "Genuflexiuni Goblet (ganteră/kettlebell)",
+    "type": "compound",
+    "equipment": "dumbbell/kettlebell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Romanian Deadlift",
+    "name_ro": "Îndreptări românești (RDL)",
+    "type": "compound",
+    "equipment": "barbell/dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Stiff-Legged Deadlift",
+    "name_ro": "Îndreptări cu picioarele drepte",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Good Morning",
+    "name_ro": "Good Mornings",
+    "type": "compound",
+    "equipment": "barbell",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Lying Leg Curl",
+    "name_ro": "Flexii femurale la aparat (culcat)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Seated Leg Curl",
+    "name_ro": "Flexii femurale la aparat (șezut)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Standing Leg Curl",
+    "name_ro": "Flexii femurale la aparat (din picioare)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Coapse - Biceps femural",
+    "name": "Nordic Hamstring Curl",
+    "name_ro": "Flexii nordice pentru biceps femural",
+    "type": "isolation",
+    "equipment": "bodyweight",
+    "difficulty": "advanced"
+  },
+  {
+    "muscle_group": "Coapse - Aductori",
+    "name": "Hip Adduction",
+    "name_ro": "Aducții la aparat",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Fesieri",
+    "name": "Hip Thrust",
+    "name_ro": "Împins din șolduri (Hip Thrust)",
+    "type": "compound",
+    "equipment": "barbell/machine/dumbbell",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Fesieri",
+    "name": "Glute Bridge",
+    "name_ro": "Podul fesier",
+    "type": "isolation",
+    "equipment": "bodyweight/barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Fesieri",
+    "name": "Glute Kickback",
+    "name_ro": "Extensii pentru fesieri (la cablu/aparat)",
+    "type": "isolation",
+    "equipment": "cable/machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Fesieri",
+    "name": "Cable Pull Through",
+    "name_ro": "Tracțiuni cu cablu printre picioare",
+    "type": "compound",
+    "equipment": "cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Fesieri",
+    "name": "Hip Abduction",
+    "name_ro": "Abducții la aparat",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Gambe",
+    "name": "Standing Calf Raise",
+    "name_ro": "Ridicări pe vârfuri din picioare (gambe)",
+    "type": "isolation",
+    "equipment": "machine/bodyweight/dumbbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Gambe",
+    "name": "Seated Calf Raise",
+    "name_ro": "Ridicări pe vârfuri din șezut (gambe)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Gambe",
+    "name": "Donkey Calf Raise",
+    "name_ro": "Ridicări pe vârfuri tip măgar (gambe)",
+    "type": "isolation",
+    "equipment": "machine/bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Gambe",
+    "name": "Leg Press Calf Raise",
+    "name_ro": "Ridicări pe vârfuri la presa pentru picioare",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Crunch",
+    "name_ro": "Abdomene clasice",
+    "type": "isolation",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Weighted Crunch",
+    "name_ro": "Abdomene cu greutate",
+    "type": "isolation",
+    "equipment": "dumbbell/plate/cable",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Cable Crunch",
+    "name_ro": "Abdomene la cablu",
+    "type": "isolation",
+    "equipment": "cable",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Decline Crunch",
+    "name_ro": "Abdomene pe bancă declinată",
+    "type": "isolation",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Hanging Leg Raise",
+    "name_ro": "Ridicări de picioare din atârnat",
+    "type": "isolation",
+    "equipment": "bodyweight",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Captain's Chair Leg Raise",
+    "name_ro": "Ridicări de picioare la paralele (scaunul căpitanului)",
+    "type": "isolation",
+    "equipment": "machine",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Reverse Crunch",
+    "name_ro": "Abdomene inverse",
+    "type": "isolation",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Plank",
+    "name_ro": "Planșă",
+    "type": "isometric",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Side Plank",
+    "name_ro": "Planșă laterală",
+    "type": "isometric",
+    "equipment": "bodyweight",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Russian Twist",
+    "name_ro": "Răsuciri rusești",
+    "type": "isolation",
+    "equipment": "bodyweight/dumbbell/plate",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Abdomen",
+    "name": "Ab Wheel Rollout",
+    "name_ro": "Rulări cu roata pentru abdomen",
+    "type": "compound",
+    "equipment": "ab wheel",
+    "difficulty": "intermediate"
+  },
+  {
+    "muscle_group": "Antebraț",
+    "name": "Wrist Curl",
+    "name_ro": "Flexii pentru antebraț (pumn)",
+    "type": "isolation",
+    "equipment": "dumbbell/barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Antebraț",
+    "name": "Reverse Wrist Curl",
+    "name_ro": "Flexii inverse pentru antebraț (pumn)",
+    "type": "isolation",
+    "equipment": "dumbbell/barbell",
+    "difficulty": "beginner"
+  },
+  {
+    "muscle_group": "Antebraț",
+    "name": "Farmer's Walk",
+    "name_ro": "Mersul fermierului",
+    "type": "compound",
+    "equipment": "dumbbell/kettlebell/trap bar",
+    "difficulty": "beginner"
+  }
 ]
