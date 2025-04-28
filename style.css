@@ -1,4 +1,4 @@
-/* style.css - HTB Academy Inspired Theme (v3 - Includes History Tab & Bodyweight) */
+/* style.css - HTB Academy Inspired Theme (v4 - Includes History Tab, Bodyweight, Form Polish) */
 
 /* 1. Definire Variabile Culoare */
 :root {
@@ -124,6 +124,12 @@
     --bs-btn-warning-hover-bg: #fca031;
     --bs-btn-warning-hover-border-color: #fca031;
 
+    --bs-btn-outline-warning-color: var(--bs-warning);
+    --bs-btn-outline-warning-border-color: var(--bs-warning);
+    --bs-btn-outline-warning-hover-color: var(--bs-warning-text-emphasis);
+    --bs-btn-outline-warning-hover-bg: var(--bs-warning);
+
+
     --bs-btn-danger-color: var(--htb-text-primary);
     --bs-btn-danger-bg: var(--bs-danger);
     --bs-btn-danger-border-color: var(--bs-danger);
@@ -176,6 +182,8 @@
     --bs-input-group-addon-bg: var(--htb-bg-light);
     --bs-input-group-addon-color: var(--htb-text-secondary);
     --bs-input-group-addon-border-color: var(--htb-border-color);
+    --bs-form-invalid-color: var(--bs-danger); /* Ensure invalid feedback text is red */
+    --bs-form-invalid-border-color: var(--bs-danger);
 
     /* Tabele (Păstrăm pt orice tabel rămas) */
     --bs-table-bg: transparent;
@@ -424,7 +432,7 @@ a:hover {
     white-space: pre-wrap; /* Preserve line breaks in notes */
     word-break: break-word; /* Prevent long words from overflowing */
 }
-/* NEW: Style for clickable area to toggle notes */
+/* Style for clickable area to toggle notes */
 .workout-log-grouped .clickable-area {
     cursor: pointer;
 }
@@ -543,8 +551,8 @@ a:hover {
     font-size: 0.7rem;
     padding: 0.3em 0.5em;
 }
-#personalRecordsList .pr-type,
-#newPrZoneList .pr-type {
+#personalRecordsList .pr-type, /* This class might not be used anymore */
+#newPrZoneList .pr-type { /* This class might not be used anymore */
     font-size: 0.65rem;
     opacity: 0.8;
 }
@@ -644,10 +652,6 @@ a:hover {
     .table-controls .btn { width: 100%; }
 }
 
-/* Add these styles to your existing style.css file */
-
-/* ... (Keep all existing styles from the previous version) ... */
-
 /* Pagination Controls */
 .pagination-controls {
     gap: 0.5rem; /* Space between elements */
@@ -714,13 +718,182 @@ a:hover {
     flex-shrink: 0; /* Prevent button from shrinking */
 }
 
-/* Adjust dashboard layout after removing focus widget */
-/* If the row previously had 3 cols (lg-4), the remaining 2 can become lg-6 */
-/* Example: If PR Zone and Recent Sessions were in a row with Focus */
-/* #dashboardTabContent .row > .col-lg-4 { */
-    /* @media (min-width: 992px) { */
-        /* flex: 0 0 auto; */
-        /* width: 50%; /* Make remaining 2 columns take half width each */ */
-    /* } */
-/* } */
-/* Note: The provided HTML already adjusted the columns to col-lg-6, so this override might not be needed */
+/* --- NEW Styles for Form Polish --- */
+
+/* Style for the set number column */
+.set-number {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--htb-text-muted);
+    min-width: 20px; /* Ensure it has some width */
+    text-align: center;
+}
+
+/* Add a subtle top border to set rows after the first one */
+.set-row + .set-row {
+    border-top: 1px dashed var(--htb-border-color);
+    padding-top: 0.5rem; /* Add some padding above the border */
+    margin-top: 0.5rem !important; /* Override mb-2 for subsequent rows */
+}
+
+/* Slightly smaller delete button for sets */
+.set-row .remove-set-btn {
+    padding: 0.15rem 0.35rem !important; /* Fine-tune padding */
+    line-height: 1;
+}
+.set-row .remove-set-btn i {
+    vertical-align: middle; /* Better icon alignment */
+}
+
+/* Ensure form section card has consistent padding */
+.form-section.card .card-body {
+    padding: 1.25rem; /* Adjust as needed */
+}
+
+/* Adjust invalid feedback for set inputs to be less intrusive */
+.set-row .invalid-feedback {
+    display: inline; /* Show inline */
+    width: auto;
+    margin-top: 0;
+    position: absolute; /* Position it relative to the input */
+    bottom: -14px; /* Adjust position below input */
+    left: 5px;
+    font-size: 0.7rem !important; /* Make it smaller */
+    background-color: var(--bs-danger-bg-subtle); /* Subtle background */
+    color: var(--bs-danger-text-emphasis);
+    padding: 0 3px;
+    border-radius: 2px;
+    opacity: 0.9;
+    pointer-events: none; /* Prevent feedback from blocking clicks */
+}
+.set-row .col {
+    position: relative; /* Needed for absolute positioning of feedback */
+    padding-bottom: 10px; /* Add space below inputs for feedback */
+}
+
+/* Make main action buttons slightly larger */
+#logTabContent .btn-success,
+#logTabContent .btn-secondary {
+    padding: .4rem .9rem; /* Adjust padding */
+    font-size: .9rem; /* Adjust font size */
+}
+
+/* --- END NEW Styles for Form Polish --- */
+
+/* --- Styles for Enhanced Plan Tab --- */
+
+#planTabContent .plan-card {
+    background-color: var(--htb-bg-medium); /* Use medium background for cards */
+    border: 1px solid var(--htb-border-color);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+#planTabContent .plan-card:hover {
+     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25) !important; /* Slightly stronger shadow on hover */
+}
+
+
+#planTabContent .plan-card-header {
+    background-color: rgba(0,0,0,0.15); /* Darker header background */
+    border-bottom: 1px solid var(--htb-border-color);
+    color: var(--htb-text-primary);
+    padding: 0.75rem 1.25rem; /* Adjust padding */
+}
+
+#planTabContent .plan-card-header h5 {
+    color: var(--htb-accent); /* Use accent color for title */
+}
+
+#planTabContent .plan-card-header .badge {
+    font-size: 0.7rem; /* Smaller badge */
+}
+
+#planTabContent .plan-card-body {
+    padding: 0.5rem 0; /* Remove horizontal padding, add vertical */
+}
+
+#planTabContent .plan-exercise-list {
+    /* No specific styles needed for the container itself */
+}
+
+#planTabContent .plan-exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem; /* Consistent padding */
+    border-bottom: 1px solid var(--htb-border-color);
+    transition: background-color 0.15s ease;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 0.5rem; /* Add gap for wrapped items */
+}
+
+#planTabContent .plan-exercise-item:last-child {
+    border-bottom: none; /* Remove border on last item */
+}
+
+#planTabContent .plan-exercise-item:hover {
+    background-color: rgba(255, 255, 255, 0.04); /* Subtle hover */
+}
+
+#planTabContent .plan-exercise-item .exercise-details {
+    flex-grow: 1; /* Allow details to take available space */
+    margin-right: 1rem; /* Space between details and actions */
+}
+
+#planTabContent .plan-exercise-item .exercise-name {
+    color: var(--htb-text-primary);
+    font-size: 0.9rem;
+}
+
+#planTabContent .plan-exercise-item .exercise-sets {
+    color: var(--htb-text-secondary);
+}
+
+#planTabContent .plan-exercise-item .exercise-actions {
+    flex-shrink: 0; /* Prevent actions container from shrinking */
+}
+
+#planTabContent .log-plan-exercise-btn {
+    font-size: 0.75rem; /* Slightly larger button text */
+    padding: 0.2rem 0.5rem; /* Adjust padding */
+    line-height: 1.2;
+    vertical-align: middle; /* Align icon and text */
+    /* Use success outline color */
+    --bs-btn-color: var(--bs-success);
+    --bs-btn-border-color: var(--bs-success);
+    --bs-btn-hover-color: var(--bs-btn-success-color); /* Use text color from variable */
+    --bs-btn-hover-bg: var(--bs-success);
+    --bs-btn-hover-border-color: var(--bs-success);
+    --bs-btn-active-color: var(--bs-btn-success-color);
+    --bs-btn-active-bg: var(--bs-btn-success-hover-bg);
+    --bs-btn-active-border-color: var(--bs-btn-success-hover-border-color);
+}
+
+#planTabContent .log-plan-exercise-btn i {
+    font-size: 0.9em; /* Adjust icon size relative to text */
+    margin-right: 0.25rem !important; /* Ensure space after icon */
+}
+
+/* Style for grouped buttons */
+#planTabContent .exercise-actions .btn-group .btn {
+    /* Ensure grouped buttons don't have extra margin */
+    margin-left: 0 !important;
+}
+
+/* Responsive adjustments for plan items */
+@media (max-width: 576px) {
+    #planTabContent .plan-exercise-item {
+        flex-direction: column; /* Stack vertically */
+        align-items: flex-start; /* Align items to start */
+    }
+    #planTabContent .plan-exercise-item .exercise-details {
+        margin-right: 0;
+        margin-bottom: 0.5rem; /* Add space below details */
+        width: 100%; /* Take full width */
+    }
+    #planTabContent .plan-exercise-item .exercise-actions {
+        align-self: flex-end; /* Align actions to the right */
+    }
+}
+
+/* --- END Styles for Enhanced Plan Tab --- */

@@ -1,4 +1,5 @@
-// app.js - Gym Log Pro Logic (v5 - Structured Exercises, Filtered Dropdown)
+
+// app.js - Gym Log Pro Logic (v6 - Structured Exercises, Filtered Dropdown, Form Polish)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Constants and State ---
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterExerciseInput = document.getElementById('filterExercise');
     const filterMuscleGroupSelect = document.getElementById('filterMuscleGroup');
     const clearFiltersBtn = document.getElementById('clearFilters');
-    const paginationControlsContainer = document.getElementById('paginationControls'); // NEW
+    const paginationControlsContainer = document.getElementById('paginationControls');
 
     // Plan Tab
     const planTabContent = document.getElementById('planTabContent'); // For event delegation
@@ -244,14 +245,19 @@ document.addEventListener('DOMContentLoaded', () => {
          if (hasRelevantPredefined && hasRelevantCustom) {
             const separator = document.createElement('option');
             separator.disabled = true;
+           
             // Find the first custom exercise in the *sorted unique* list
             const firstCustomIndexInSorted = uniqueCombinedExercises.findIndex(ex => customExercises.includes(ex.value));
 
             if (firstCustomIndexInSorted !== -1) {
                  // Find the corresponding option element in the dropdown
-                 const firstCustomOption = exerciseSelect.querySelector(`option[value="${CSS.escape(uniqueCombinedExercises[firstCustomIndexInSorted].value)}"]`);
+                 // Need to account for the initial "Alegeți..." option, hence +1
+                 const firstCustomOption = exerciseSelect.options[firstCustomIndexInSorted + 1];
                  if (firstCustomOption) {
                      exerciseSelect.insertBefore(separator, firstCustomOption);
+                 } else {
+                     // Fallback if index calculation is off, just append
+                     exerciseSelect.appendChild(separator);
                  }
             }
          }
@@ -282,8 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateMuscleGroupFilter() {
         // Keep existing populateMuscleGroupFilter function - it works based on logged data
-        const muscleGroups = [...new Set(workouts.flatMap(w => w.muscleGroups))].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
-        filterMuscleGroupSelect.innerHTML = '<option value="">Filtrează grupă...</option>';
+        const muscleGroups = [...new Set(workouts.flatMap(w => w.muscleGroups || []))].sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' })); // Safer flatMap
+        filterMuscleGroupSelect.innerHTML = '<option value="">Toate grupele...</option>'; // Changed default text
         muscleGroups.forEach(group => {
             const option = document.createElement('option');
             option.value = group;
@@ -309,35 +315,83 @@ document.addEventListener('DOMContentLoaded', () => {
         setsWarning.classList.add('d-none');
     }
 
+    // MODIFIED: addSetRow for new form structure
     function addSetRow(reps = '', weight = '') {
-        // Keep existing addSetRow function
+        const setIndex = setsContainer.children.length + 1; // Get current set number
         const setDiv = document.createElement('div');
         setDiv.classList.add('row', 'g-2', 'mb-2', 'set-row', 'align-items-center');
+        // Added column for set number (col-1) and adjusted others
         setDiv.innerHTML = `
-            <div class="col">
-                <input type="number" class="form-control form-control-sm reps-input" placeholder="Rep." min="0" value="${reps}" required>
-                <div class="invalid-feedback" style="font-size: 0.75rem;">Rep. necesare.</div>
+            <div class="col-1 d-flex justify-content-center align-items-center">
+                <span class="set-number text-muted small">${setIndex}</span>
             </div>
             <div class="col">
-                <input type="number" class="form-control form-control-sm weight-input" placeholder="Kg" min="0" step="0.01" value="${weight}" required>
-                 <div class="invalid-feedback" style="font-size: 0.75rem;">Greutate necesară.</div>
+                <label for="reps-${setIndex}" class="visually-hidden">Repetări Set ${setIndex}</label>
+                <input type="number" id="reps-${setIndex}" class="form-control form-control-sm reps-input" placeholder="Rep." min="0" value="${reps}" required>
+                <div class="invalid-feedback" style="font-size: 0.75rem;">Rep.</div>
             </div>
-            <div class="col-auto">
-                <button type="button" class="btn btn-outline-danger btn-sm remove-set-btn" title="Șterge Set"><i class="bi bi-x-lg"></i></button>
+            <div class="col">
+                 <label for="weight-${setIndex}" class="visually-hidden">Greutate Set ${setIndex}</label>
+                <input type="number" id="weight-${setIndex}" class="form-control form-control-sm weight-input" placeholder="Kg" min="0" step="0.01" value="${weight}" required>
+                 <div class="invalid-feedback" style="font-size: 0.75rem;">Kg</div>
+            </div>
+            <div class="col-auto d-flex align-items-center" style="width: 45px;"> <!-- Fixed width column for button -->
+                <button type="button" class="btn btn-outline-danger btn-sm remove-set-btn p-1" title="Șterge Set ${setIndex}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
         `;
         setsContainer.appendChild(setDiv);
+
+        // Add event listener for the remove button
         setDiv.querySelector('.remove-set-btn').addEventListener('click', (e) => {
             const rowToRemove = e.currentTarget.closest('.set-row');
-            if (setsContainer.children.length > 1) rowToRemove.remove();
-            else showToast('Atenție', 'Trebuie să existe cel puțin un set.', 'warning');
+            if (setsContainer.children.length > 1) {
+                rowToRemove.remove();
+                // Re-number remaining sets after removal
+                updateSetNumbers();
+            } else {
+                showToast('Atenție', 'Trebuie să existe cel puțin un set.', 'warning');
+            }
             validateSets();
         });
+
+        // Add event listeners for input validation
         setDiv.querySelectorAll('.reps-input, .weight-input').forEach(input => {
              input.addEventListener('input', validateSets);
          });
-         validateSets();
+
+         validateSets(); // Initial validation check
     }
+
+    // NEW Helper function to update set numbers visually after deletion
+    function updateSetNumbers() {
+        const setRows = setsContainer.querySelectorAll('.set-row');
+        setRows.forEach((row, index) => {
+            const numberSpan = row.querySelector('.set-number');
+            if (numberSpan) {
+                numberSpan.textContent = index + 1;
+            }
+            // Update visually-hidden labels and button title
+            const repsInput = row.querySelector('.reps-input');
+            const weightInput = row.querySelector('.weight-input');
+            const removeBtn = row.querySelector('.remove-set-btn');
+            const newIndex = index + 1;
+            if(repsInput) {
+                repsInput.id = `reps-${newIndex}`;
+                const repsLabel = row.querySelector(`label[for^="reps-"]`);
+                if(repsLabel) repsLabel.htmlFor = `reps-${newIndex}`; repsLabel.textContent = `Repetări Set ${newIndex}`;
+            }
+            if(weightInput) {
+                 weightInput.id = `weight-${newIndex}`;
+                 const weightLabel = row.querySelector(`label[for^="weight-"]`);
+                 if(weightLabel) weightLabel.htmlFor = `weight-${newIndex}`; weightLabel.textContent = `Greutate Set ${newIndex}`;
+            }
+            if(removeBtn) removeBtn.title = `Șterge Set ${newIndex}`;
+
+        });
+    }
+
 
      function validateSets() {
         // Keep existing validateSets function
@@ -348,7 +402,10 @@ document.addEventListener('DOMContentLoaded', () => {
              setRows.forEach(row => {
                  const repsInput = row.querySelector('.reps-input');
                  const weightInput = row.querySelector('.weight-input');
-                 if (!repsInput.value || repsInput.value < 0 || !weightInput.value || weightInput.value < 0) {
+                 // Check for empty, non-numeric, or negative values
+                 if (!repsInput.value || isNaN(parseFloat(repsInput.value)) || parseFloat(repsInput.value) < 0 ||
+                     !weightInput.value || isNaN(parseFloat(weightInput.value)) || parseFloat(weightInput.value) < 0)
+                 {
                      isValid = false;
                  }
              });
@@ -363,8 +420,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setsContainer.querySelectorAll('.set-row').forEach(row => {
             const reps = row.querySelector('.reps-input').value;
             const weight = row.querySelector('.weight-input').value;
-            if (reps && weight && parseFloat(reps) >= 0 && parseFloat(weight) >= 0) {
-                sets.push({ reps: parseInt(reps, 10), weight: parseFloat(weight) });
+            // Ensure values are valid numbers >= 0 before pushing
+            const repsNum = parseInt(reps, 10);
+            const weightNum = parseFloat(weight);
+            if (!isNaN(repsNum) && repsNum >= 0 && !isNaN(weightNum) && weightNum >= 0) {
+                sets.push({ reps: repsNum, weight: weightNum });
             }
         });
         return sets;
@@ -430,12 +490,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     entryDiv.dataset.id = workout.id; // Store ID for actions
 
                     const currentVolume = calculateVolume([workout]);
-                    const currentE1RM = calculateMaxE1RM(workout.sets);
+                    const currentE1RM = calculateMaxE1RM(workout.sets || []); // Safer access
                     const isPR = checkForPR(workout.exercise, currentVolume, currentE1RM, workout.date);
                     const previousWorkout = findPreviousWorkout(workout, allWorkoutsSorted);
                     const volumeComparisonHTML = generateComparisonHTML(currentVolume, previousWorkout ? calculateVolume([previousWorkout]) : null, 'volume');
-                    const e1rmComparisonHTML = generateComparisonHTML(currentE1RM, previousWorkout ? calculateMaxE1RM(previousWorkout.sets) : null, 'e1rm');
-                    const setsSummaryHTML = workout.sets.map((set, index) => `<span class="badge text-bg-secondary me-1 fw-normal" title="Set ${index + 1}">${set.reps}r @ ${set.weight}kg</span>`).join(' ');
+                    const e1rmComparisonHTML = generateComparisonHTML(currentE1RM, previousWorkout ? calculateMaxE1RM(previousWorkout.sets || []) : null, 'e1rm'); // Safer access
+                    const setsSummaryHTML = (workout.sets || []).map((set, index) => `<span class="badge text-bg-secondary me-1 fw-normal" title="Set ${index + 1}">${set.reps || 0}r @ ${set.weight || 0}kg</span>`).join(' '); // Safer access
                     const notesExist = workout.notes && workout.notes.trim().length > 0;
 
                     entryDiv.innerHTML = `
@@ -443,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="entry-main-info mb-1 me-2 flex-grow-1 ${notesExist ? 'clickable-area' : ''}" ${notesExist ? 'title="Vezi/Ascunde notițe"' : ''}>
                                 <h6 class="mb-0 exercise-name d-inline-block">${workout.exercise}</h6>
                                 ${isPR ? '<span class="pr-indicator text-warning ms-1" title="Record Personal stabilit la această dată!"><i class="bi bi-star-fill"></i></span>' : ''}
-                                <small class="text-muted muscle-groups ms-2 d-block d-sm-inline">(${workout.muscleGroups.join(', ')})</small>
+                                <small class="text-muted muscle-groups ms-2 d-block d-sm-inline">(${(workout.muscleGroups || []).join(', ')})</small> <!-- Safer access -->
                             </div>
                             <div class="entry-actions text-nowrap ms-sm-auto mb-1">
                                 <button class="btn btn-sm btn-outline-primary edit-btn py-0 px-1" title="Editează"><i class="bi bi-pencil-fill"></i></button>
@@ -629,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Calculations (Volume, E1RM) ---
     // Keep existing calculation functions: calculateVolume, calculateE1RM, calculateMaxE1RM
     function calculateVolume(workoutArray) {
-        return workoutArray.reduce((totalVol, workout) => totalVol + workout.sets.reduce((vol, set) => vol + (set.reps * set.weight), 0), 0);
+        return workoutArray.reduce((totalVol, workout) => totalVol + (workout.sets || []).reduce((vol, set) => vol + ((set.reps || 0) * (set.weight || 0)), 0), 0); // Safer access
     }
     function calculateE1RM(weight, reps) {
         if (reps <= 0 || weight <= 0) return 0;
@@ -640,16 +700,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function calculateMaxE1RM(sets) {
         if (!sets || sets.length === 0) return 0;
-        return Math.max(0, ...sets.map(set => calculateE1RM(set.weight, set.reps)));
+        return Math.max(0, ...sets.map(set => calculateE1RM(set.weight || 0, set.reps || 0))); // Safer access
     }
 
 
     // --- Update PRs ---
     // Keep existing PR functions: updatePersonalRecords, checkForPR
      function updatePersonalRecords(exercise, sets, workoutDate) {
-         const currentMaxWeightSet = sets.reduce((maxSet, currentSet) => (currentSet.weight > (maxSet?.weight || 0) ? currentSet : maxSet), null);
-         const currentMaxWeight = currentMaxWeightSet ? currentMaxWeightSet.weight : 0;
-         const currentMaxE1RM = calculateMaxE1RM(sets);
+         const currentMaxWeightSet = (sets || []).reduce((maxSet, currentSet) => ((currentSet.weight || 0) > (maxSet?.weight || 0) ? currentSet : maxSet), null); // Safer access
+         const currentMaxWeight = currentMaxWeightSet ? (currentMaxWeightSet.weight || 0) : 0;
+         const currentMaxE1RM = calculateMaxE1RM(sets || []); // Safer access
          const currentVolume = calculateVolume([{ sets }]);
          let recordUpdated = false;
 
@@ -699,13 +759,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let isWeightPR = false;
         if (record.weightDate === workoutDate) {
             // Find the specific workout entry on that date for the exercise
-            const workoutEntry = workouts.find(w => w.id && w.date === workoutDate && w.exercise === exercise); // Check ID exists for safety
-            if (workoutEntry && workoutEntry.sets) {
-                const maxWeightThisEntry = Math.max(0, ...workoutEntry.sets.map(s => s.weight));
-                // Check if the max weight in *this specific entry* matches the record
-                if (Math.abs(maxWeightThisEntry - record.weight) < tolerance) {
+            // Ensure we are checking against the correct workout ID if multiple entries exist on the same day
+            // Note: This check might be complex if multiple entries exist. The current logic assumes
+            // the PR was set by *any* entry on that date matching the value.
+            // A more precise check would require passing the workout ID here.
+            // For simplicity, we check if *any* workout on that date achieved the PR weight.
+            const workoutsOnDate = workouts.filter(w => w.date === workoutDate && w.exercise === exercise);
+            const maxWeightOnDate = Math.max(0, ...workoutsOnDate.flatMap(w => w.sets || []).map(s => s.weight || 0));
+
+            if (Math.abs(maxWeightOnDate - record.weight) < tolerance) {
+                 // Check if the *current* workout being rendered actually contains this max weight
+                 const currentMaxWeight = Math.max(0, ...(workouts.find(w => w.date === workoutDate && w.exercise === exercise)?.sets || []).map(s => s.weight || 0));
+                 if (Math.abs(currentMaxWeight - record.weight) < tolerance) {
                     isWeightPR = true;
-                }
+                 }
             }
         }
 
@@ -773,9 +840,19 @@ document.addEventListener('DOMContentLoaded', () => {
         saveData(WORKOUT_STORAGE_KEY, workouts);
         showToast('Succes', `Antrenament ${actionType} cu succes!`);
 
-        if (prSetByThisEntry && actionType === 'adăugat') {
-            setTimeout(() => showToast('Record Personal!', `Nou record stabilit pentru ${workoutData.exercise}!`, 'info'), 600);
+        // Check if a PR was actually set *by this specific entry* before showing the toast
+        // This requires re-checking the PR status after saving
+        const newVolume = calculateVolume([workoutData]);
+        const newE1RM = calculateMaxE1RM(workoutData.sets);
+        if (checkForPR(workoutData.exercise, newVolume, newE1RM, workoutData.date)) {
+             // Check if the PR date *matches* this entry's date
+             const record = personalRecords[workoutData.exercise];
+             if (record && (record.volumeDate === workoutData.date || record.e1rmDate === workoutData.date || record.weightDate === workoutData.date)) {
+                 // Only show if the PR date matches this entry's date
+                 setTimeout(() => showToast('Record Personal!', `Nou record stabilit pentru ${workoutData.exercise}!`, 'info'), 600);
+             }
         }
+
 
         populateMuscleGroupFilter(); // Update history filter options
         populateProgressExerciseDropdownDash(); // Update dashboard dropdown options
@@ -812,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Select Muscle Groups FIRST
         Array.from(muscleGroupsSelect.options).forEach(option => {
-            option.selected = workout.muscleGroups.includes(option.value);
+            option.selected = (workout.muscleGroups || []).includes(option.value); // Safer access
         });
 
         // Manually trigger the update for the exercise dropdown based on selected groups
@@ -855,6 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addSetRow(); // Add one empty row if no sets existed
         }
         validateSets(); // Validate sets after populating
+        updateSetNumbers(); // Ensure set numbers are correct after populating
 
         logTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -917,7 +995,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchDate = !dateFilter || w.date === dateFilter;
             // Filter exercise based on the logged exercise name (string)
             const matchExercise = !exerciseFilter || w.exercise.toLowerCase().includes(exerciseFilter);
-            const matchMuscleGroup = !muscleGroupFilter || w.muscleGroups.includes(muscleGroupFilter);
+            const matchMuscleGroup = !muscleGroupFilter || (w.muscleGroups || []).includes(muscleGroupFilter); // Safer access
             return matchDate && matchExercise && matchMuscleGroup;
         });
         // Sort ALL filtered results descending by date, then ID (newest first)
@@ -993,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .map(([exercise, data]) => ({ exercise, ...data }))
             .filter(record => record.e1rm > 0 || record.weight > 0 || record.volume > 0)
             .sort((a, b) => (b.e1rm || 0) - (a.e1rm || 0)); // Sort by e1RM descending
-        noPrMessage.classList.toggle('d-none', sortedRecords.length > 0);
+        noPrMessage.classList.toggle('d-none', sortedRecords.length === 0);
         const topRecords = sortedRecords.slice(0, 5); // Show top 5
         topRecords.forEach(record => {
             const li = document.createElement('li');
@@ -1366,7 +1444,24 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
         });
         doc.setFontSize(18); doc.text("Jurnal Antrenamente - Gym Log Pro", 14, 20); doc.setFontSize(11); doc.setTextColor(100);
-        doc.autoTable({ head: [tableColumn], body: tableRows, startY: 30, theme: 'grid', headStyles: { fillColor: [22, 160, 133] }, styles: { fontSize: 8, cellPadding: 2 }, columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 45 }, 2: { cellWidth: 35 }, 3: { cellWidth: 15, halign: 'center' }, 4: { cellWidth: 20, halign: 'center' }, 5: { cellWidth: 25, halign: 'right' }, 6: { cellWidth: 30, halign: 'right' } } });
+        // Use jsPDF-AutoTable
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 30,
+            theme: 'grid',
+            headStyles: { fillColor: [22, 160, 133] }, // Example: Teal header
+            styles: { fontSize: 8, cellPadding: 2 },
+            columnStyles: {
+                0: { cellWidth: 20 }, // Data
+                1: { cellWidth: 45 }, // Exercitiu
+                2: { cellWidth: 35 }, // Grupe
+                3: { cellWidth: 15, halign: 'center' }, // Seturi
+                4: { cellWidth: 20, halign: 'center' }, // Rep. Totale
+                5: { cellWidth: 25, halign: 'right' }, // Volum
+                6: { cellWidth: 30, halign: 'right' }  // e1RM Max
+            }
+        });
         doc.save(`gym_log_pro_export_${new Date().toISOString().split('T')[0]}.pdf`); showToast('Export PDF', 'Datele exportate în PDF.', 'success');
     }
 
